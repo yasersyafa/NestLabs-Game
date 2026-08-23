@@ -1,2 +1,6 @@
 ﻿<Solution>
+  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="DOTween.Modules.csproj" />
+  <Project Path="Nestlabs.Obstacle.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
 </Solution>
