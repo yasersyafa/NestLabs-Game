@@ -22,6 +22,7 @@ namespace Nestlabs.Obstacle
 
         public override void OnHit()
         {
+            base.OnHit();
             #if UNITY_EDITOR
             Debug.Log("[IdleObstacle] on hit function running");
             #endif

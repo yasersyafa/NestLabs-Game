@@ -33,6 +33,7 @@ namespace Nestlabs.Obstacle
 
         public override void OnHit()
         {
+            base.OnHit();
             #if UNITY_EDITOR
             Debug.Log("[MovingObstacle] on hit function running");
             #endif

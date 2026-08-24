@@ -53,6 +53,17 @@ namespace Nestlabs.Obstacle
             warningUI.gameObject.SetActive(true);
         }
 
+        // The camera keeps tracking the player while the warning is up (SimpleCameraFollow runs
+        // every LateUpdate), so a one-time position from ShowWarning goes stale within a frame or
+        // two. Re-anchor every frame the icon is visible so it stays lined up with spawnY.
+        private void Update()
+        {
+            if (warningUI != null && warningUI.gameObject.activeSelf)
+            {
+                PositionWarningUI(warningUI);
+            }
+        }
+
         private void Fire()
         {
             if (warningUI != null)
@@ -95,6 +106,7 @@ namespace Nestlabs.Obstacle
 
         public override void OnHit()
         {
+            base.OnHit();
             #if UNITY_EDITOR
             Debug.Log("[ProjectileObstacle] on hit function running");
             #endif

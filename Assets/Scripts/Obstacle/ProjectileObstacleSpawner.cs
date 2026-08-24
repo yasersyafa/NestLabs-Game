@@ -1,10 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Nestlabs.Obstacle
 {
     public class ProjectileObstacleSpawner : MonoBehaviour
     {
+        private IObjectResolver _resolver;
+
+        [Inject]
+        public void Construct(IObjectResolver resolver)
+        {
+            _resolver = resolver;
+        }
+
         [Header("References")]
         [SerializeField] private ProjectileObstacle projectilePrefab;
         [SerializeField] private RectTransform warningIconPrefab;
@@ -65,7 +75,7 @@ namespace Nestlabs.Obstacle
                 warningIcon.gameObject.SetActive(false);
             }
 
-            var instance = Instantiate(projectilePrefab, startPos, Quaternion.identity);
+            var instance = _resolver.Instantiate(projectilePrefab, startPos, Quaternion.identity);
             instance.Configure(startPos, endPos, warningIcon);
             activeProjectiles.Add(instance);
         }

@@ -8,7 +8,9 @@
         "UniTask",
         "Unity.InputSystem",
         "GabrielBigardi.SpriteAnimator",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "NestLabs.Shared",
+        "Nestlabs.Obstacle"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

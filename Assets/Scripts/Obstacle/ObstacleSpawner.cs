@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Nestlabs.Obstacle
 {
@@ -8,6 +10,14 @@ namespace Nestlabs.Obstacle
     // own ProjectileObstacleSpawner since it's time-based, not tied to player progress.
     public class ObstacleSpawner : MonoBehaviour
     {
+        private IObjectResolver _resolver;
+
+        [Inject]
+        public void Construct(IObjectResolver resolver)
+        {
+            _resolver = resolver;
+        }
+
         [Header("References")]
         [SerializeField] private MovingObstacle movingObstaclePrefab;
         [SerializeField] private IdleObstacle idleObstaclePrefab;
@@ -88,7 +98,7 @@ namespace Nestlabs.Obstacle
             var startPos = new Vector3(startX, spawnY, 0f);
             var endPos = new Vector3(endX, spawnY, 0f);
 
-            var instance = Instantiate(movingObstaclePrefab, startPos, Quaternion.identity);
+            var instance = _resolver.Instantiate(movingObstaclePrefab, startPos, Quaternion.identity);
             instance.Configure(startPos, endPos);
             active.Add(instance.transform);
         }
@@ -99,7 +109,7 @@ namespace Nestlabs.Obstacle
 
             float halfWidth = GetScreenHalfWidth();
             float x = Random.Range(-halfWidth, halfWidth);
-            var instance = Instantiate(idleObstaclePrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
+            var instance = _resolver.Instantiate(idleObstaclePrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
             active.Add(instance.transform);
         }
 

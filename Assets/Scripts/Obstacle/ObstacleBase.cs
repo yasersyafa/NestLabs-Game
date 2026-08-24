@@ -1,4 +1,6 @@
+using NestLabs.Shared.Obstacle;
 using UnityEngine;
+using VContainer;
 
 namespace Nestlabs.Obstacle
 {
@@ -9,9 +11,17 @@ namespace Nestlabs.Obstacle
 
     public abstract class ObstacleBase : MonoBehaviour, IHittable
     {
+        private IObstacleEventSink _eventSink = NullObstacleEventSink.Instance;
+
+        [Inject]
+        public void Construct(IObstacleEventSink eventSink)
+        {
+            _eventSink = eventSink;
+        }
+
         public virtual void OnHit()
         {
-            // generic effect for the obstacle
+            _eventSink.Hit(transform.position);
         }
     }
 }
