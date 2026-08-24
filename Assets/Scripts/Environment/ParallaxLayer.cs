@@ -25,6 +25,13 @@ namespace Nestlabs.Environment
             tileHeight = tileA != null ? tileA.bounds.size.y : 0f;
         }
 
+        public void SetSprite(Sprite sprite)
+        {
+            if (tileA != null) tileA.sprite = sprite;
+            if (tileB != null) tileB.sprite = sprite;
+            tileHeight = tileA != null ? tileA.bounds.size.y : tileHeight;
+        }
+
         public void ApplyDelta(float deltaY)
         {
             float offset = deltaY * scrollFactor;
