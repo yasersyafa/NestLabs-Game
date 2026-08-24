@@ -22,8 +22,10 @@ namespace Nestlabs.Obstacle
         [SerializeField] private Vector2 yOffsetRange = new Vector2(-1f, 1f);
 
         [Header("Spawn Position")]
-        [Tooltip("Moving obstacle travels between +xDistance and -xDistance (starting side random). Idle obstacle spawns at a random X within [-xDistance, xDistance].")]
-        [SerializeField] private float xDistance = 5f;
+        [Tooltip("Extra margin kept inside the screen edge (world units) to account for obstacle sprite size.")]
+        [SerializeField] private float xEdgeMargin = 0.5f;
+
+        private Camera cam;
 
         [Header("Type Selection")]
         [Range(0f, 1f)]
@@ -38,7 +40,20 @@ namespace Nestlabs.Obstacle
 
         private void Awake()
         {
+            cam = Camera.main;
             if (player != null) nextSpawnY = player.position.y + lookaheadDistance;
+        }
+
+        // Half-width of the visible screen in world units, minus edge margin. Recomputed
+        // per spawn (not cached) so it stays correct if resolution/aspect changes at runtime.
+        // This is the sole source of the X range - obstacles are placed/moved purely
+        // within actual screen bounds, no separate configurable X range.
+        private float GetScreenHalfWidth()
+        {
+            if (cam == null || !cam.orthographic) return 0f;
+
+            float screenHalfWidth = cam.orthographicSize * cam.aspect;
+            return Mathf.Max(0f, screenHalfWidth - xEdgeMargin);
         }
 
         private void Update()
@@ -66,9 +81,9 @@ namespace Nestlabs.Obstacle
         {
             if (movingObstaclePrefab == null) return;
 
-            bool startFromRight = Random.value > 0.5f;
-            float startX = startFromRight ? xDistance : -xDistance;
-            float endX = -startX;
+            float halfWidth = GetScreenHalfWidth();
+            float startX = Random.Range(-halfWidth, halfWidth);
+            float endX = Random.Range(-halfWidth, halfWidth);
 
             var startPos = new Vector3(startX, spawnY, 0f);
             var endPos = new Vector3(endX, spawnY, 0f);
@@ -82,7 +97,8 @@ namespace Nestlabs.Obstacle
         {
             if (idleObstaclePrefab == null) return;
 
-            float x = Random.Range(-xDistance, xDistance);
+            float halfWidth = GetScreenHalfWidth();
+            float x = Random.Range(-halfWidth, halfWidth);
             var instance = Instantiate(idleObstaclePrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
             active.Add(instance.transform);
         }

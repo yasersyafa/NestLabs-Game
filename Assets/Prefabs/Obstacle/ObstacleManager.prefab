@@ -84,7 +84,7 @@ MonoBehaviour:
   spawnYGapMin: 4
   spawnYGapMax: 6
   yOffsetRange: {x: -1, y: 1}
-  xDistance: 5
+  xEdgeMargin: 1
   idleSpawnChance: 0.5
   cullDistanceBelowPlayer: 12
 --- !u!1 &9060067221345848154
