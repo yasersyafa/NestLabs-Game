@@ -1,7 +1,9 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="Assembly-CSharp-Editor-firstpass.csproj" />
+  <Project Path="NestLabs.Runtime.csproj" />
   <Project Path="DOTween.Modules.csproj" />
   <Project Path="Nestlabs.Obstacle.csproj" />
+  <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Nestlabs.Environment.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="NestLabs.Tests.EditMode.csproj" />
 </Solution>

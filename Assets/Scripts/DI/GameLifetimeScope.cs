@@ -1,5 +1,6 @@
 using MessagePipe;
 using NestLabs.Player;
+using NestLabs.Score;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -25,6 +26,8 @@ namespace NestLabs
             builder.RegisterMessageBroker<PlayerLatchedEvent>(options);
             builder.RegisterMessageBroker<PlayerHitEvent>(options);
             builder.RegisterMessageBroker<PlayerDiedEvent>(options);
+            builder.RegisterMessageBroker<ScoreChangedEvent>(options);
+            builder.RegisterMessageBroker<ScoreFinalizedEvent>(options);
 
             builder.Register<IPlayerEventSink, MessagePipePlayerEventSink>(Lifetime.Singleton);
 
@@ -35,6 +38,7 @@ namespace NestLabs
 
             builder.RegisterComponentInHierarchy<PlayerBase>();
             builder.RegisterComponentInHierarchy<PlayerDebugHud>();
+            builder.RegisterComponentInHierarchy<ScoreService>();
         }
     }
 }
