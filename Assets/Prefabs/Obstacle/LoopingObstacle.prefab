@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3406182125281159834}
   - component: {fileID: 6797437713577562968}
   - component: {fileID: 785143267999250328}
+  - component: {fileID: 7268872587205795623}
   m_Layer: 0
   m_Name: LoopingObstacle
   m_TagString: Untagged
@@ -83,8 +84,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 0.54997826, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: ca5ce7f3f3ac3bb499d37119b1867d7e, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -128,7 +129,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.28
 --- !u!114 &785143267999250328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,3 +143,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Nestlabs.Obstacle::Nestlabs.Obstacle.MovingObstacle
   duration: 2
+--- !u!114 &7268872587205795623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5757565613989480197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d4337bea670e194ca021e2a54e31bf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GabrielBigardi.SpriteAnimator::GabrielBigardi.SpriteAnimator.SpriteAnimator
+  _playAutomatically: 1
+  _spriteAnimationObject: {fileID: 11400000, guid: bea0dbeac8fb445528be04cb55c5e30e, type: 2}
+  _spriteRenderer: {fileID: 3406182125281159834}
