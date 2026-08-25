@@ -1769,6 +1769,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5763185891404399917, guid: c248ceced59bdc445be89af56ebf0cc3, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -8658507732877468846, guid: 9019ecf15395a334184dce12068a3673, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1851,6 +1855,18 @@ PrefabInstance:
     - target: {fileID: 1643803673605715831, guid: 9cf015c05d3f2452d9bd4e2051fb9d05, type: 3}
       propertyPath: player
       value: 
+      objectReference: {fileID: 1862734603}
+    - target: {fileID: 1643803673605715831, guid: 9cf015c05d3f2452d9bd4e2051fb9d05, type: 3}
+      propertyPath: layers.Array.data[0].scrollFactor
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1643803673605715831, guid: 9cf015c05d3f2452d9bd4e2051fb9d05, type: 3}
+      propertyPath: layers.Array.data[1].scrollFactor
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1643803673605715831, guid: 9cf015c05d3f2452d9bd4e2051fb9d05, type: 3}
+      propertyPath: layers.Array.data[2].scrollFactor
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1699761867791551242, guid: 9cf015c05d3f2452d9bd4e2051fb9d05, type: 3}
       propertyPath: m_LocalPosition.x

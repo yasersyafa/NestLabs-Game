@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77fafcc6bd2ee94ebe9ac341b986e7a, type: 3}
+  m_Name: Skin_Default
+  m_EditorClassIdentifier: GabrielBigardi.SpriteAnimator::GabrielBigardi.SpriteAnimator.SpriteAnimationObject
+  SpriteAnimations:
+  - Name: Latch
+    FPS: 10
+    Frames:
+    - {fileID: -8658507732877468846, guid: 9019ecf15395a334184dce12068a3673, type: 3}
+    SpriteAnimationType: 0
+  - Name: Slide
+    FPS: 10
+    Frames:
+    - {fileID: -8658507732877468846, guid: 9019ecf15395a334184dce12068a3673, type: 3}
+    SpriteAnimationType: 0
+  - Name: Jump
+    FPS: 10
+    Frames:
+    - {fileID: 3702143434177717931, guid: 9019ecf15395a334184dce12068a3673, type: 3}
+    SpriteAnimationType: 0
+  - Name: Fall
+    FPS: 10
+    Frames:
+    - {fileID: 7093487714807042051, guid: 9019ecf15395a334184dce12068a3673, type: 3}
+    SpriteAnimationType: 0
+  - Name: Dash
+    FPS: 10
+    Frames:
+    - {fileID: -1798583560104158613, guid: 9019ecf15395a334184dce12068a3673, type: 3}
+    SpriteAnimationType: 0
+  - Name: Hit
+    FPS: 10
+    Frames:
+    - {fileID: 1998704298584016887, guid: 9019ecf15395a334184dce12068a3673, type: 3}
+    SpriteAnimationType: 1
+  - Name: Dead
+    FPS: 10
+    Frames:
+    - {fileID: 1998704298584016887, guid: 9019ecf15395a334184dce12068a3673, type: 3}
+    SpriteAnimationType: 1
