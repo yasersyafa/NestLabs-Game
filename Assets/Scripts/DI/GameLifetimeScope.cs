@@ -40,14 +40,18 @@ namespace NestLabs
             // TouchPlayerInput is IDisposable; the container tears its InputAction down with the scope.
             builder.Register<IPlayerInput, TouchPlayerInput>(Lifetime.Singleton);
 
-            builder.RegisterInstance(_playerConfig);
-            builder.RegisterInstance(_audioLibrary);
+            // RegisterInstance throws on a null instance, which aborts the whole Configure and
+            // leaves every other component uninjected. The downstream symptom is a null resolver
+            // somewhere unrelated, so fail loudly here naming the field that is actually missing.
+            if (!RegisterRequired(builder, _playerConfig, nameof(_playerConfig))) return;
+            if (!RegisterRequired(builder, _audioLibrary, nameof(_audioLibrary))) return;
             builder.Register<IAudioMuteStore, PlayerPrefsAudioMuteStore>(Lifetime.Singleton);
 
             builder.RegisterComponentInHierarchy<PlayerBase>();
             builder.RegisterComponentInHierarchy<PlayerDebugHud>();
             builder.RegisterComponentInHierarchy<ScoreService>();
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
+            builder.RegisterComponentInHierarchy<Hitstop>().As<IHitstop>();
             builder.RegisterComponentInHierarchy<ObstacleSpawner>();
             builder.RegisterComponentInHierarchy<ProjectileObstacleSpawner>();
 
@@ -56,6 +60,20 @@ namespace NestLabs
             // actually runs. Skipping this leaves audio silent with no error.
             builder.Register<AudioEventBinder>(Lifetime.Singleton);
             builder.RegisterBuildCallback(resolver => resolver.Resolve<AudioEventBinder>());
+        }
+
+        private bool RegisterRequired<T>(IContainerBuilder builder, T asset, string field) where T : class
+        {
+            if (asset == null)
+            {
+                Debug.LogError(
+                    $"[GameLifetimeScope] '{field}' is not assigned on '{name}'. No dependency will " +
+                    "be injected until it is.", this);
+                return false;
+            }
+
+            builder.RegisterInstance(asset);
+            return true;
         }
     }
 }
