@@ -1,4 +1,5 @@
 using System;
+using NestLabs.Shared.Combat;
 using UnityEngine;
 using VContainer;
 
@@ -155,6 +156,13 @@ namespace NestLabs.Player
             if (!_health.TryApplyDamage(source.Damage, source.Position))
             {
                 return;
+            }
+
+            // Only accepted hits notify the source, so OnTriggerStay2D re-contacts during i-frames
+            // cannot re-fire the obstacle's hit SFX.
+            if (source is IHittable hittable)
+            {
+                hittable.OnHit();
             }
 
             _events.Hit(source.Damage, _health.Current, _health.GetKnockback());
