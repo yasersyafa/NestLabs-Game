@@ -78,13 +78,17 @@ namespace NestLabs.Tests
             _nodeSensor = _go.AddComponent<PlayerNodeSensor>();
 
             _config = ScriptableObject.CreateInstance<PlayerConfigSO>();
+            // No wind-up and no slow-mo by default, so the existing tests can assert the launch
+            // directly. NullHitstop is what guarantees no test ever touches global Time.timeScale.
+            _config.GrappleAnticipationDuration = 0f;
+            _config.GrappleTimeScale = 1f;
             health.Initialize(_config);
 
             _input = new FakePlayerInput();
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
-                _fsm, motor, sensor, _nodeSensor, visual, health, _config, _input,
-                NullPlayerEventSink.Instance, _go.transform);
+                _fsm, motor, sensor, _nodeSensor, visual, null, health, NullHitstop.Instance,
+                _config, _input, NullPlayerEventSink.Instance, _go.transform);
             _context.ResetBlackboard();
 
             _fsm.Register(new LatchState(_context));
@@ -348,6 +352,104 @@ namespace NestLabs.Tests
 
             Assert.AreEqual(PlayerStateId.Latch, _fsm.CurrentId);
             Assert.AreEqual(-1, _context.LastWallSide);
+        }
+
+        // --- Grapple juice ---------------------------------------------------------------
+
+        [Test]
+        public void Grapple_HoldsStill_DuringTheWindUp()
+        {
+            _config.GrappleAnticipationDuration = 10f;
+
+            EnterGrapple(new Vector2(0f, 3f), force: 25f);
+
+            Assert.AreEqual(Vector2.zero, _context.Motor.Velocity,
+                "The player must hang motionless until the wind-up is spent.");
+            Assert.AreEqual(PlayerStateId.Dash, _fsm.CurrentId);
+
+            _fsm.Tick(0.5f);
+
+            Assert.AreEqual(Vector2.zero, _context.Motor.Velocity,
+                "Ticking scaled time must not end an unscaled wind-up.");
+            Assert.AreEqual(PlayerStateId.Dash, _fsm.CurrentId, "The crossing test must not run mid-wind-up.");
+        }
+
+        [Test]
+        public void Grapple_LaunchesOnTheEnteringFrame_WhenWindUpIsZero()
+        {
+            _config.GrappleAnticipationDuration = 0f;
+
+            EnterGrapple(new Vector2(0f, 3f), force: 25f);
+
+            Assert.AreEqual(25f, _context.Motor.Velocity.y, 0.001f);
+        }
+
+        [Test]
+        public void ExitDecay_BleedsHorizontalSpeedDownToTheExitSpeed()
+        {
+            _config.GrappleExitSpeed = 9f;
+            _config.GrappleExitDecayDuration = 0.5f;
+
+            EnterGrapple(new Vector2(3f, 0f), force: 30f);
+            _go.transform.position = new Vector3(4f, 0f, 0f);
+            _fsm.Tick(0f);
+
+            Assert.AreEqual(PlayerStateId.Fall, _fsm.CurrentId);
+            Assert.AreEqual(30f, _context.Motor.Velocity.x, 0.001f, "Speed is kept at the crossing.");
+
+            for (int i = 0; i < 40; i++) _fsm.FixedTick(0.02f);
+
+            Assert.AreEqual(9f, _context.Motor.Velocity.x, 0.01f,
+                "The bleed-off must settle at the exit speed, not overshoot past it.");
+        }
+
+        [Test]
+        public void ExitDecay_LeavesALaunchSlowerThanTheExitSpeedAlone()
+        {
+            _config.GrappleExitSpeed = 9f;
+
+            EnterGrapple(new Vector2(3f, 0f), force: 4f);
+            _go.transform.position = new Vector3(4f, 0f, 0f);
+            _fsm.Tick(0f);
+
+            for (int i = 0; i < 10; i++) _fsm.FixedTick(0.02f);
+
+            Assert.AreEqual(4f, _context.Motor.Velocity.x, 0.001f,
+                "A slow node must not be accelerated up to the exit speed.");
+        }
+
+        [Test]
+        public void Grapple_DoesNotStrandTheTimeScale_WhenTheHitstopWasDestroyed()
+        {
+            // The exact shipped bug: Hitstop sat on a HierarchyDesignerFolder object, which
+            // destroys itself at Start. `??` cannot see a destroyed MonoBehaviour, so Begin still
+            // set the time scale while its Update was already gone.
+            var hitstopGo = new GameObject("DeadHitstop");
+            var hitstop = hitstopGo.AddComponent<Hitstop>();
+            Object.DestroyImmediate(hitstopGo);
+
+            _config.GrappleTimeScale = 0.5f;
+
+            var context = new PlayerContext(
+                _fsm, _context.Motor, _sensor, _nodeSensor, _context.Visual, null, _context.Health,
+                hitstop, _config, _input, NullPlayerEventSink.Instance, _go.transform);
+            context.ResetBlackboard();
+
+            try
+            {
+                Assert.AreSame(NullHitstop.Instance, context.Hitstop,
+                    "A destroyed Hitstop must resolve to the no-op sink.");
+
+                context.ActiveNode = PlaceNode(new Vector2(0f, 3f));
+                _fsm.Initialize(context, PlayerStateId.Dash);
+
+                Assert.AreEqual(1f, Time.timeScale, 0.0001f,
+                    "A destroyed Hitstop must never be able to strand the time scale.");
+            }
+            finally
+            {
+                Time.timeScale = 1f;
+            }
         }
 
         // --- Transition mechanics --------------------------------------------------------

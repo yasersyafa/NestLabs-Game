@@ -32,6 +32,18 @@ namespace NestLabs.Player
         [Tooltip("Safety cap on a pull, in seconds. Only reached when geometry blocks the path to the node. Speed and range come from the node's own NodeDataSO.")]
         public float GrappleMaxDuration = 0.5f;
 
+        [Tooltip("Seconds the player hangs motionless before the launch fires. Real time, so the slow-mo does not stretch it.")]
+        [Min(0f)] public float GrappleAnticipationDuration = 0.08f;
+
+        [Tooltip("Time scale during the wind-up. Lasts exactly GrappleAnticipationDuration. 1 disables the slow-mo entirely.")]
+        [Range(0.05f, 1f)] public float GrappleTimeScale = 0.5f;
+
+        [Tooltip("Horizontal speed the launch bleeds back down to after crossing the node.")]
+        [Min(0f)] public float GrappleExitSpeed = 9f;
+
+        [Tooltip("Seconds to blend from launch speed down to GrappleExitSpeed.")]
+        [Min(0f)] public float GrappleExitDecayDuration = 0.35f;
+
         [Header("Latch")]
         [Tooltip("Seconds the player clings motionless before Slide takes over.")]
         public float LatchGraceDuration = 0.35f;

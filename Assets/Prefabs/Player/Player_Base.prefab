@@ -205,6 +205,7 @@ GameObject:
   - component: {fileID: 8694559285311071969}
   - component: {fileID: 2356649437822569510}
   - component: {fileID: 5453508517143972832}
+  - component: {fileID: 5911165872010203805}
   m_Layer: 0
   m_Name: Player_Base
   m_TagString: Untagged
@@ -388,9 +389,28 @@ MonoBehaviour:
   _sensor: {fileID: 4532374945447130273}
   _nodeSensor: {fileID: 2136428184516852969}
   _visual: {fileID: 2356649437822569510}
+  _trail: {fileID: 5911165872010203805}
   _health: {fileID: 8694559285311071969}
   _hurtbox: {fileID: 3843367002444813805}
   _fallbackConfig: {fileID: 11400000, guid: 8d58cd1f3fcb91a4c84715f9684d19dd, type: 2}
+--- !u!114 &5911165872010203805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5759962793155421914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71651a159e888ed429103138f5faef92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.Player.PlayerTrail
+  _source: {fileID: 3998087810167902498}
+  _poolSize: 10
+  _spawnInterval: 0.02
+  _fadeDuration: 0.22
+  _startColor: {r: 1, g: 1, b: 1, a: 0.55}
+  _sortingOffset: -1
 --- !u!1 &6637469076782966229
 GameObject:
   m_ObjectHideFlags: 0

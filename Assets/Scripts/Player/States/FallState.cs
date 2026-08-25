@@ -1,4 +1,5 @@
 using NestLabs.Node;
+using UnityEngine;
 
 namespace NestLabs.Player
 {
@@ -25,7 +26,34 @@ namespace NestLabs.Player
 
         public override void FixedTick(float fixedDeltaTime)
         {
+            BleedOffLaunchSpeed(fixedDeltaTime);
             MoveWithGravity(fixedDeltaTime);
+        }
+
+        /// <summary>
+        /// Eases horizontal speed from a grapple launch back down to normal air speed. Y is left to
+        /// gravity, which already handles a near-vertical launch on its own.
+        /// </summary>
+        private void BleedOffLaunchSpeed(float fixedDeltaTime)
+        {
+            if (Ctx.GrappleDecayRemaining <= 0f)
+            {
+                return;
+            }
+
+            Ctx.GrappleDecayRemaining -= fixedDeltaTime;
+
+            Vector2 v = Motor.Velocity;
+            float target = Mathf.Sign(v.x) * Config.GrappleExitSpeed;
+
+            if (Mathf.Abs(v.x) <= Config.GrappleExitSpeed)
+            {
+                Ctx.GrappleDecayRemaining = 0f;
+                return;
+            }
+
+            v.x = Mathf.MoveTowards(v.x, target, Ctx.GrappleDecayRate * fixedDeltaTime);
+            Motor.Velocity = v;
         }
 
         public override void OnTap()

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 namespace NestLabs.Node
@@ -26,6 +27,10 @@ namespace NestLabs.Node
         [SerializeField] private bool _drawGizmos = true;
 
         private float _readyAt;
+        private Tween _popTween;
+        private Tween _flashTween;
+        private Vector3 _spriteBaseScale = Vector3.one;
+
         public Vector2 Position => transform.position;
 
         public float LaunchForce => _data != null ? _data.LaunchForce : 0f;
@@ -67,7 +72,15 @@ namespace NestLabs.Node
                 return;
             }
 
+            if (_sprite != null) _spriteBaseScale = _sprite.transform.localScale;
+
             ApplyData();
+        }
+
+        private void OnDestroy()
+        {
+            _popTween?.Kill();
+            _flashTween?.Kill();
         }
 
         private void Update()
@@ -88,9 +101,9 @@ namespace NestLabs.Node
             if (_data.ReuseCooldown > 0f)
             {
                 _readyAt = Time.time + _data.ReuseCooldown;
-                if (_sprite != null) _sprite.color = _data.SpentTint;
-                SetRingColor(_data.SpentTint);
             }
+
+            PlayPop();
 
             // Allocates per launch. Pool this if nodes ever get dense.
             if (_data.LaunchVfx != null)
@@ -154,6 +167,48 @@ namespace NestLabs.Node
             }
 
             SetRingColor(IsReady ? _data.Tint : _data.SpentTint);
+        }
+
+        /// <summary>
+        /// Grab reaction: a scale punch plus a flash that settles into whichever tint the node is
+        /// about to sit at. Runs unscaled because the grab happens during the player's slow-mo.
+        /// </summary>
+        private void PlayPop()
+        {
+            Color settle = _readyAt > 0f ? _data.SpentTint : _data.Tint;
+
+            if (_sprite != null && _data.PopScale > 0f && _data.PopDuration > 0f)
+            {
+                _popTween?.Kill();
+                _sprite.transform.localScale = _spriteBaseScale;
+                _popTween = _sprite.transform
+                    .DOPunchScale(_spriteBaseScale * _data.PopScale, _data.PopDuration, vibrato: 1, elasticity: 0.4f)
+                    .SetUpdate(true)
+                    .SetLink(gameObject);
+            }
+
+            if (_data.PopDuration <= 0f)
+            {
+                if (_sprite != null) _sprite.color = settle;
+                SetRingColor(settle);
+                return;
+            }
+
+            _flashTween?.Kill();
+            if (_sprite != null) _sprite.color = _data.PopFlash;
+            SetRingColor(_data.PopFlash);
+
+            // One driver for both renderers so they never drift apart.
+            float t = 0f;
+            _flashTween = DOTween.To(() => t, v =>
+                {
+                    t = v;
+                    Color c = Color.Lerp(_data.PopFlash, settle, v);
+                    if (_sprite != null) _sprite.color = c;
+                    SetRingColor(c);
+                }, 1f, _data.PopDuration)
+                .SetUpdate(true)
+                .SetLink(gameObject);
         }
 
         private void SetRingColor(Color color)

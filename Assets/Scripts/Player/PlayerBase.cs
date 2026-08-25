@@ -19,6 +19,7 @@ namespace NestLabs.Player
         [SerializeField] private PlayerSensor _sensor;
         [SerializeField] private PlayerNodeSensor _nodeSensor;
         [SerializeField] private PlayerVisual _visual;
+        [SerializeField] private PlayerTrail _trail;
         [SerializeField] private PlayerHealth _health;
         [SerializeField] private PlayerHurtbox _hurtbox;
 
@@ -29,6 +30,7 @@ namespace NestLabs.Player
         private PlayerConfigSO _config;
         private IPlayerInput _input;
         private IPlayerEventSink _events;
+        private IHitstop _hitstop;
         private PlayerStateMachine _fsm;
         private PlayerContext _context;
         private bool _ownsInput;
@@ -42,11 +44,13 @@ namespace NestLabs.Player
         /// assembly happens in Start.
         /// </summary>
         [Inject]
-        public void Construct(IPlayerInput input, IPlayerEventSink events, PlayerConfigSO config)
+        public void Construct(
+            IPlayerInput input, IPlayerEventSink events, PlayerConfigSO config, IHitstop hitstop)
         {
             _input = input;
             _events = events;
             _config = config;
+            _hitstop = hitstop;
         }
 
         private void Reset()
@@ -55,6 +59,7 @@ namespace NestLabs.Player
             _sensor = GetComponent<PlayerSensor>();
             _nodeSensor = GetComponentInChildren<PlayerNodeSensor>();
             _visual = GetComponent<PlayerVisual>();
+            _trail = GetComponent<PlayerTrail>();
             _health = GetComponent<PlayerHealth>();
             _hurtbox = GetComponentInChildren<PlayerHurtbox>();
         }
@@ -127,12 +132,21 @@ namespace NestLabs.Player
             }
 
             _events ??= NullPlayerEventSink.Instance;
+            IHitstop safeHitstop = NullHitstop.Safe(_hitstop);
+            if (_hitstop != null && ReferenceEquals(safeHitstop, NullHitstop.Instance))
+            {
+                Debug.LogError(
+                    "[PlayerBase] The injected IHitstop was already destroyed. Check that Hitstop " +
+                    "is not on a HierarchyDesignerFolder object, which destroys itself at Start.", this);
+            }
+            _hitstop = safeHitstop;
 
             _health.Initialize(_config);
 
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
-                _fsm, _motor, _sensor, _nodeSensor, _visual, _health, _config, _input, _events, transform);
+                _fsm, _motor, _sensor, _nodeSensor, _visual, _trail, _health, _hitstop, _config,
+                _input, _events, transform);
             _context.ResetBlackboard();
 
             _fsm.Register(new LatchState(_context));

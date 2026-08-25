@@ -15,7 +15,16 @@ namespace NestLabs.Player
         public PlayerSensor Sensor { get; }
         public PlayerNodeSensor NodeSensor { get; }
         public PlayerVisual Visual { get; }
+        public PlayerTrail Trail { get; }
         public PlayerHealth Health { get; }
+        /// <summary>
+        /// Resolved on every read rather than once in the constructor. PlayerBase builds this in
+        /// Start, and a hierarchy tool can destroy a service in Start too, with no ordering
+        /// guarantee between them. A construction-time check would catch that only sometimes.
+        /// </summary>
+        public IHitstop Hitstop => NullHitstop.Safe(_hitstop);
+
+        private readonly IHitstop _hitstop;
         public PlayerConfigSO Config { get; }
         public IPlayerInput Input { get; }
         public IPlayerEventSink Events { get; }
@@ -28,7 +37,9 @@ namespace NestLabs.Player
             PlayerSensor sensor,
             PlayerNodeSensor nodeSensor,
             PlayerVisual visual,
+            PlayerTrail trail,
             PlayerHealth health,
+            IHitstop hitstop,
             PlayerConfigSO config,
             IPlayerInput input,
             IPlayerEventSink events,
@@ -39,7 +50,9 @@ namespace NestLabs.Player
             Sensor = sensor;
             NodeSensor = nodeSensor;
             Visual = visual;
+            Trail = trail;
             Health = health;
+            _hitstop = hitstop;
             Config = config;
             Input = input;
             Events = events;
@@ -53,6 +66,28 @@ namespace NestLabs.Player
 
         /// <summary>The node the current launch is aimed at. Set on tap, cleared when Dash exits.</summary>
         public NodeBase ActiveNode { get; set; }
+
+        /// <summary>Seconds of launch-speed bleed-off left. Armed by Dash on exit, spent by Fall.</summary>
+        public float GrappleDecayRemaining { get; set; }
+
+        /// <summary>How fast the bleed-off runs, in units/sec^2. Derived from the launch speed.</summary>
+        public float GrappleDecayRate { get; set; }
+
+        /// <summary>Arms the post-launch bleed-off so the pull settles into normal air speed.</summary>
+        public void ArmGrappleDecay(float launchSpeed)
+        {
+            float duration = Config.GrappleExitDecayDuration;
+            float excess = Mathf.Abs(launchSpeed) - Config.GrappleExitSpeed;
+
+            if (duration <= 0f || excess <= 0f)
+            {
+                GrappleDecayRemaining = 0f;
+                return;
+            }
+
+            GrappleDecayRemaining = duration;
+            GrappleDecayRate = excess / duration;
+        }
 
         /// <summary>-1 or +1. Drives sprite flip.</summary>
         public int FacingDirection { get; set; } = 1;
@@ -86,6 +121,8 @@ namespace NestLabs.Player
         public void ResetBlackboard()
         {
             ActiveNode = null;
+            GrappleDecayRemaining = 0f;
+            GrappleDecayRate = 0f;
             FacingDirection = 1;
             LastWallSide = 0;
             LastWallExitTime = float.NegativeInfinity;

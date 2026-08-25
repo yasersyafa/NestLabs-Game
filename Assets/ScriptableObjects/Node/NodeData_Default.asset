@@ -17,7 +17,10 @@ MonoBehaviour:
   ReuseCooldown: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   SpentTint: {r: 1, g: 1, b: 1, a: 0.35}
-  LaunchVfx: {fileID: 0}
   ShowRange: 1
   RangeRingWidth: 0.06
   RangeRingSegments: 48
+  LaunchVfx: {fileID: 0}
+  PopScale: 0.35
+  PopDuration: 0.22
+  PopFlash: {r: 1, g: 1, b: 1, a: 1}

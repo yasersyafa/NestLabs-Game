@@ -18,6 +18,10 @@ MonoBehaviour:
   JumpHorizontalSpeed: 6
   JumpCutMultiplier: 0.5
   GrappleMaxDuration: 0.5
+  GrappleAnticipationDuration: 0.25
+  GrappleTimeScale: 0.5
+  GrappleExitSpeed: 9
+  GrappleExitDecayDuration: 0.35
   LatchGraceDuration: 0.35
   LatchStickForce: 2
   SlideSpeed: 3

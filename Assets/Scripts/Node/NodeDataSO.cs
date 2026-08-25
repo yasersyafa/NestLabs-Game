@@ -39,5 +39,14 @@ namespace NestLabs.Node
         [Tooltip("Spawned at the node when a launch fires. Optional.")]
         public GameObject LaunchVfx;
 
+        [Header("Grab Pop")]
+        [Tooltip("Scale punch when the player grabs this node. Zero disables the pop.")]
+        [Min(0f)] public float PopScale = 0.35f;
+
+        [Tooltip("Seconds the pop takes.")]
+        [Min(0f)] public float PopDuration = 0.22f;
+
+        [Tooltip("Colour the node flashes to on grab, before it settles.")]
+        public Color PopFlash = Color.white;
     }
 }
