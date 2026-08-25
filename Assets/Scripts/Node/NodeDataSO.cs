@@ -26,7 +26,18 @@ namespace NestLabs.Node
         [Tooltip("Shown while the node is on cooldown.")]
         public Color SpentTint = new Color(1f, 1f, 1f, 0.35f);
 
+        [Header("Range Ring")]
+        [Tooltip("Draw the launch range in the running game, not just as a Scene view gizmo.")]
+        public bool ShowRange = true;
+
+        [Tooltip("Ring thickness, in world units.")]
+        [Min(0f)] public float RangeRingWidth = 0.06f;
+
+        [Tooltip("Segments in the ring. Higher is smoother and costs more vertices.")]
+        [Range(12, 128)] public int RangeRingSegments = 48;
+
         [Tooltip("Spawned at the node when a launch fires. Optional.")]
         public GameObject LaunchVfx;
+
     }
 }

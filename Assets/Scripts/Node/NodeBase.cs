@@ -4,7 +4,7 @@ namespace NestLabs.Node
 {
     /// <summary>
     /// A grapple point. Holds no player knowledge: it publishes a position and a launch force, and
-    /// the player node sensor finds it through the trigger on the Radius child. All tuning comes
+    /// the player's node sensor finds it through the trigger on the Radius child. All tuning comes
     /// from <see cref="NodeDataSO"/> so variants differ by asset, not by script.
     /// </summary>
     [DisallowMultipleComponent]
@@ -18,8 +18,14 @@ namespace NestLabs.Node
         [SerializeField] private SpriteRenderer _sprite;
         [SerializeField] private Transform _vfxRoot;
 
-        private float _readyAt;
+        [Tooltip("Draws the range in the Game view and in a build. Sits under the Radius child so it inherits the collider's transform exactly.")]
+        [SerializeField] private LineRenderer _rangeRing;
 
+        [Header("Debug")]
+        [Tooltip("Draw the launch range in the Scene view.")]
+        [SerializeField] private bool _drawGizmos = true;
+
+        private float _readyAt;
         public Vector2 Position => transform.position;
 
         public float LaunchForce => _data != null ? _data.LaunchForce : 0f;
@@ -45,14 +51,14 @@ namespace NestLabs.Node
 
         private void OnValidate()
         {
-            // Keeps the collider the designer sees in the Scene view honest about the asset radius.
-            if (_radius == null || _sprite == null || _vfxRoot == null) FindParts();
+            // Keeps the collider the designer sees in the Scene view honest about the asset's radius.
+            if (_radius == null || _sprite == null || _rangeRing == null || _vfxRoot == null) FindParts();
             ApplyData();
         }
 
         private void Awake()
         {
-            if (_radius == null || _sprite == null || _vfxRoot == null) FindParts();
+            if (_radius == null || _sprite == null || _rangeRing == null || _vfxRoot == null) FindParts();
 
             if (_data == null)
             {
@@ -71,6 +77,7 @@ namespace NestLabs.Node
 
             _readyAt = 0f;
             if (_sprite != null) _sprite.color = _data.Tint;
+            SetRingColor(_data.Tint);
         }
 
         /// <summary>Called by the player the instant a launch starts. Puts the node on cooldown.</summary>
@@ -82,6 +89,7 @@ namespace NestLabs.Node
             {
                 _readyAt = Time.time + _data.ReuseCooldown;
                 if (_sprite != null) _sprite.color = _data.SpentTint;
+                SetRingColor(_data.SpentTint);
             }
 
             // Allocates per launch. Pool this if nodes ever get dense.
@@ -96,6 +104,7 @@ namespace NestLabs.Node
         {
             if (_radius == null) _radius = GetComponentInChildren<CircleCollider2D>();
             if (_sprite == null) _sprite = GetComponentInChildren<SpriteRenderer>();
+            if (_rangeRing == null) _rangeRing = GetComponentInChildren<LineRenderer>();
             if (_vfxRoot == null) _vfxRoot = transform.Find("Vfx");
             if (_vfxRoot == null) _vfxRoot = transform;
         }
@@ -111,6 +120,115 @@ namespace NestLabs.Node
             }
 
             if (_sprite != null) _sprite.color = _data.Tint;
+
+            BuildRangeRing();
         }
+
+        /// <summary>
+        /// Rebuilds the in-game range ring. Points are local and the ring parents under the Radius
+        /// child, so it tracks the collider's own position and scale with no per-frame work.
+        /// </summary>
+        private void BuildRangeRing()
+        {
+            if (_rangeRing == null) return;
+
+            if (_data == null || !_data.ShowRange)
+            {
+                _rangeRing.enabled = false;
+                return;
+            }
+
+            _rangeRing.enabled = true;
+            _rangeRing.useWorldSpace = false;
+            _rangeRing.loop = true;
+            _rangeRing.widthMultiplier = _data.RangeRingWidth;
+
+            int segments = Mathf.Clamp(_data.RangeRingSegments, 12, 128);
+            if (_rangeRing.positionCount != segments) _rangeRing.positionCount = segments;
+
+            float step = Mathf.PI * 2f / segments;
+            for (int i = 0; i < segments; i++)
+            {
+                float a = i * step;
+                _rangeRing.SetPosition(i, new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * _data.Radius);
+            }
+
+            SetRingColor(IsReady ? _data.Tint : _data.SpentTint);
+        }
+
+        private void SetRingColor(Color color)
+        {
+            if (_rangeRing == null) return;
+
+            _rangeRing.startColor = color;
+            _rangeRing.endColor = color;
+        }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            DrawRange(false);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            DrawRange(true);
+        }
+
+        /// <summary>
+        /// Draws the launch range. The radius is read off the collider rather than the asset, so a
+        /// node whose data never applied shows the range that is actually live, not the intended one.
+        /// </summary>
+        private void DrawRange(bool selected)
+        {
+            if (!_drawGizmos || _radius == null) return;
+
+            Transform t = _radius.transform;
+            Vector3 center = t.TransformPoint(_radius.offset);
+            Vector3 scale = t.lossyScale;
+            float radius = _radius.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+
+            Color tint = _data != null ? _data.Tint : Color.white;
+            if (!IsReady) tint = Color.red;
+
+            UnityEditor.Handles.color = new Color(tint.r, tint.g, tint.b, selected ? 0.12f : 0.05f);
+            UnityEditor.Handles.DrawSolidDisc(center, Vector3.forward, radius);
+
+            UnityEditor.Handles.color = new Color(tint.r, tint.g, tint.b, selected ? 1f : 0.5f);
+            UnityEditor.Handles.DrawWireDisc(center, Vector3.forward, radius, selected ? 2f : 1f);
+
+            // The pull aims at the node's own position, which is not the collider's centre when the
+            // Radius child is offset. Seeing both apart is the point of drawing them separately.
+            Vector3 target = transform.position;
+            const float Tick = 0.18f;
+            UnityEditor.Handles.DrawLine(target + Vector3.left * Tick, target + Vector3.right * Tick);
+            UnityEditor.Handles.DrawLine(target + Vector3.down * Tick, target + Vector3.up * Tick);
+
+            if ((target - center).sqrMagnitude > 0.0001f)
+            {
+                UnityEditor.Handles.DrawDottedLine(center, target, 3f);
+            }
+
+            if (!selected) return;
+
+            string label;
+            if (_data == null)
+            {
+                label = "no NodeDataSO";
+            }
+            else
+            {
+                label = _data.name + "\nforce " + _data.LaunchForce.ToString("0.#")
+                        + "   radius " + _data.Radius.ToString("0.#");
+
+                if (_data.ReuseCooldown > 0f)
+                {
+                    label += "\ncooldown " + _data.ReuseCooldown.ToString("0.#") + "s";
+                }
+            }
+
+            UnityEditor.Handles.Label(center + Vector3.up * (radius + 0.25f), label);
+        }
+#endif
     }
 }
