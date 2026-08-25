@@ -23,8 +23,6 @@ namespace NestLabs.Player
                 Ctx.LastWallSide = Sense.WallSide;
             }
 
-            Ctx.DashChargesRemaining = Config.DashChargesPerAirtime;
-
             if (Ctx.LastWallSide != 0)
             {
                 Ctx.FacingDirection = -Ctx.LastWallSide;

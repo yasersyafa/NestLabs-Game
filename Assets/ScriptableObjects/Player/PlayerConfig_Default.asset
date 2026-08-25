@@ -14,19 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.Player.PlayerConfigSO
   Gravity: 60
   MaxFallSpeed: 25
-  JumpVelocity: 18
-  JumpHorizontalSpeed: 9
+  JumpVelocity: 16
+  JumpHorizontalSpeed: 6
   JumpCutMultiplier: 0.5
-  DashSpeed: 30
-  DashDuration: 0.15
-  DashCooldown: 0.2
-  DashChargesPerAirtime: 1
+  GrappleMaxDuration: 0.5
   LatchGraceDuration: 0.35
   LatchStickForce: 2
   SlideSpeed: 3
-  SlideAcceleration: 8
-  SlideMaxSpeed: 10
-  MaxHealth: 3
+  SlideAcceleration: 4
+  SlideMaxSpeed: 6
+  MaxHealth: 1
   HitStunDuration: 0.3
   KnockbackVelocity: {x: 8, y: 10}
   InvulnerabilityDuration: 1

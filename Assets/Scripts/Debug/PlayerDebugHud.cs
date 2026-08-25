@@ -87,7 +87,7 @@ namespace NestLabs
                 header =
                     $"State: {_player.Fsm.CurrentId}    " +
                     $"HP: {ctx.Health.Current}    " +
-                    $"Dash: {ctx.DashChargesRemaining}    " +
+                    $"Node: {(ctx.TryGetNodeInRange(out _) ? "in range" : "none")}    " +
                     $"Wall: {ctx.Sense.WallSide}    " +
                     $"Vel: {ctx.Motor.Velocity.x:0.0}, {ctx.Motor.Velocity.y:0.0}";
             }

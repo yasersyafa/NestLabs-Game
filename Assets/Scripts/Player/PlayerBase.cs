@@ -17,6 +17,7 @@ namespace NestLabs.Player
         [Header("Components")]
         [SerializeField] private PlayerMotor _motor;
         [SerializeField] private PlayerSensor _sensor;
+        [SerializeField] private PlayerNodeSensor _nodeSensor;
         [SerializeField] private PlayerVisual _visual;
         [SerializeField] private PlayerHealth _health;
         [SerializeField] private PlayerHurtbox _hurtbox;
@@ -52,6 +53,7 @@ namespace NestLabs.Player
         {
             _motor = GetComponent<PlayerMotor>();
             _sensor = GetComponent<PlayerSensor>();
+            _nodeSensor = GetComponentInChildren<PlayerNodeSensor>();
             _visual = GetComponent<PlayerVisual>();
             _health = GetComponent<PlayerHealth>();
             _hurtbox = GetComponentInChildren<PlayerHurtbox>();
@@ -130,7 +132,7 @@ namespace NestLabs.Player
 
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
-                _fsm, _motor, _sensor, _visual, _health, _config, _input, _events, transform);
+                _fsm, _motor, _sensor, _nodeSensor, _visual, _health, _config, _input, _events, transform);
             _context.ResetBlackboard();
 
             _fsm.Register(new LatchState(_context));

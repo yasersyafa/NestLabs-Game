@@ -1,3 +1,5 @@
+using NestLabs.Node;
+
 namespace NestLabs.Player
 {
     /// <summary>Descending through the air, after an apex or after a dash ends.</summary>
@@ -35,12 +37,14 @@ namespace NestLabs.Player
                 return;
             }
 
-            if (!Ctx.CanDash)
+            if (!Ctx.TryGetNodeInRange(out NodeBase node))
             {
+                // Deliberately leave the tap buffered, so it fires the moment a node comes in range.
                 return;
             }
 
             ConsumeTap();
+            Ctx.ActiveNode = node;
             ChangeTo(PlayerStateId.Dash);
         }
     }

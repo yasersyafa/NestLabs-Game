@@ -28,17 +28,9 @@ namespace NestLabs.Player
         [Range(0f, 1f)]
         public float JumpCutMultiplier = 0.5f;
 
-        [Header("Dash")]
-        public float DashSpeed = 30f;
-
-        [Tooltip("How long the burst lasts, in seconds. Gravity is suspended for this whole window.")]
-        public float DashDuration = 0.15f;
-
-        [Tooltip("Minimum seconds between two dashes, even when charges remain.")]
-        public float DashCooldown = 0.2f;
-
-        [Tooltip("Dashes allowed per airtime. Refilled on entering Latch.")]
-        public int DashChargesPerAirtime = 1;
+        [Header("Grapple")]
+        [Tooltip("Safety cap on a pull, in seconds. Only reached when geometry blocks the path to the node. Speed and range come from the node's own NodeDataSO.")]
+        public float GrappleMaxDuration = 0.5f;
 
         [Header("Latch")]
         [Tooltip("Seconds the player clings motionless before Slide takes over.")]
@@ -83,6 +75,7 @@ namespace NestLabs.Player
             {
                 InvulnerabilityDuration = HitStunDuration;
             }
+
         }
     }
 }
