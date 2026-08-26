@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NestLabs.Node;
 using NestLabs.Player;
 using NUnit.Framework;
 using UnityEngine;
@@ -17,6 +18,9 @@ namespace NestLabs.Tests
         private PlayerStateMachine _fsm;
         private PlayerContext _context;
         private PlayerSensor _sensor;
+        private PlayerNodeSensor _nodeSensor;
+        private readonly List<GameObject> _nodeObjects = new List<GameObject>();
+        private readonly List<NodeDataSO> _nodeData = new List<NodeDataSO>();
 
         /// <summary>Stages wall contact so wall-dependent states behave as they would in a scene.</summary>
         private void SenseWall(int side)
@@ -26,6 +30,36 @@ namespace NestLabs.Tests
                 false,
                 0.05f,
                 side < 0 ? PlayerCollisionFlags.WallLeft : PlayerCollisionFlags.WallRight);
+        }
+
+        /// <summary>
+        /// Stages a grapple node at a world offset from the player and puts it in range. Bypasses
+        /// the trigger, which never fires without a physics step.
+        /// </summary>
+        private NodeBase PlaceNode(Vector2 offset, float force = 20f)
+        {
+            var data = ScriptableObject.CreateInstance<NodeDataSO>();
+            data.LaunchForce = force;
+            _nodeData.Add(data);
+
+            var go = new GameObject("NodeUnderTest");
+            go.transform.position = _go.transform.position + (Vector3)offset;
+            _nodeObjects.Add(go);
+
+            NodeBase node = go.AddComponent<NodeBase>();
+            node.Data = data;
+
+            _nodeSensor.InRange.Add(node);
+            return node;
+        }
+
+        /// <summary>Drops straight into the pull, the way a tap would have.</summary>
+        private NodeBase EnterGrapple(Vector2 offset, float force = 20f)
+        {
+            NodeBase node = PlaceNode(offset, force);
+            _context.ActiveNode = node;
+            _fsm.Initialize(_context, PlayerStateId.Dash);
+            return node;
         }
 
         [SetUp]
@@ -39,14 +73,22 @@ namespace NestLabs.Tests
             PlayerVisual visual = _go.AddComponent<PlayerVisual>();
             PlayerHealth health = _go.AddComponent<PlayerHealth>();
 
+            // Added first so PlayerNodeSensor's RequireComponent is already satisfied.
+            _go.AddComponent<CircleCollider2D>();
+            _nodeSensor = _go.AddComponent<PlayerNodeSensor>();
+
             _config = ScriptableObject.CreateInstance<PlayerConfigSO>();
+            // No wind-up and no slow-mo by default, so the existing tests can assert the launch
+            // directly. NullHitstop is what guarantees no test ever touches global Time.timeScale.
+            _config.GrappleAnticipationDuration = 0f;
+            _config.GrappleTimeScale = 1f;
             health.Initialize(_config);
 
             _input = new FakePlayerInput();
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
-                _fsm, motor, sensor, visual, health, _config, _input,
-                NullPlayerEventSink.Instance, _go.transform);
+                _fsm, motor, sensor, _nodeSensor, visual, null, health, NullHitstop.Instance,
+                _config, _input, NullPlayerEventSink.Instance, _go.transform);
             _context.ResetBlackboard();
 
             _fsm.Register(new LatchState(_context));
@@ -61,6 +103,12 @@ namespace NestLabs.Tests
         [TearDown]
         public void TearDown()
         {
+            foreach (GameObject go in _nodeObjects) Object.DestroyImmediate(go);
+            _nodeObjects.Clear();
+
+            foreach (NodeDataSO data in _nodeData) Object.DestroyImmediate(data);
+            _nodeData.Clear();
+
             Object.DestroyImmediate(_go);
             Object.DestroyImmediate(_config);
         }
@@ -73,8 +121,11 @@ namespace NestLabs.Tests
         [TestCase(PlayerStateId.Fall, PlayerStateId.Dash)]
         public void Tap_ResolvesPerTable(PlayerStateId from, PlayerStateId expected)
         {
+            // The airborne rows need a node to launch at; the wall rows ignore it.
+            PlaceNode(new Vector2(2f, 0f));
+
             _fsm.Initialize(_context, from);
-            // The airborne cases must read as a dash, not as a coyote wall jump.
+            // The airborne cases must read as a grapple, not as a coyote wall jump.
             _context.LastWallSide = 0;
             _context.LastWallExitTime = float.NegativeInfinity;
 
@@ -89,7 +140,14 @@ namespace NestLabs.Tests
         [TestCase(PlayerStateId.Dead)]
         public void Tap_IsSwallowed_ByUninterruptibleStates(PlayerStateId state)
         {
-            _fsm.Initialize(_context, state);
+            if (state == PlayerStateId.Dash)
+            {
+                EnterGrapple(new Vector2(0f, 3f));
+            }
+            else
+            {
+                _fsm.Initialize(_context, state);
+            }
 
             _input.TapPending = true;
             _fsm.Tick(0f);
@@ -100,26 +158,25 @@ namespace NestLabs.Tests
         [Test]
         public void Tap_SwallowedByDash_StaysBufferedForTheNextState()
         {
-            _fsm.Initialize(_context, PlayerStateId.Dash);
+            EnterGrapple(new Vector2(0f, 3f));
 
             _input.TapPending = true;
             _fsm.Tick(0f);
 
-            Assert.IsTrue(_input.TapPending, "Dash must not consume the tap — it has to survive the dash.");
+            Assert.IsTrue(_input.TapPending, "Dash must not consume the tap, it has to survive the pull.");
         }
 
         [Test]
-        public void Tap_InAir_IsIgnored_WhenNoDashChargeRemains()
+        public void Tap_InAir_IsIgnored_WhenNoNodeInRange()
         {
             _fsm.Initialize(_context, PlayerStateId.Fall);
             _context.LastWallSide = 0;
-            _context.DashChargesRemaining = 0;
 
             _input.TapPending = true;
             _fsm.Tick(0f);
 
-            Assert.AreEqual(PlayerStateId.Fall, _fsm.CurrentId);
-            Assert.IsTrue(_input.TapPending, "A refused tap stays buffered until a dash is legal again.");
+            Assert.AreEqual(PlayerStateId.Fall, _fsm.CurrentId, "No node in range means the tap does nothing.");
+            Assert.IsTrue(_input.TapPending, "A refused tap stays buffered until a node comes in range.");
         }
 
         [Test]
@@ -136,8 +193,11 @@ namespace NestLabs.Tests
         }
 
         [Test]
-        public void WallJump_SpendsCoyote_SoTheNextTapDashes()
+        public void WallJump_SpendsCoyote_SoTheNextGrappleFires()
         {
+            // The second tap needs somewhere to launch at, or it would just stay buffered.
+            PlaceNode(new Vector2(2f, 0f));
+
             _fsm.Initialize(_context, PlayerStateId.Fall);
             _context.LastWallSide = -1;
             _context.LastWallExitTime = Time.time;
@@ -166,16 +226,6 @@ namespace NestLabs.Tests
 
             Assert.AreEqual(PlayerStateId.Jump, _fsm.CurrentId);
             Assert.AreEqual(1, _input.ConsumeCount);
-        }
-
-        [Test]
-        public void Latch_RefillsDashCharges()
-        {
-            _context.DashChargesRemaining = 0;
-
-            _fsm.Initialize(_context, PlayerStateId.Latch);
-
-            Assert.AreEqual(_config.DashChargesPerAirtime, _context.DashChargesRemaining);
         }
 
         [Test]
@@ -233,20 +283,58 @@ namespace NestLabs.Tests
         }
 
         [Test]
-        public void Dash_EndsAfterItsDuration()
+        public void Grapple_LaunchesTowardTheNode_AtItsOwnForce()
         {
-            _fsm.Initialize(_context, PlayerStateId.Dash);
+            EnterGrapple(new Vector2(0f, 3f), force: 25f);
 
-            _fsm.Tick(_config.DashDuration + 0.01f);
+            Assert.AreEqual(0f, _context.Motor.Velocity.x, 0.001f);
+            Assert.AreEqual(25f, _context.Motor.Velocity.y, 0.001f);
+        }
+
+        [Test]
+        public void Grapple_PicksNearestNode()
+        {
+            PlaceNode(new Vector2(5f, 0f), force: 10f);
+            PlaceNode(new Vector2(2f, 0f), force: 30f);
+
+            _fsm.Initialize(_context, PlayerStateId.Fall);
+            _context.LastWallSide = 0;
+
+            _input.TapPending = true;
+            _fsm.Tick(0f);
+
+            Assert.AreEqual(PlayerStateId.Dash, _fsm.CurrentId);
+            Assert.AreEqual(30f, _context.Motor.Velocity.x, 0.001f, "The near node's force must win.");
+        }
+
+        [Test]
+        public void Grapple_EndsOnCrossingTheNode_KeepingItsVelocity()
+        {
+            EnterGrapple(new Vector2(0f, 3f), force: 25f);
+
+            // Past the node. No physics runs in EditMode, so move the player by hand.
+            _go.transform.position = new Vector3(0f, 4f, 0f);
+            _fsm.Tick(0f);
+
+            Assert.AreEqual(PlayerStateId.Fall, _fsm.CurrentId);
+            Assert.AreEqual(25f, _context.Motor.Velocity.y, 0.001f,
+                "Momentum must carry out the far side, not be zeroed at the node.");
+        }
+
+        [Test]
+        public void Grapple_FallsOut_WhenTheMaxDurationExpires()
+        {
+            EnterGrapple(new Vector2(0f, 3f));
+
+            _fsm.Tick(_config.GrappleMaxDuration + 0.01f);
 
             Assert.AreEqual(PlayerStateId.Fall, _fsm.CurrentId);
         }
 
         [Test]
-        public void Dash_CutsShort_OnHittingTheFarWall()
+        public void Grapple_CutsShort_OnHittingTheFarWall()
         {
-            _context.FacingDirection = -1;
-            _fsm.Initialize(_context, PlayerStateId.Dash);
+            EnterGrapple(new Vector2(-3f, 0f));
 
             SenseWall(-1);
             _fsm.Tick(0f);
@@ -264,6 +352,104 @@ namespace NestLabs.Tests
 
             Assert.AreEqual(PlayerStateId.Latch, _fsm.CurrentId);
             Assert.AreEqual(-1, _context.LastWallSide);
+        }
+
+        // --- Grapple juice ---------------------------------------------------------------
+
+        [Test]
+        public void Grapple_HoldsStill_DuringTheWindUp()
+        {
+            _config.GrappleAnticipationDuration = 10f;
+
+            EnterGrapple(new Vector2(0f, 3f), force: 25f);
+
+            Assert.AreEqual(Vector2.zero, _context.Motor.Velocity,
+                "The player must hang motionless until the wind-up is spent.");
+            Assert.AreEqual(PlayerStateId.Dash, _fsm.CurrentId);
+
+            _fsm.Tick(0.5f);
+
+            Assert.AreEqual(Vector2.zero, _context.Motor.Velocity,
+                "Ticking scaled time must not end an unscaled wind-up.");
+            Assert.AreEqual(PlayerStateId.Dash, _fsm.CurrentId, "The crossing test must not run mid-wind-up.");
+        }
+
+        [Test]
+        public void Grapple_LaunchesOnTheEnteringFrame_WhenWindUpIsZero()
+        {
+            _config.GrappleAnticipationDuration = 0f;
+
+            EnterGrapple(new Vector2(0f, 3f), force: 25f);
+
+            Assert.AreEqual(25f, _context.Motor.Velocity.y, 0.001f);
+        }
+
+        [Test]
+        public void ExitDecay_BleedsHorizontalSpeedDownToTheExitSpeed()
+        {
+            _config.GrappleExitSpeed = 9f;
+            _config.GrappleExitDecayDuration = 0.5f;
+
+            EnterGrapple(new Vector2(3f, 0f), force: 30f);
+            _go.transform.position = new Vector3(4f, 0f, 0f);
+            _fsm.Tick(0f);
+
+            Assert.AreEqual(PlayerStateId.Fall, _fsm.CurrentId);
+            Assert.AreEqual(30f, _context.Motor.Velocity.x, 0.001f, "Speed is kept at the crossing.");
+
+            for (int i = 0; i < 40; i++) _fsm.FixedTick(0.02f);
+
+            Assert.AreEqual(9f, _context.Motor.Velocity.x, 0.01f,
+                "The bleed-off must settle at the exit speed, not overshoot past it.");
+        }
+
+        [Test]
+        public void ExitDecay_LeavesALaunchSlowerThanTheExitSpeedAlone()
+        {
+            _config.GrappleExitSpeed = 9f;
+
+            EnterGrapple(new Vector2(3f, 0f), force: 4f);
+            _go.transform.position = new Vector3(4f, 0f, 0f);
+            _fsm.Tick(0f);
+
+            for (int i = 0; i < 10; i++) _fsm.FixedTick(0.02f);
+
+            Assert.AreEqual(4f, _context.Motor.Velocity.x, 0.001f,
+                "A slow node must not be accelerated up to the exit speed.");
+        }
+
+        [Test]
+        public void Grapple_DoesNotStrandTheTimeScale_WhenTheHitstopWasDestroyed()
+        {
+            // The exact shipped bug: Hitstop sat on a HierarchyDesignerFolder object, which
+            // destroys itself at Start. `??` cannot see a destroyed MonoBehaviour, so Begin still
+            // set the time scale while its Update was already gone.
+            var hitstopGo = new GameObject("DeadHitstop");
+            var hitstop = hitstopGo.AddComponent<Hitstop>();
+            Object.DestroyImmediate(hitstopGo);
+
+            _config.GrappleTimeScale = 0.5f;
+
+            var context = new PlayerContext(
+                _fsm, _context.Motor, _sensor, _nodeSensor, _context.Visual, null, _context.Health,
+                hitstop, _config, _input, NullPlayerEventSink.Instance, _go.transform);
+            context.ResetBlackboard();
+
+            try
+            {
+                Assert.AreSame(NullHitstop.Instance, context.Hitstop,
+                    "A destroyed Hitstop must resolve to the no-op sink.");
+
+                context.ActiveNode = PlaceNode(new Vector2(0f, 3f));
+                _fsm.Initialize(context, PlayerStateId.Dash);
+
+                Assert.AreEqual(1f, Time.timeScale, 0.0001f,
+                    "A destroyed Hitstop must never be able to strand the time scale.");
+            }
+            finally
+            {
+                Time.timeScale = 1f;
+            }
         }
 
         // --- Transition mechanics --------------------------------------------------------

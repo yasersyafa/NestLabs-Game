@@ -1,3 +1,5 @@
+using NestLabs.Node;
+
 namespace NestLabs.Player
 {
     /// <summary>Ascending arc after leaving a wall. Hands over to Fall at the apex.</summary>
@@ -43,13 +45,14 @@ namespace NestLabs.Player
                 return;
             }
 
-            if (!Ctx.CanDash)
+            if (!Ctx.TryGetNodeInRange(out NodeBase node))
             {
-                // Deliberately leave the tap buffered — it will fire the moment a dash is legal again.
+                // Deliberately leave the tap buffered, so it fires the moment a node comes in range.
                 return;
             }
 
             ConsumeTap();
+            Ctx.ActiveNode = node;
             ChangeTo(PlayerStateId.Dash);
         }
     }

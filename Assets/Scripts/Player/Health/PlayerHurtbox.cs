@@ -1,4 +1,5 @@
 using System;
+using NestLabs.Shared.Combat;
 using UnityEngine;
 
 namespace NestLabs.Player

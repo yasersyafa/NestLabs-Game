@@ -3,6 +3,7 @@ using Nestlabs.Level;
 using NestLabs.Audio;
 using NestLabs.Player;
 using NestLabs.Score;
+using NestLabs.Shared.Flow;
 using NestLabs.Shared.Obstacle;
 using UnityEngine;
 using VContainer;
@@ -33,6 +34,7 @@ namespace NestLabs
             builder.RegisterMessageBroker<ScoreChangedEvent>(options);
             builder.RegisterMessageBroker<ScoreFinalizedEvent>(options);
             builder.RegisterMessageBroker<ObstacleHitEvent>(options);
+            builder.RegisterMessageBroker<GameStateChangedEvent>(options);
 
             builder.Register<IPlayerEventSink, MessagePipePlayerEventSink>(Lifetime.Singleton);
             builder.Register<IObstacleEventSink, MessagePipeObstacleEventSink>(Lifetime.Singleton);
@@ -40,8 +42,11 @@ namespace NestLabs
             // TouchPlayerInput is IDisposable; the container tears its InputAction down with the scope.
             builder.Register<IPlayerInput, TouchPlayerInput>(Lifetime.Singleton);
 
-            builder.RegisterInstance(_playerConfig);
-            builder.RegisterInstance(_audioLibrary);
+            // RegisterInstance throws on a null instance, which aborts the whole Configure and
+            // leaves every other component uninjected. The downstream symptom is a null resolver
+            // somewhere unrelated, so fail loudly here naming the field that is actually missing.
+            if (!RegisterRequired(builder, _playerConfig, nameof(_playerConfig))) return;
+            if (!RegisterRequired(builder, _audioLibrary, nameof(_audioLibrary))) return;
             builder.Register<IAudioMuteStore, PlayerPrefsAudioMuteStore>(Lifetime.Singleton);
 
             builder.RegisterComponentInHierarchy<PlayerBase>();
@@ -49,12 +54,34 @@ namespace NestLabs
             builder.RegisterComponentInHierarchy<ScoreService>();
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
             builder.RegisterComponentInHierarchy<LevelGenerator>();
+            builder.RegisterComponentInHierarchy<Hitstop>().As<IHitstop>();
 
-            // AudioEventBinder has no MonoBehaviour and nothing else resolves it — force-resolve
-            // it once at container build so its constructor (and its MessagePipe subscriptions)
-            // actually runs. Skipping this leaves audio silent with no error.
+            builder.Register<IGameStateService, GameStateService>(Lifetime.Singleton);
+
+            // Neither of these is a MonoBehaviour and nothing else resolves them yet —
+            // force-resolve once at container build so their constructors (and their MessagePipe
+            // subscriptions) actually run. Skipping this leaves audio silent and the game state
+            // stuck in Play after a death, with no error either way.
             builder.Register<AudioEventBinder>(Lifetime.Singleton);
-            builder.RegisterBuildCallback(resolver => resolver.Resolve<AudioEventBinder>());
+            builder.RegisterBuildCallback(resolver =>
+            {
+                resolver.Resolve<AudioEventBinder>();
+                resolver.Resolve<IGameStateService>();
+            });
+        }
+
+        private bool RegisterRequired<T>(IContainerBuilder builder, T asset, string field) where T : class
+        {
+            if (asset == null)
+            {
+                Debug.LogError(
+                    $"[GameLifetimeScope] '{field}' is not assigned on '{name}'. No dependency will " +
+                    "be injected until it is.", this);
+                return false;
+            }
+
+            builder.RegisterInstance(asset);
+            return true;
         }
     }
 }

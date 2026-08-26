@@ -1,4 +1,4 @@
-using NestLabs.Player;
+using NestLabs.Shared.Combat;
 using UnityEngine;
 
 namespace NestLabs

@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 5cfcfbab2b263af4b8feb20e4e4f4ceb, type: 3}
+  m_Sprite: {fileID: -7355614025404685270, guid: 9019ecf15395a334184dce12068a3673, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -107,6 +107,88 @@ MonoBehaviour:
   _playAutomatically: 0
   _spriteAnimationObject: {fileID: 11400000, guid: 1dddcf991c693444382b450864fd8cac, type: 2}
   _spriteRenderer: {fileID: 3998087810167902498}
+--- !u!1 &4084316375287262774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 343307897305799306}
+  - component: {fileID: 8708512828020597812}
+  - component: {fileID: 2136428184516852969}
+  m_Layer: 0
+  m_Name: NodeSensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &343307897305799306
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4084316375287262774}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5878367451301115101}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &8708512828020597812
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4084316375287262774}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.1
+--- !u!114 &2136428184516852969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4084316375287262774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 367dc036a0f6182418ecda6b5e184a12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.Player.PlayerNodeSensor
+  _trigger: {fileID: 8708512828020597812}
 --- !u!1 &5759962793155421914
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,6 +205,7 @@ GameObject:
   - component: {fileID: 8694559285311071969}
   - component: {fileID: 2356649437822569510}
   - component: {fileID: 5453508517143972832}
+  - component: {fileID: 5911165872010203805}
   m_Layer: 0
   m_Name: Player_Base
   m_TagString: Untagged
@@ -145,6 +228,7 @@ Transform:
   m_Children:
   - {fileID: 4150900430440061226}
   - {fileID: 7516482468780635438}
+  - {fileID: 343307897305799306}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &7395811528878936414
@@ -287,6 +371,8 @@ MonoBehaviour:
   _jumpSquash: {x: -0.25, y: 0.35, z: 0}
   _hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashDuration: 0.12
+  _grappleStretch: 0.4
+  _grappleFlashColor: {r: 0.55, g: 0.9, b: 1, a: 1}
 --- !u!114 &5453508517143972832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,10 +387,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.Player.PlayerBase
   _motor: {fileID: 7649607639846185508}
   _sensor: {fileID: 4532374945447130273}
+  _nodeSensor: {fileID: 2136428184516852969}
   _visual: {fileID: 2356649437822569510}
+  _trail: {fileID: 5911165872010203805}
   _health: {fileID: 8694559285311071969}
   _hurtbox: {fileID: 3843367002444813805}
   _fallbackConfig: {fileID: 11400000, guid: 8d58cd1f3fcb91a4c84715f9684d19dd, type: 2}
+--- !u!114 &5911165872010203805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5759962793155421914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71651a159e888ed429103138f5faef92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.Player.PlayerTrail
+  _source: {fileID: 3998087810167902498}
+  _poolSize: 10
+  _spawnInterval: 0.02
+  _fadeDuration: 0.22
+  _startColor: {r: 1, g: 1, b: 1, a: 0.55}
+  _sortingOffset: -1
 --- !u!1 &6637469076782966229
 GameObject:
   m_ObjectHideFlags: 0

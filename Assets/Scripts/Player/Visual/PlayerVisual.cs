@@ -21,6 +21,11 @@ namespace NestLabs.Player
         [SerializeField] private Color _hitFlashColor = Color.red;
         [SerializeField] private float _hitFlashDuration = 0.12f;
 
+        [Header("Grapple Wind-up")]
+        [Tooltip("Stretch applied along the launch axis while the player winds up.")]
+        [SerializeField] private float _grappleStretch = 0.4f;
+        [SerializeField] private Color _grappleFlashColor = new Color(0.55f, 0.9f, 1f, 1f);
+
         private Tween _squashTween;
         private Tween _flashTween;
 
@@ -105,6 +110,44 @@ namespace NestLabs.Player
             _squashTween = _squashRoot
                 .DOPunchScale(_jumpSquash, _squashDuration, vibrato: 1, elasticity: 0.4f)
                 .SetLink(gameObject);
+        }
+
+        /// <summary>
+        /// Wind-up before a grapple launch: stretch along the launch axis plus a colour pop. Both
+        /// tweens run unscaled because the wind-up happens during the slow-mo and must not be
+        /// stretched by it.
+        /// </summary>
+        public void PlayGrappleAnticipation(Vector2 direction, float duration)
+        {
+            if (duration <= 0f) return;
+
+            if (_squashRoot != null)
+            {
+                // Stretch toward the node and pinch across it, so the pose reads as aim, not as a pop.
+                Vector2 d = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.up;
+                var punch = new Vector3(
+                    _grappleStretch * (Mathf.Abs(d.x) - Mathf.Abs(d.y)),
+                    _grappleStretch * (Mathf.Abs(d.y) - Mathf.Abs(d.x)),
+                    0f);
+
+                _squashTween?.Kill();
+                _squashRoot.localScale = Vector3.one;
+                _squashTween = _squashRoot
+                    .DOPunchScale(punch, duration, vibrato: 0, elasticity: 0f)
+                    .SetUpdate(true)
+                    .SetLink(gameObject);
+            }
+
+            if (_renderer != null)
+            {
+                _flashTween?.Kill();
+                _renderer.color = Color.white;
+                _flashTween = _renderer
+                    .DOColor(_grappleFlashColor, duration * 0.5f)
+                    .SetLoops(2, LoopType.Yoyo)
+                    .SetUpdate(true)
+                    .SetLink(gameObject);
+            }
         }
 
         /// <summary>Damage flash. Uses SpriteRenderer.DOColor from the DOTween Modules assembly.</summary>

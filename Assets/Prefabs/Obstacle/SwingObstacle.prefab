@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6778730248118562341}
   - component: {fileID: 1519158823203621363}
   - component: {fileID: 62102186209148952}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SwingObstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
