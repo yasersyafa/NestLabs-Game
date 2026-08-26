@@ -17,6 +17,11 @@ namespace Nestlabs.Level.Rules
         [Tooltip("Random jitter added on top of the computed spawn height.")]
         [SerializeField] private Vector2 yOffsetRange = new Vector2(-1f, 1f);
 
+        [Header("Offscreen Guarantee")]
+        [Tooltip("Never spawn inside the camera view. Raises the effective lookahead to at least this far above the top of the viewport.")]
+        [SerializeField] private bool keepSpawnsOffscreen = false;
+        [SerializeField] private float offscreenMargin = 2f;
+
         [Header("Despawn")]
         [Tooltip("Destroy the obstacle once the player has climbed this far above it.")]
         [SerializeField] private float cullDistanceBelowPlayer = 12f;
@@ -24,6 +29,8 @@ namespace Nestlabs.Level.Rules
         [Header("Initial Fill")]
         [Tooltip("How many times to fire immediately when the level starts (e.g. so a few are already visible), before settling into the normal gap-based cadence. 1 = old behavior (just the first one fires right away).")]
         [SerializeField] private int initialBurstCount = 1;
+        [Tooltip("Y above the player where the initial burst starts filling, walking upward by the normal gap. 0 = start at lookaheadDistance (previous behavior).")]
+        [SerializeField] private float initialFillStartOffset = 0f;
 
         private float _nextSpawnY;
         private bool _hasBurstFilled;
@@ -35,9 +42,27 @@ namespace Nestlabs.Level.Rules
         // only ever runs after every object's Awake and after ctx.Resolver is assigned.
         public override void Initialize(SpawnRuleContext ctx)
         {
-            _nextSpawnY = ctx.Player != null ? ctx.Player.position.y + lookaheadDistance : lookaheadDistance;
+            // The burst starts here rather than at lookaheadDistance when initialFillStartOffset is
+            // set, so a rule with a long lookahead doesn't begin the run with an empty corridor
+            // between the player and its first spawn.
+            float startOffset = initialFillStartOffset > 0f ? initialFillStartOffset : lookaheadDistance;
+
+            _nextSpawnY = ctx.Player != null ? ctx.Player.position.y + startOffset : startOffset;
             _active.Clear();
             _hasBurstFilled = false;
+        }
+
+        // Follows the live camera instead of a hardcoded number, so this stays correct across
+        // aspect ratios, orthographic size changes, and camera follow offset changes.
+        private float EffectiveLookahead(SpawnRuleContext ctx)
+        {
+            if (!keepSpawnsOffscreen || ctx.Cam == null || !ctx.Cam.orthographic || ctx.Player == null)
+                return lookaheadDistance;
+
+            float viewTopAbovePlayer =
+                (ctx.Cam.transform.position.y + ctx.Cam.orthographicSize) - ctx.Player.position.y;
+
+            return Mathf.Max(lookaheadDistance, viewTopAbovePlayer + offscreenMargin);
         }
 
         public override void Tick(SpawnRuleContext ctx, float deltaTime)
@@ -60,12 +85,14 @@ namespace Nestlabs.Level.Rules
                 // player - normal climbing never does this, since _nextSpawnY is always kept
                 // ahead by lookaheadDistance. Snap forward instead of crawling back to the player
                 // one small gap per frame, so spawning resumes right at the player immediately.
+                float lookahead = EffectiveLookahead(ctx);
+
                 if (_nextSpawnY <= ctx.Player.position.y)
                 {
-                    _nextSpawnY = ctx.Player.position.y + lookaheadDistance;
+                    _nextSpawnY = ctx.Player.position.y + lookahead;
                 }
 
-                if (ctx.Player.position.y + lookaheadDistance >= _nextSpawnY)
+                if (ctx.Player.position.y + lookahead >= _nextSpawnY)
                 {
                     FireOnce(ctx);
                 }
@@ -77,7 +104,20 @@ namespace Nestlabs.Level.Rules
         private void FireOnce(SpawnRuleContext ctx)
         {
             float spawnY = _nextSpawnY + UnityEngine.Random.Range(yOffsetRange.x, yOffsetRange.y);
+
+            // Steady state only - the initial burst is allowed to fill the visible corridor, since
+            // at level start there is nothing on screen for the player to have watched appear.
+            if (_hasBurstFilled && keepSpawnsOffscreen && ctx.Cam != null && ctx.Cam.orthographic)
+            {
+                float floorY = ctx.Cam.transform.position.y + ctx.Cam.orthographicSize + offscreenMargin;
+                if (spawnY < floorY) spawnY = floorY;
+            }
+
             OnSpawn(spawnY, ctx, t => _active.Add(t));
+
+            // A clamped spawn can land above the ladder cursor. Without this the next gap is
+            // measured from a position already passed.
+            if (_nextSpawnY < spawnY) _nextSpawnY = spawnY;
             _nextSpawnY += UnityEngine.Random.Range(spawnYGapMin, spawnYGapMax);
         }
 
