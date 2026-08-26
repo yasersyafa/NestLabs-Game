@@ -21,13 +21,23 @@ namespace Nestlabs.Level.Rules
         [Tooltip("Destroy the obstacle once the player has climbed this far above it.")]
         [SerializeField] private float cullDistanceBelowPlayer = 12f;
 
+        [Header("Initial Fill")]
+        [Tooltip("How many times to fire immediately when the level starts (e.g. so a few are already visible), before settling into the normal gap-based cadence. 1 = old behavior (just the first one fires right away).")]
+        [SerializeField] private int initialBurstCount = 1;
+
         private float _nextSpawnY;
+        private bool _hasBurstFilled;
         private readonly List<Transform> _active = new();
 
+        // Only resets pure state here - deliberately does NOT spawn anything. This runs from
+        // LevelGenerator.Awake(), before VContainer's [Inject] Construct() is guaranteed to have
+        // set ctx.Resolver. All spawning - including the initial burst - happens in Tick, which
+        // only ever runs after every object's Awake and after ctx.Resolver is assigned.
         public override void Initialize(SpawnRuleContext ctx)
         {
             _nextSpawnY = ctx.Player != null ? ctx.Player.position.y + lookaheadDistance : lookaheadDistance;
             _active.Clear();
+            _hasBurstFilled = false;
         }
 
         public override void Tick(SpawnRuleContext ctx, float deltaTime)
@@ -36,14 +46,27 @@ namespace Nestlabs.Level.Rules
 
             _active.RemoveAll(t => t == null);
 
-            if (ctx.Player.position.y + lookaheadDistance >= _nextSpawnY)
+            if (!_hasBurstFilled)
             {
-                float spawnY = _nextSpawnY + UnityEngine.Random.Range(yOffsetRange.x, yOffsetRange.y);
-                OnSpawn(spawnY, ctx, t => _active.Add(t));
-                _nextSpawnY += UnityEngine.Random.Range(spawnYGapMin, spawnYGapMax);
+                for (int i = 0; i < Mathf.Max(1, initialBurstCount); i++)
+                {
+                    FireOnce(ctx);
+                }
+                _hasBurstFilled = true;
+            }
+            else if (ctx.Player.position.y + lookaheadDistance >= _nextSpawnY)
+            {
+                FireOnce(ctx);
             }
 
             CullActive(ctx);
+        }
+
+        private void FireOnce(SpawnRuleContext ctx)
+        {
+            float spawnY = _nextSpawnY + UnityEngine.Random.Range(yOffsetRange.x, yOffsetRange.y);
+            OnSpawn(spawnY, ctx, t => _active.Add(t));
+            _nextSpawnY += UnityEngine.Random.Range(spawnYGapMin, spawnYGapMax);
         }
 
         private void CullActive(SpawnRuleContext ctx)
