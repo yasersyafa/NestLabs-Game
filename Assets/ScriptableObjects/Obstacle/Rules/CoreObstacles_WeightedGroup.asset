@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: CoreObstacles_WeightedGroup
   m_EditorClassIdentifier: Nestlabs.Obstacle::Nestlabs.Obstacle.Rules.WeightedGroupSpawnRuleSO
   lookaheadDistance: 8
-  spawnYGapMin: 4
-  spawnYGapMax: 6
+  spawnYGapMin: 6
+  spawnYGapMax: 9
   yOffsetRange: {x: -1, y: 1}
+  minSpawnSeparation: 5
+  keepSpawnsOffscreen: 1
+  offscreenMargin: 2
   cullDistanceBelowPlayer: 12
   entries:
   - Kind: 0
