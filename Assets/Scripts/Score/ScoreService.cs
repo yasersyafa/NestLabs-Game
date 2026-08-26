@@ -16,6 +16,9 @@ namespace NestLabs.Score
         [Tooltip("Points awarded per world unit climbed above baseline.")]
         [SerializeField] private float pointsPerUnit = 1f;
 
+        [Tooltip("Editor-only score tracing. Off by default - RecomputeScore runs per frame while climbing.")]
+        [SerializeField] private bool verboseLogging;
+
         private readonly ScoreData data = new();
         private IPublisher<ScoreChangedEvent> scoreChangedPublisher;
         private IPublisher<ScoreFinalizedEvent> scoreFinalizedPublisher;
@@ -99,7 +102,7 @@ namespace NestLabs.Score
             scoreChangedPublisher?.Publish(new ScoreChangedEvent(0));
 
             #if UNITY_EDITOR
-            Debug.Log($"[ScoreService] ResetRun -> CurrentScore=0, BestScore= {data.BestScore}");
+            if (verboseLogging) Debug.Log($"[ScoreService] ResetRun -> CurrentScore=0, BestScore= {data.BestScore}");
             #endif
         }
 
@@ -111,7 +114,7 @@ namespace NestLabs.Score
             scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore));
 
             #if UNITY_EDITOR
-            Debug.Log($"[ScoreService] AddBonusPoints({points}) -> CurrentScore={data.CurrentScore}, BestScore={data.BestScore}");
+            if (verboseLogging) Debug.Log($"[ScoreService] AddBonusPoints({points}) -> CurrentScore={data.CurrentScore}, BestScore={data.BestScore}");
             #endif
         }
 
@@ -123,7 +126,7 @@ namespace NestLabs.Score
             scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore));
 
             #if UNITY_EDITOR
-            Debug.Log($"[ScoreService] RecomputeScore -> baselineY={baselineY:F2}, highestY={highestY:F2}, climbed={climbed:F2}, CurrentScore={data.CurrentScore}, BestScore={data.BestScore}");
+            if (verboseLogging) Debug.Log($"[ScoreService] RecomputeScore -> baselineY={baselineY:F2}, highestY={highestY:F2}, climbed={climbed:F2}, CurrentScore={data.CurrentScore}, BestScore={data.BestScore}");
             #endif
         }
 
@@ -133,7 +136,7 @@ namespace NestLabs.Score
             scoreFinalizedPublisher?.Publish(new ScoreFinalizedEvent(data.CurrentScore, data.BestScore));
 
             #if UNITY_EDITOR
-            Debug.Log($"[ScoreService] FinalizeRun -> FinalScore={data.CurrentScore}, BestScore={data.BestScore}");
+            if (verboseLogging) Debug.Log($"[ScoreService] FinalizeRun -> FinalScore={data.CurrentScore}, BestScore={data.BestScore}");
             #endif
         }
     }
