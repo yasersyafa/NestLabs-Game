@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.Node.NodeDataSO
   LaunchForce: 25
   Radius: 2
-  ReuseCooldown: 0
-  Tint: {r: 1, g: 1, b: 1, a: 1}
-  SpentTint: {r: 1, g: 1, b: 1, a: 0.35}
+  ReuseCooldown: 0.3
+  Tint: {r: 0.5019608, g: 0.882353, b: 0.89019614, a: 1}
+  SpentTint: {r: 0.33842117, g: 0.6076563, b: 0.6132076, a: 0.35}
   ShowRange: 1
   RangeRingWidth: 0.06
   RangeRingSegments: 48
