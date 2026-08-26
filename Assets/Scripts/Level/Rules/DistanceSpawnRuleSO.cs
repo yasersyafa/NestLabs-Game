@@ -16,6 +16,8 @@ namespace Nestlabs.Level.Rules
         [SerializeField] private float spawnYGapMax = 6f;
         [Tooltip("Random jitter added on top of the computed spawn height.")]
         [SerializeField] private Vector2 yOffsetRange = new Vector2(-1f, 1f);
+        [Tooltip("Hard floor on the distance between two consecutive spawns, applied after yOffsetRange jitter. 0 = off.")]
+        [SerializeField] private float minSpawnSeparation = 0f;
 
         [Header("Offscreen Guarantee")]
         [Tooltip("Never spawn inside the camera view. Raises the effective lookahead to at least this far above the top of the viewport.")]
@@ -34,6 +36,8 @@ namespace Nestlabs.Level.Rules
 
         private float _nextSpawnY;
         private bool _hasBurstFilled;
+        private float _lastSpawnY;
+        private bool _hasLastSpawnY;
         private readonly List<Transform> _active = new();
 
         // Only resets pure state here - deliberately does NOT spawn anything. This runs from
@@ -50,6 +54,7 @@ namespace Nestlabs.Level.Rules
             _nextSpawnY = ctx.Player != null ? ctx.Player.position.y + startOffset : startOffset;
             _active.Clear();
             _hasBurstFilled = false;
+            _hasLastSpawnY = false;
         }
 
         // Follows the live camera instead of a hardcoded number, so this stays correct across
@@ -113,10 +118,18 @@ namespace Nestlabs.Level.Rules
                 if (spawnY < floorY) spawnY = floorY;
             }
 
+            if (_hasLastSpawnY && spawnY < _lastSpawnY + minSpawnSeparation)
+            {
+                spawnY = _lastSpawnY + minSpawnSeparation;
+            }
+
             OnSpawn(spawnY, ctx, t => _active.Add(t));
 
+            _lastSpawnY = spawnY;
+            _hasLastSpawnY = true;
+
             // A clamped spawn can land above the ladder cursor. Without this the next gap is
-            // measured from a position already passed.
+            // measured from a position already passed, re-creating the tight pair just prevented.
             if (_nextSpawnY < spawnY) _nextSpawnY = spawnY;
             _nextSpawnY += UnityEngine.Random.Range(spawnYGapMin, spawnYGapMax);
         }
