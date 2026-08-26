@@ -2,7 +2,8 @@
     "name": "Nestlabs.Level",
     "rootNamespace": "Nestlabs.Level",
     "references": [
-        "VContainer"
+        "VContainer",
+        "NestLabs.Shared"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

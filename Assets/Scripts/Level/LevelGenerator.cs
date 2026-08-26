@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Nestlabs.Level.Rules;
+using NestLabs.Shared.Flow;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -14,11 +15,13 @@ namespace Nestlabs.Level
     public sealed class LevelGenerator : MonoBehaviour
     {
         private IObjectResolver _resolver;
+        private IGameStateService _gameState = NullGameStateService.Instance;
 
         [Inject]
-        public void Construct(IObjectResolver resolver)
+        public void Construct(IObjectResolver resolver, IGameStateService gameState)
         {
             _resolver = resolver;
+            _gameState = gameState ?? NullGameStateService.Instance;
         }
 
         [Header("References")]
@@ -63,6 +66,10 @@ namespace Nestlabs.Level
         private void Update()
         {
             if (player == null) return;
+
+            // Death and Pause both leave this Update running, so without this every rule keeps
+            // spawning after the run is over.
+            if (!_gameState.IsPlaying) return;
 
             _ctx.Player = player;
             _ctx.Resolver = _resolver;
