@@ -75,6 +75,14 @@ namespace Nestlabs.Level
             {
                 rule.Tick(_ctx, dt);
             }
+
+            // All spawning happens in the loop above, so anything querying physics later in Update
+            // order still sees synced colliders.
+            if (_ctx.TransformsDirty)
+            {
+                Physics2D.SyncTransforms();
+                _ctx.TransformsDirty = false;
+            }
         }
 
         private void OnDestroy()

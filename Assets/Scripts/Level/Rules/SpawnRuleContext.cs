@@ -22,6 +22,11 @@ namespace Nestlabs.Level.Rules
         public RectTransform UiCanvas;
         public float RawScreenHalfWidth;
 
+        // Set whenever a Spawn/Despawn moves or toggles a collider. LevelGenerator flushes it with
+        // a single Physics2D.SyncTransforms after all rules tick - the sync cost scales with total
+        // collider count, so one per frame beats one per spawned instance.
+        public bool TransformsDirty;
+
         private readonly Dictionary<Component, IObjectPool<Component>> _poolsByPrefab = new();
 
         // Keyed by GameObject (not the pooled component itself) so Despawn can be called with
@@ -52,7 +57,7 @@ namespace Nestlabs.Level.Rules
             // A reused instance's Collider2D keeps its *previous* physics bounds until Physics2D
             // syncs transforms on its own schedule (next FixedUpdate) - a same-frame query like
             // PlayerSensor's Rigidbody2D.Cast would otherwise hit it at its old, stale location.
-            Physics2D.SyncTransforms();
+            TransformsDirty = true;
 
             _byGameObject[component.gameObject] = (component, pool);
             return component;
@@ -65,6 +70,7 @@ namespace Nestlabs.Level.Rules
 
             (entry.Instance as IPoolable)?.OnDespawned();
             entry.Pool.Release(entry.Instance);
+            TransformsDirty = true;
         }
     }
 }
