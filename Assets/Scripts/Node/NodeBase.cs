@@ -37,6 +37,9 @@ namespace NestLabs.Node
 
         public float LaunchForce => _data != null ? _data.LaunchForce : 0f;
 
+        /// <summary>Grab radius, read off the serialized data so it is valid on a prefab asset too.</summary>
+        public float ClaimRadius => _data != null ? _data.Radius : 0f;
+
         public bool IsReady => _data == null || Time.time >= _readyAt;
 
         /// <summary>Set by EditMode tests, which stage a node without going through the asset pipeline.</summary>

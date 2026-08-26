@@ -39,6 +39,12 @@ namespace Nestlabs.Obstacle.Rules
         [Tooltip("Extra margin kept inside the screen edge (world units) to account for obstacle sprite size.")]
         [SerializeField] private float xEdgeMargin = 0.5f;
 
+        [Header("Node Avoidance")]
+        [Tooltip("Extra clearance kept outside a grapple node's radius, on top of the obstacle's own size.")]
+        [SerializeField] private float nodeClearancePadding = 0.5f;
+        [Tooltip("How many X positions to try before skipping this spawn.")]
+        [SerializeField] private int maxPlacementTries = 6;
+
         protected override void OnSpawn(float spawnY, SpawnRuleContext ctx, Action<Transform> register)
         {
             if (!TryPickEntry(out Entry entry)) return;
@@ -80,12 +86,55 @@ namespace Nestlabs.Obstacle.Rules
 
         private float GetHalfWidth(SpawnRuleContext ctx) => Mathf.Max(0f, ctx.RawScreenHalfWidth - xEdgeMargin);
 
+        // Re-rolls X until the footprint clears every claimed grapple radius, then takes it.
+        private float PickX(SpawnRuleContext ctx, float spawnY, float halfWidth, float radius)
+        {
+            float required = radius + nodeClearancePadding;
+            float bestX = 0f;
+            float bestClearance = float.NegativeInfinity;
+
+            for (int i = 0; i < Mathf.Max(1, maxPlacementTries); i++)
+            {
+                float x = UnityEngine.Random.Range(-halfWidth, halfWidth);
+                float clearance = ctx.ClaimClearance(new Vector2(x, spawnY));
+
+                if (clearance >= required) return x;
+
+                if (clearance > bestClearance)
+                {
+                    bestClearance = clearance;
+                    bestX = x;
+                }
+            }
+
+            // The corridor can be narrower than a single node blocks: at 9:16 the playable width is
+            // 4.75 but one default node covers 5.56, and a Strong node 7.56. Fall back to the
+            // roomiest sample rather than skipping - dropping spawns starves the hazard field far
+            // more than a partial overlap costs.
+            return bestX;
+        }
+
+        // Serialized collider size, not bounds - a prefab asset has no physics shape, so bounds
+        // reads back zero (the same trap that produced the unbounded wall column).
+        private static float PrefabRadius(Component prefab)
+        {
+            if (prefab == null) return 0f;
+
+            float scale = Mathf.Abs(prefab.transform.lossyScale.x);
+
+            if (prefab.TryGetComponent(out CircleCollider2D circle)) return circle.radius * scale;
+            if (prefab.TryGetComponent(out BoxCollider2D box)) return Mathf.Max(box.size.x, box.size.y) * 0.5f * scale;
+
+            return 0f;
+        }
+
         private void SpawnIdle(Entry entry, float spawnY, SpawnRuleContext ctx, Action<Transform> register)
         {
             if (entry.IdlePrefab == null) return;
 
             float halfWidth = GetHalfWidth(ctx);
-            float x = UnityEngine.Random.Range(-halfWidth, halfWidth);
+            float x = PickX(ctx, spawnY, halfWidth, PrefabRadius(entry.IdlePrefab));
+
             var instance = ctx.Spawn(entry.IdlePrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
             (instance as IPoolable)?.OnSpawned(null);
             register(instance.transform);
@@ -96,7 +145,8 @@ namespace Nestlabs.Obstacle.Rules
             if (entry.MovingPrefab == null) return;
 
             float halfWidth = GetHalfWidth(ctx);
-            float startX = UnityEngine.Random.Range(-halfWidth, halfWidth);
+            // Only the start point is checked - the sweep to endX can still cross a node radius.
+            float startX = PickX(ctx, spawnY, halfWidth, PrefabRadius(entry.MovingPrefab));
             float endX = UnityEngine.Random.Range(-halfWidth, halfWidth);
 
             var startPos = new Vector3(startX, spawnY, 0f);
@@ -116,7 +166,10 @@ namespace Nestlabs.Obstacle.Rules
             // anchor that much further from the edge or the swing clips off-screen.
             float sideReach = entry.SwingPrefab.RopeLength * Mathf.Sin(entry.SwingPrefab.MaxAngle * Mathf.Deg2Rad);
             float halfWidth = Mathf.Max(0f, GetHalfWidth(ctx) - sideReach);
-            float anchorX = UnityEngine.Random.Range(-halfWidth, halfWidth);
+
+            // Tested at the bob's rest position, not the anchor - the anchor is a rope end, the
+            // bob is the hazard. The swing arc itself can still cross a node radius.
+            float anchorX = PickX(ctx, spawnY, halfWidth, PrefabRadius(entry.SwingPrefab));
             float anchorY = spawnY + entry.SwingPrefab.RopeLength;
 
             var anchorPos = new Vector3(anchorX, anchorY, 0f);

@@ -24,6 +24,10 @@ namespace NestLabs.Tests.PlayMode
         private const float ClimbPerFrame = 0.5f;
         private const int MaxReasonableWalls = 60;
 
+        // Mirrors CoreObstacles_WeightedGroup.asset - the test needs the same corridor the rule uses.
+        private const float ObstacleXEdgeMargin = 1f;
+        private const float NodeClearancePadding = 0.5f;
+
         [UnityTest]
         public IEnumerator RulesSpawnObstaclesAndWallPairsAsClimberAscends()
         {
@@ -72,6 +76,51 @@ namespace NestLabs.Tests.PlayMode
             Assert.Greater(nodeCount, 0,
                 "NodeSpawnRuleSO never fired a grapple node over the climb");
 
+            AssertObstaclesClearOfNodeRadii();
+
+            AssertWallsOnSolidLayer(walls);
+        }
+
+        // Idle only. Moving tweens along X and Swing arcs through its rope, so their live positions
+        // drift away from the spawn point - and only the spawn footprint is avoidance-checked, so
+        // asserting on those two would flag the sweep case that is deliberately out of scope.
+        private static void AssertObstaclesClearOfNodeRadii()
+        {
+            Camera cam = Camera.main;
+            NodeBase[] nodes = Object.FindObjectsByType<NodeBase>(FindObjectsSortMode.None);
+            IdleObstacle[] idle = Object.FindObjectsByType<IdleObstacle>(FindObjectsSortMode.None);
+
+            if (cam == null || !cam.orthographic || nodes.Length == 0 || idle.Length == 0) return;
+
+            float corridor = 2f * Mathf.Max(0f, cam.orthographicSize * cam.aspect - ObstacleXEdgeMargin);
+
+            foreach (IdleObstacle obstacle in idle)
+            {
+                float obstacleRadius = obstacle.TryGetComponent(out CircleCollider2D circle)
+                    ? circle.radius * Mathf.Abs(obstacle.transform.lossyScale.x)
+                    : 0f;
+
+                foreach (NodeBase node in nodes)
+                {
+                    float minSeparation = node.ClaimRadius + obstacleRadius;
+
+                    // Avoidance is best-effort by design: at 9:16 a single node's clearance spans
+                    // more X than the whole playable corridor, so no clear spot exists to pick.
+                    // Only assert where one did.
+                    if (2f * (minSeparation + NodeClearancePadding) >= corridor) continue;
+
+                    float actual = Vector2.Distance(obstacle.transform.position, node.Position);
+
+                    Assert.Greater(actual, minSeparation,
+                        $"IdleObstacle at {obstacle.transform.position} is {actual:F2} from node " +
+                        $"at {node.Position} but needs more than {minSeparation:F2} - it is inside the " +
+                        $"grapple radius, and the {corridor:F2}-wide corridor had room to avoid it");
+                }
+            }
+        }
+
+        private static void AssertWallsOnSolidLayer(WallTerrain[] walls)
+        {
             const int solidLayer = 6;
             foreach (WallTerrain wall in walls)
             {

@@ -39,6 +39,9 @@ namespace NestLabs.Node.Rules
             var instance = ctx.Spawn(entry.Prefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
             (instance as IPoolable)?.OnSpawned(null);
             register(instance.transform);
+
+            // Reserve the grab radius so the obstacle rule keeps hazards out of it.
+            ctx.AddClaim(instance.transform, entry.Prefab.ClaimRadius);
         }
 
         private bool TryPickEntry(out Entry picked)

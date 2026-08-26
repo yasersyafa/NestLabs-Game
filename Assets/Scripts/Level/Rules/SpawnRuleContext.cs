@@ -35,6 +35,43 @@ namespace Nestlabs.Level.Rules
         // resolve to the same pooled instance and its pool.
         private readonly Dictionary<GameObject, (Component Instance, IObjectPool<Component> Pool)> _byGameObject = new();
 
+        // Spots a later rule must not spawn into. Grapple nodes claim their grab radius so hazards
+        // never land inside a point the player is required to reach.
+        private readonly List<(Transform Owner, float Radius)> _claims = new();
+
+        public void AddClaim(Transform owner, float radius)
+        {
+            if (owner == null || radius <= 0f) return;
+            _claims.Add((owner, radius));
+        }
+
+        /// <summary>
+        /// Distance from <paramref name="point"/> to the nearest claim's edge. Negative means inside
+        /// a claim. <see cref="float.MaxValue"/> when nothing is claimed. Callers compare against
+        /// their own required padding, and can rank candidate positions when none fully clear.
+        /// </summary>
+        public float ClaimClearance(Vector2 point)
+        {
+            float nearest = float.MaxValue;
+
+            // Pruned lazily here rather than in Despawn: a pooled instance goes inactive, not null,
+            // and Despawn has no idea whether its instance ever claimed anything.
+            for (int i = _claims.Count - 1; i >= 0; i--)
+            {
+                (Transform owner, float radius) = _claims[i];
+                if (owner == null || !owner.gameObject.activeInHierarchy)
+                {
+                    _claims.RemoveAt(i);
+                    continue;
+                }
+
+                float edge = Vector2.Distance(owner.position, point) - radius;
+                if (edge < nearest) nearest = edge;
+            }
+
+            return nearest;
+        }
+
         // Does not call IPoolable.OnSpawned - callers must Configure(...) first (when the type
         // has one) before triggering that, so setup never races stale/default field values.
         public T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
