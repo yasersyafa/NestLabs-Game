@@ -1,11 +1,9 @@
 {
-    "name": "Nestlabs.Obstacle",
-    "rootNamespace": "Nestlabs.Obstacle",
+    "name": "Nestlabs.Wall",
+    "rootNamespace": "Nestlabs.Wall",
     "references": [
-        "GUID:adfd9be994c37445fbeb21a5adfd9056",
-        "NestLabs.Shared",
-        "VContainer",
-        "Nestlabs.Level"
+        "Nestlabs.Level",
+        "VContainer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

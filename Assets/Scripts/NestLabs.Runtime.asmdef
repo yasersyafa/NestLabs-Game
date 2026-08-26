@@ -10,7 +10,8 @@
         "GabrielBigardi.SpriteAnimator",
         "DOTween.Modules",
         "NestLabs.Shared",
-        "Nestlabs.Obstacle"
+        "Nestlabs.Obstacle",
+        "Nestlabs.Level"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

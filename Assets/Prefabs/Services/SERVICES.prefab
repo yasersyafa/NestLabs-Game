@@ -200,12 +200,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3255362025372492357, guid: 0ba5109c5a1f74c1b9084c04c2e0a202, type: 3}
       propertyPath: m_Name
-      value: ObstacleManager
+      value: LevelGenerator
       objectReference: {fileID: 0}
-    - target: {fileID: 5592193058703453036, guid: 0ba5109c5a1f74c1b9084c04c2e0a202, type: 3}
-      propertyPath: swingObstaclePrefab
-      value: 
-      objectReference: {fileID: 1519158823203621363, guid: 78b03ba5dd5f144b3832931a748ba3fe, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

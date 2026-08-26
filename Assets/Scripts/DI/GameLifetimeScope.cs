@@ -1,5 +1,5 @@
 using MessagePipe;
-using Nestlabs.Obstacle;
+using Nestlabs.Level;
 using NestLabs.Audio;
 using NestLabs.Player;
 using NestLabs.Score;
@@ -48,8 +48,7 @@ namespace NestLabs
             builder.RegisterComponentInHierarchy<PlayerDebugHud>();
             builder.RegisterComponentInHierarchy<ScoreService>();
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
-            builder.RegisterComponentInHierarchy<ObstacleSpawner>();
-            builder.RegisterComponentInHierarchy<ProjectileObstacleSpawner>();
+            builder.RegisterComponentInHierarchy<LevelGenerator>();
 
             // AudioEventBinder has no MonoBehaviour and nothing else resolves it — force-resolve
             // it once at container build so its constructor (and its MessagePipe subscriptions)

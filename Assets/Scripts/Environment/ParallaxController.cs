@@ -14,13 +14,18 @@ namespace Nestlabs.Environment
         [Tooltip("Background themes swapped in as the player climbs. List in ascending heightThreshold order.")]
         [SerializeField] private List<ParallaxStage> stages = new();
 
+        [Tooltip("Higher = layers catch up to the player faster (snappier). Lower = more lag/smoothing.")]
+        [SerializeField] private float followSmoothing = 8f;
+
         private int currentStageIndex = -1;
+        private float smoothedPlayerY;
 
         private void Awake()
         {
             if (player == null) return;
 
             float initialPlayerY = player.position.y;
+            smoothedPlayerY = initialPlayerY;
             foreach (var layer in layers) layer.Initialize(initialPlayerY);
             CheckStageTransition(initialPlayerY);
         }
@@ -30,7 +35,10 @@ namespace Nestlabs.Environment
             if (player == null) return;
 
             float currentY = player.position.y;
-            foreach (var layer in layers) layer.UpdatePosition(currentY);
+            float t = 1f - Mathf.Exp(-followSmoothing * Time.deltaTime);
+            smoothedPlayerY = Mathf.Lerp(smoothedPlayerY, currentY, t);
+
+            foreach (var layer in layers) layer.UpdatePosition(smoothedPlayerY);
 
             CheckStageTransition(currentY);
         }
