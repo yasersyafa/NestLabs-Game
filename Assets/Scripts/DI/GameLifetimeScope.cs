@@ -3,6 +3,7 @@ using Nestlabs.Obstacle;
 using NestLabs.Audio;
 using NestLabs.Player;
 using NestLabs.Score;
+using NestLabs.Shared.Flow;
 using NestLabs.Shared.Obstacle;
 using UnityEngine;
 using VContainer;
@@ -33,6 +34,7 @@ namespace NestLabs
             builder.RegisterMessageBroker<ScoreChangedEvent>(options);
             builder.RegisterMessageBroker<ScoreFinalizedEvent>(options);
             builder.RegisterMessageBroker<ObstacleHitEvent>(options);
+            builder.RegisterMessageBroker<GameStateChangedEvent>(options);
 
             builder.Register<IPlayerEventSink, MessagePipePlayerEventSink>(Lifetime.Singleton);
             builder.Register<IObstacleEventSink, MessagePipeObstacleEventSink>(Lifetime.Singleton);
@@ -55,11 +57,18 @@ namespace NestLabs
             builder.RegisterComponentInHierarchy<ObstacleSpawner>();
             builder.RegisterComponentInHierarchy<ProjectileObstacleSpawner>();
 
-            // AudioEventBinder has no MonoBehaviour and nothing else resolves it — force-resolve
-            // it once at container build so its constructor (and its MessagePipe subscriptions)
-            // actually runs. Skipping this leaves audio silent with no error.
+            builder.Register<IGameStateService, GameStateService>(Lifetime.Singleton);
+
+            // Neither of these is a MonoBehaviour and nothing else resolves them yet —
+            // force-resolve once at container build so their constructors (and their MessagePipe
+            // subscriptions) actually run. Skipping this leaves audio silent and the game state
+            // stuck in Play after a death, with no error either way.
             builder.Register<AudioEventBinder>(Lifetime.Singleton);
-            builder.RegisterBuildCallback(resolver => resolver.Resolve<AudioEventBinder>());
+            builder.RegisterBuildCallback(resolver =>
+            {
+                resolver.Resolve<AudioEventBinder>();
+                resolver.Resolve<IGameStateService>();
+            });
         }
 
         private bool RegisterRequired<T>(IContainerBuilder builder, T asset, string field) where T : class

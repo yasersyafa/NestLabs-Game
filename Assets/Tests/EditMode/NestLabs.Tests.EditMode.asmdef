@@ -3,6 +3,8 @@
     "rootNamespace": "NestLabs.Tests",
     "references": [
         "NestLabs.Runtime",
+        "NestLabs.Shared",
+        "MessagePipe",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
