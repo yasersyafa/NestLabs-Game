@@ -70,7 +70,17 @@ namespace Nestlabs.Wall.Rules
             }
             else
             {
+                // A big instant jump (e.g. a grapple dash) can leave the filled column far behind
+                // the player - normal climbing never does this, since topY is always kept ahead
+                // by refillLookahead. Snap forward instead of crawling back to the player one
+                // small gap per frame, so the next batch starts flush with the player immediately.
                 float topY = _nextSegmentY - _segmentHeight;
+                if (topY <= ctx.Player.position.y)
+                {
+                    _nextSegmentY = ctx.Player.position.y;
+                    topY = _nextSegmentY - _segmentHeight;
+                }
+
                 if (ctx.Player.position.y + refillLookahead >= topY)
                 {
                     for (int i = 0; i < refillSegmentCount; i++)

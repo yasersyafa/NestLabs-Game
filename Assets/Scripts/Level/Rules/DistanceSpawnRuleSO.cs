@@ -54,9 +54,21 @@ namespace Nestlabs.Level.Rules
                 }
                 _hasBurstFilled = true;
             }
-            else if (ctx.Player.position.y + lookaheadDistance >= _nextSpawnY)
+            else
             {
-                FireOnce(ctx);
+                // A big instant jump (e.g. a grapple dash) can leave _nextSpawnY far behind the
+                // player - normal climbing never does this, since _nextSpawnY is always kept
+                // ahead by lookaheadDistance. Snap forward instead of crawling back to the player
+                // one small gap per frame, so spawning resumes right at the player immediately.
+                if (_nextSpawnY <= ctx.Player.position.y)
+                {
+                    _nextSpawnY = ctx.Player.position.y + lookaheadDistance;
+                }
+
+                if (ctx.Player.position.y + lookaheadDistance >= _nextSpawnY)
+                {
+                    FireOnce(ctx);
+                }
             }
 
             CullActive(ctx);
