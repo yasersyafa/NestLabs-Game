@@ -4,6 +4,7 @@
     "references": [
         "NestLabs.Runtime",
         "NestLabs.Shared",
+        "NestLabs.Node",
         "MessagePipe",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

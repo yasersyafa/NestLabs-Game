@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e4ba0f6e0a407890885499c24318e2, type: 3}
+  m_Name: GrapplePoints
+  m_EditorClassIdentifier: NestLabs.Node::NestLabs.Node.Rules.NodeSpawnRuleSO
+  lookaheadDistance: 8
+  spawnYGapMin: 6
+  spawnYGapMax: 10
+  yOffsetRange: {x: -1, y: 1}
+  cullDistanceBelowPlayer: 12
+  entries:
+  - Prefab: {fileID: 2735869302020331096, guid: b725b1097bb116e43bcfcbaba7c2966d, type: 3}
+    Weight: 1
+  - Prefab: {fileID: 7108807769103039184, guid: c6502339d3a3a17459c617791634d5d3, type: 3}
+    Weight: 1
+  xEdgeMargin: 1

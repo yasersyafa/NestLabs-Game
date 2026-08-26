@@ -6,8 +6,9 @@
   <Project Path="DOTween.Modules.csproj" />
   <Project Path="Nestlabs.Obstacle.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
-  <Project Path="Nestlabs.Environment.csproj" />
   <Project Path="NestLabs.Tests.EditMode.csproj" />
+  <Project Path="NestLabs.Node.csproj" />
+  <Project Path="Nestlabs.Environment.csproj" />
   <Project Path="Nestlabs.Wall.csproj" />
   <Project Path="NestLabs.Tests.PlayMode.csproj" />
 </Solution>

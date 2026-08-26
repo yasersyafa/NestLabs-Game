@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Nestlabs.Level;
 using Nestlabs.Obstacle;
 using Nestlabs.Wall;
+using NestLabs.Node;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -50,9 +51,10 @@ namespace NestLabs.Tests.PlayMode
             int swingCount = Object.FindObjectsByType<SwingObstacle>(FindObjectsSortMode.None).Length;
             WallTerrain[] walls = Object.FindObjectsByType<WallTerrain>(FindObjectsSortMode.None);
             int wallCount = walls.Length;
+            int nodeCount = Object.FindObjectsByType<NodeBase>(FindObjectsSortMode.None).Length;
 
             Debug.Log($"[LevelGeneratorSpawnTests] climbed to y={climber.position.y:F1} - " +
-                      $"idle={idleCount} moving={movingCount} swing={swingCount} wall={wallCount}");
+                      $"idle={idleCount} moving={movingCount} swing={swingCount} wall={wallCount} node={nodeCount}");
 
             Assert.Greater(idleCount + movingCount + swingCount, 0,
                 "WeightedGroupSpawnRuleSO never fired an Idle/Moving/Swing obstacle over the climb");
@@ -60,6 +62,8 @@ namespace NestLabs.Tests.PlayMode
                 "WallPairSpawnRuleSO never fired a wall pair over the climb");
             Assert.AreEqual(0, wallCount % 2,
                 "Wall pair rule should always spawn left+right together (expected an even count)");
+            Assert.Greater(nodeCount, 0,
+                "NodeSpawnRuleSO never fired a grapple node over the climb");
 
             const int solidLayer = 6;
             foreach (WallTerrain wall in walls)

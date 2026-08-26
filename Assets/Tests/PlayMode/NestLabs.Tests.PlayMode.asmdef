@@ -5,6 +5,7 @@
         "Nestlabs.Obstacle",
         "Nestlabs.Level",
         "Nestlabs.Wall",
+        "NestLabs.Node",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
