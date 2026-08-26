@@ -1,4 +1,6 @@
+using System;
 using DG.Tweening;
+using Nestlabs.Level;
 using UnityEngine;
 
 namespace NestLabs.Node
@@ -9,7 +11,7 @@ namespace NestLabs.Node
     /// from <see cref="NodeDataSO"/> so variants differ by asset, not by script.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class NodeBase : MonoBehaviour
+    public sealed class NodeBase : MonoBehaviour, IPoolable
     {
         [Header("Data")]
         [SerializeField] private NodeDataSO _data;
@@ -81,6 +83,27 @@ namespace NestLabs.Node
         {
             _popTween?.Kill();
             _flashTween?.Kill();
+        }
+
+        // Nothing to (re)start on spawn - Awake's structural wiring (FindParts/ApplyData)
+        // doesn't need to redo per reuse, and cooldown/tint reset happens on despawn instead.
+        public void OnSpawned(Action releaseSelf)
+        {
+        }
+
+        // Pooled reuse skips OnDestroy, so a Node returning to the pool mid-cooldown or
+        // mid-pop-tween must reset both here or it could come back still looking/acting spent.
+        public void OnDespawned()
+        {
+            _popTween?.Kill();
+            _flashTween?.Kill();
+            _readyAt = 0f;
+
+            if (_data != null)
+            {
+                if (_sprite != null) _sprite.color = _data.Tint;
+                SetRingColor(_data.Tint);
+            }
         }
 
         private void Update()

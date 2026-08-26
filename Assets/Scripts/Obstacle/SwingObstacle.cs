@@ -1,4 +1,6 @@
+using System;
 using DG.Tweening;
+using Nestlabs.Level;
 using UnityEngine;
 
 namespace Nestlabs.Obstacle
@@ -10,7 +12,7 @@ namespace Nestlabs.Obstacle
     [RequireComponent(typeof(LineRenderer))]
     [RequireComponent(typeof(CircleCollider2D))]
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SwingObstacle : ObstacleBase
+    public class SwingObstacle : ObstacleBase, IPoolable
     {
         [Header("Swing")]
         [Tooltip("Distance from the anchor to the obstacle, in world units.")]
@@ -67,9 +69,11 @@ namespace Nestlabs.Obstacle
             _rope.positionCount = 2;
         }
 
-        private void Start()
+        // Pooled instances never get Start() called again on reactivation, so the pool calls
+        // this explicitly every time (fresh or reused) instead.
+        public void OnSpawned(Action releaseSelf)
         {
-            _currentAngle = Random.value < 0.5f ? -maxAngle : maxAngle;
+            _currentAngle = UnityEngine.Random.value < 0.5f ? -maxAngle : maxAngle;
             UpdatePosition();
 
             float startAngle = _currentAngle;
@@ -83,6 +87,11 @@ namespace Nestlabs.Obstacle
                 .From(startAngle)
                 .SetEase(swingEase)
                 .SetLoops(-1, LoopType.Yoyo);
+        }
+
+        public void OnDespawned()
+        {
+            _swingTween?.Kill();
         }
 
         private void UpdatePosition()

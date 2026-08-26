@@ -1,4 +1,5 @@
 using System;
+using Nestlabs.Level;
 using Nestlabs.Level.Rules;
 using UnityEngine;
 using VContainer.Unity;
@@ -35,7 +36,8 @@ namespace NestLabs.Node.Rules
             float halfWidth = Mathf.Max(0f, ctx.RawScreenHalfWidth - xEdgeMargin);
             float x = UnityEngine.Random.Range(-halfWidth, halfWidth);
 
-            var instance = ctx.Resolver.Instantiate(entry.Prefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
+            var instance = ctx.Spawn(entry.Prefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
+            (instance as IPoolable)?.OnSpawned(null);
             register(instance.transform);
         }
 

@@ -88,7 +88,7 @@ namespace Nestlabs.Level.Rules
                 Transform obstacle = _active[i];
                 if (ctx.Player.position.y - obstacle.position.y > cullDistanceBelowPlayer)
                 {
-                    UnityEngine.Object.Destroy(obstacle.gameObject);
+                    ctx.Despawn(obstacle);
                     _active.RemoveAt(i);
                 }
             }

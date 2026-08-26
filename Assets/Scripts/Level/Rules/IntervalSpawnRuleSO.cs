@@ -40,5 +40,9 @@ namespace Nestlabs.Level.Rules
         }
 
         protected abstract void OnSpawn(SpawnRuleContext ctx, Action<Component> register);
+
+        // Lets a self-terminating spawn (e.g. Projectile, once it finishes its own sequence)
+        // free its concurrency slot without exposing the whole _active list to subclasses.
+        protected void ReleaseFromActive(Component instance) => _active.Remove(instance);
     }
 }

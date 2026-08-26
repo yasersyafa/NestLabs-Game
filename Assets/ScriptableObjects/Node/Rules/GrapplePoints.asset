@@ -23,4 +23,4 @@ MonoBehaviour:
     Weight: 1
   - Prefab: {fileID: 7108807769103039184, guid: c6502339d3a3a17459c617791634d5d3, type: 3}
     Weight: 1
-  xEdgeMargin: 1
+  xEdgeMargin: 1.2

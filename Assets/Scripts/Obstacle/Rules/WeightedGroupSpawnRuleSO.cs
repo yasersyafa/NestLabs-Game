@@ -1,4 +1,5 @@
 using System;
+using Nestlabs.Level;
 using Nestlabs.Level.Rules;
 using UnityEngine;
 using VContainer.Unity;
@@ -85,7 +86,8 @@ namespace Nestlabs.Obstacle.Rules
 
             float halfWidth = GetHalfWidth(ctx);
             float x = UnityEngine.Random.Range(-halfWidth, halfWidth);
-            var instance = ctx.Resolver.Instantiate(entry.IdlePrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
+            var instance = ctx.Spawn(entry.IdlePrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
+            (instance as IPoolable)?.OnSpawned(null);
             register(instance.transform);
         }
 
@@ -100,8 +102,9 @@ namespace Nestlabs.Obstacle.Rules
             var startPos = new Vector3(startX, spawnY, 0f);
             var endPos = new Vector3(endX, spawnY, 0f);
 
-            var instance = ctx.Resolver.Instantiate(entry.MovingPrefab, startPos, Quaternion.identity);
+            var instance = ctx.Spawn(entry.MovingPrefab, startPos, Quaternion.identity);
             instance.Configure(startPos, endPos);
+            (instance as IPoolable)?.OnSpawned(null);
             register(instance.transform);
         }
 
@@ -117,8 +120,9 @@ namespace Nestlabs.Obstacle.Rules
             float anchorY = spawnY + entry.SwingPrefab.RopeLength;
 
             var anchorPos = new Vector3(anchorX, anchorY, 0f);
-            var instance = ctx.Resolver.Instantiate(entry.SwingPrefab, anchorPos, Quaternion.identity);
+            var instance = ctx.Spawn(entry.SwingPrefab, anchorPos, Quaternion.identity);
             instance.Configure(anchorPos);
+            (instance as IPoolable)?.OnSpawned(null);
             register(instance.transform);
         }
     }

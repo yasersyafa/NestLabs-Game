@@ -1,10 +1,12 @@
+using System;
 using DG.Tweening;
+using Nestlabs.Level;
 using UnityEngine;
 
 namespace Nestlabs.Obstacle
 {
     [RequireComponent(typeof(Collider2D))]
-    public class ProjectileObstacle : ObstacleBase
+    public class ProjectileObstacle : ObstacleBase, IPoolable
     {
         [Header("Timing")]
         [SerializeField] private float moveDuration = 1f;
@@ -18,6 +20,7 @@ namespace Nestlabs.Obstacle
         private Vector3 startPos;
         private Vector3 endPos;
         private RectTransform warningUI;
+        private Action releaseSelf;
 
         // Called by a spawner right after Instantiate to drive this instance at runtime.
         public void Configure(Vector3 start, Vector3 end, RectTransform warningIcon)
@@ -33,8 +36,12 @@ namespace Nestlabs.Obstacle
             sprite = GetComponent<SpriteRenderer>();
         }
 
-        private void Start()
+        // Pooled instances never get Start() called again on reactivation, so the pool calls
+        // this explicitly every time (fresh or reused) instead.
+        public void OnSpawned(Action releaseSelf)
         {
+            this.releaseSelf = releaseSelf;
+
             transform.position = startPos;
             SetProjectileVisible(false);
 
@@ -43,7 +50,18 @@ namespace Nestlabs.Obstacle
                 .AppendInterval(warningDuration)
                 .AppendCallback(Fire)
                 .Append(transform.DOMove(endPos, moveDuration).SetEase(Ease.Linear))
-                .AppendCallback(() => Destroy(gameObject));
+                .AppendCallback(() => this.releaseSelf?.Invoke());
+        }
+
+        public void OnDespawned()
+        {
+            sequence?.Kill();
+            if (warningUI != null)
+            {
+                Destroy(warningUI.gameObject);
+                warningUI = null;
+            }
+            SetProjectileVisible(false);
         }
 
         private void ShowWarning()

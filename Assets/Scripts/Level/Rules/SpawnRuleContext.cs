@@ -1,11 +1,19 @@
+using System.Collections.Generic;
+using Nestlabs.Level;
 using UnityEngine;
+using UnityEngine.Pool;
 using VContainer;
+using VContainer.Unity;
 
 namespace Nestlabs.Level.Rules
 {
     // Shared per-frame data handed to every rule's Tick. Built once by LevelGenerator.Awake;
     // RawScreenHalfWidth is recomputed once per frame so all rules see the same camera state
     // without each duplicating the cam.orthographicSize * cam.aspect calculation themselves.
+    //
+    // Also the single pooling entry point for every rule: Spawn/Despawn replace raw
+    // Instantiate/Destroy so obstacle/wall/node churn doesn't repeatedly allocate and GC. One
+    // ObjectPool<Component> per distinct prefab reference, created lazily on first use.
     public sealed class SpawnRuleContext
     {
         public Transform Player;
@@ -13,5 +21,50 @@ namespace Nestlabs.Level.Rules
         public Camera Cam;
         public RectTransform UiCanvas;
         public float RawScreenHalfWidth;
+
+        private readonly Dictionary<Component, IObjectPool<Component>> _poolsByPrefab = new();
+
+        // Keyed by GameObject (not the pooled component itself) so Despawn can be called with
+        // *any* Component on that GameObject - a Transform (what the distance-based rules track
+        // in their _active lists) or the behavior script itself (what Projectile tracks) both
+        // resolve to the same pooled instance and its pool.
+        private readonly Dictionary<GameObject, (Component Instance, IObjectPool<Component> Pool)> _byGameObject = new();
+
+        // Does not call IPoolable.OnSpawned - callers must Configure(...) first (when the type
+        // has one) before triggering that, so setup never races stale/default field values.
+        public T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
+        {
+            if (!_poolsByPrefab.TryGetValue(prefab, out IObjectPool<Component> pool))
+            {
+                pool = new ObjectPool<Component>(
+                    // Position/rotation here are a throwaway initial placement - every Get()
+                    // result (fresh or reused) is immediately repositioned below.
+                    createFunc: () => Resolver.Instantiate(prefab, Vector3.zero, Quaternion.identity),
+                    actionOnGet: instance => instance.gameObject.SetActive(true),
+                    actionOnRelease: instance => instance.gameObject.SetActive(false),
+                    actionOnDestroy: instance => Object.Destroy(instance.gameObject));
+                _poolsByPrefab[prefab] = pool;
+            }
+
+            var component = (T)pool.Get();
+            component.transform.SetPositionAndRotation(position, rotation);
+
+            // A reused instance's Collider2D keeps its *previous* physics bounds until Physics2D
+            // syncs transforms on its own schedule (next FixedUpdate) - a same-frame query like
+            // PlayerSensor's Rigidbody2D.Cast would otherwise hit it at its old, stale location.
+            Physics2D.SyncTransforms();
+
+            _byGameObject[component.gameObject] = (component, pool);
+            return component;
+        }
+
+        public void Despawn(Component instance)
+        {
+            if (instance == null) return;
+            if (!_byGameObject.TryGetValue(instance.gameObject, out var entry)) return;
+
+            (entry.Instance as IPoolable)?.OnDespawned();
+            entry.Pool.Release(entry.Instance);
+        }
     }
 }

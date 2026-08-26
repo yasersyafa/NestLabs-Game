@@ -95,7 +95,7 @@ namespace Nestlabs.Wall.Rules
                 Transform segment = _active[i];
                 if (ctx.Player.position.y - segment.position.y > cullDistanceBelowPlayer)
                 {
-                    Object.Destroy(segment.gameObject);
+                    ctx.Despawn(segment);
                     _active.RemoveAt(i);
                 }
             }
@@ -108,10 +108,10 @@ namespace Nestlabs.Wall.Rules
             float halfWidth = Mathf.Max(0f, ctx.RawScreenHalfWidth - xInset);
             float y = _nextSegmentY;
 
-            var left = ctx.Resolver.Instantiate(wallPrefab, new Vector3(-halfWidth, y, 0f), Quaternion.identity);
+            var left = ctx.Spawn(wallPrefab, new Vector3(-halfWidth, y, 0f), Quaternion.identity);
             _active.Add(left.transform);
 
-            var right = ctx.Resolver.Instantiate(wallPrefab, new Vector3(halfWidth, y, 0f), Quaternion.identity);
+            var right = ctx.Spawn(wallPrefab, new Vector3(halfWidth, y, 0f), Quaternion.identity);
             _active.Add(right.transform);
 
             _nextSegmentY += _segmentHeight;

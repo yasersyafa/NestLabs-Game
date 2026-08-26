@@ -1,4 +1,5 @@
 using System;
+using Nestlabs.Level;
 using Nestlabs.Level.Rules;
 using UnityEngine;
 using VContainer.Unity;
@@ -41,9 +42,14 @@ namespace Nestlabs.Obstacle.Rules
                 warningIcon.gameObject.SetActive(false);
             }
 
-            var instance = ctx.Resolver.Instantiate(projectilePrefab, startPos, Quaternion.identity);
+            var instance = ctx.Spawn(projectilePrefab, startPos, Quaternion.identity);
             instance.Configure(startPos, endPos, warningIcon);
             register(instance);
+            (instance as IPoolable)?.OnSpawned(() =>
+            {
+                ReleaseFromActive(instance);
+                ctx.Despawn(instance);
+            });
         }
     }
 }

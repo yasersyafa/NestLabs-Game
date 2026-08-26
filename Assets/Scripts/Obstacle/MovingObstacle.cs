@@ -1,9 +1,11 @@
+using System;
 using DG.Tweening;
+using Nestlabs.Level;
 using UnityEngine;
 
 namespace Nestlabs.Obstacle
 {
-    public class MovingObstacle : ObstacleBase
+    public class MovingObstacle : ObstacleBase, IPoolable
     {
         [SerializeField] private float duration = 2f;
 
@@ -18,12 +20,19 @@ namespace Nestlabs.Obstacle
             endPos = end;
         }
 
-        private void Start()
+        // Pooled instances never get Start() called again on reactivation, so the pool calls
+        // this explicitly every time (fresh or reused) instead.
+        public void OnSpawned(Action releaseSelf)
         {
             transform.position = startPos;
             tween = transform.DOMove(endPos, duration)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo);
+        }
+
+        public void OnDespawned()
+        {
+            tween?.Kill();
         }
 
         private void OnDestroy()
