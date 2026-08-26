@@ -21,5 +21,7 @@ namespace NestLabs
         public void Begin(float scale, float unscaledDuration) { }
 
         public void Cancel() { }
+
+        public void SetPaused(bool paused) { }
     }
 }

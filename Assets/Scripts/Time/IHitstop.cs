@@ -15,5 +15,12 @@ namespace NestLabs
 
         /// <summary>Restores full speed immediately.</summary>
         void Cancel();
+
+        /// <summary>
+        /// Global pause. Outranks a dip: while paused the time scale stays at 0 and a running dip
+        /// does not tick down, so unpausing resumes it instead of eating it. Routed through here
+        /// rather than a second Time.timeScale writer, which would race Begin and Cancel.
+        /// </summary>
+        void SetPaused(bool paused);
     }
 }
