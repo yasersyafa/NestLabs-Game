@@ -68,6 +68,11 @@ namespace Nestlabs.Level.Rules
             if (instance == null) return;
             if (!_byGameObject.TryGetValue(instance.gameObject, out var entry)) return;
 
+            // Drop the mapping before releasing: keeps the dictionary from growing for the whole
+            // run, and turns a double Despawn into a no-op instead of an ObjectPool collectionCheck
+            // throw.
+            _byGameObject.Remove(instance.gameObject);
+
             (entry.Instance as IPoolable)?.OnDespawned();
             entry.Pool.Release(entry.Instance);
             TransformsDirty = true;
