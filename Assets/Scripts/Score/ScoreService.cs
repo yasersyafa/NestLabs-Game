@@ -1,5 +1,7 @@
+using System;
 using MessagePipe;
 using NestLabs.Player;
+using NestLabs.Shared.Flow;
 using UnityEngine;
 using VContainer;
 
@@ -17,6 +19,7 @@ namespace NestLabs.Score
         private readonly ScoreData data = new();
         private IPublisher<ScoreChangedEvent> scoreChangedPublisher;
         private IPublisher<ScoreFinalizedEvent> scoreFinalizedPublisher;
+        private IDisposable subscriptions;
 
         private float baselineY;
         private float highestY;
@@ -28,13 +31,44 @@ namespace NestLabs.Score
 
         [Inject]
         public void Construct(
+            IGameStateService gameState,
             ISubscriber<PlayerDiedEvent> died,
+            ISubscriber<GameStateChangedEvent> gameStateChanged,
             IPublisher<ScoreChangedEvent> scoreChanged,
             IPublisher<ScoreFinalizedEvent> scoreFinalized)
         {
             scoreChangedPublisher = scoreChanged;
             scoreFinalizedPublisher = scoreFinalized;
-            died.Subscribe(_ => FinalizeRun());
+
+            DisposableBagBuilder bag = DisposableBag.CreateBuilder();
+            died.Subscribe(_ => FinalizeRun()).AddTo(bag);
+            gameStateChanged.Subscribe(HandleGameStateChanged).AddTo(bag);
+            subscriptions = bag.Build();
+
+            // GameStateService starts life already in Play (no menu flow yet), so no
+            // GameStateChangedEvent will ever fire for that first run. Pick it up directly.
+            if (gameState.IsPlaying) ResetRun();
+        }
+
+        private void OnDestroy()
+        {
+            subscriptions?.Dispose();
+        }
+
+        private void HandleGameStateChanged(GameStateChangedEvent e)
+        {
+            switch (e.To)
+            {
+                case GameState.Play:
+                    // Resuming from Pause keeps the current run's score; anything else (Menu or
+                    // Death) starting Play is a fresh run.
+                    if (e.From == GameState.Pause) runActive = true;
+                    else ResetRun();
+                    break;
+                case GameState.Pause:
+                    runActive = false;
+                    break;
+            }
         }
 
         private void Update()

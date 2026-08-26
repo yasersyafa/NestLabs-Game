@@ -249,6 +249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 309345610}
   - component: {fileID: 309345611}
+  - component: {fileID: 309345612}
   m_Layer: 5
   m_Name: Score
   m_TagString: Untagged
@@ -303,6 +304,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &309345612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309345609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76bb0a774f67740b28d8849aa173d93b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ScoreHud
+  scoreText: {fileID: 848984924}
+  bestScoreText: {fileID: 1027927248}
+  scoreFormat: '{0}m'
+  bestScoreFormat: BEST {0}m
 --- !u!1 &419138681
 GameObject:
   m_ObjectHideFlags: 0

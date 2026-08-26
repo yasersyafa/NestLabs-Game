@@ -4,6 +4,7 @@ using NestLabs.Audio;
 using NestLabs.Player;
 using NestLabs.Score;
 using NestLabs.Shared.Flow;
+using NestLabs.UI;
 using NestLabs.Shared.Obstacle;
 using UnityEngine;
 using VContainer;
@@ -52,6 +53,7 @@ namespace NestLabs
             builder.RegisterComponentInHierarchy<PlayerBase>();
             builder.RegisterComponentInHierarchy<PlayerDebugHud>();
             builder.RegisterComponentInHierarchy<ScoreService>();
+            builder.RegisterComponentInHierarchy<ScoreHud>();
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
             builder.RegisterComponentInHierarchy<LevelGenerator>();
             builder.RegisterComponentInHierarchy<Hitstop>().As<IHitstop>();
