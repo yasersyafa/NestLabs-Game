@@ -22,6 +22,7 @@ namespace NestLabs.Tests.PlayMode
         private const string ScenePath = "Assets/Scenes/YaserScene.unity";
         private const int ClimbFrames = 300;
         private const float ClimbPerFrame = 0.5f;
+        private const int MaxReasonableWalls = 60;
 
         [UnityTest]
         public IEnumerator RulesSpawnObstaclesAndWallPairsAsClimberAscends()
@@ -62,6 +63,12 @@ namespace NestLabs.Tests.PlayMode
                 "WallPairSpawnRuleSO never fired a wall pair over the climb");
             Assert.AreEqual(0, wallCount % 2,
                 "Wall pair rule should always spawn left+right together (expected an even count)");
+            // Regression guard: a bad segment height makes the refill gate never close, which
+            // spawns a pair every frame. The climb covers 150 world units, so a correctly tiled
+            // column is on the order of tens of segments, never hundreds.
+            Assert.Less(wallCount, MaxReasonableWalls,
+                $"WallPairSpawnRuleSO spawned {wallCount} active walls over a {ClimbFrames}-frame climb - " +
+                "the column is not bounding itself, check the resolved segment height");
             Assert.Greater(nodeCount, 0,
                 "NodeSpawnRuleSO never fired a grapple node over the climb");
 
