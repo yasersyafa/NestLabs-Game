@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Nestlabs.Wall::Nestlabs.Wall.Rules.WallPairSpawnRuleSO
   wallPrefab: {fileID: 8362043124674205718, guid: f60922eb38c0748a5978c1a85aa087ef, type: 3}
   xInset: -0.1
+  segmentHeightOverride: 0
   initialSegmentCount: 5
-  refillSegmentCount: 5
   refillLookahead: 8
-  cullDistanceBelowPlayer: 12
+  maxSegmentsPerFrame: 8
+  cullDistanceBelowPlayer: 8

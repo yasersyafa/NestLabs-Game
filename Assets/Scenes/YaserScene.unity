@@ -1591,10 +1591,56 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6a50c53a4b6974bf4863b998b15b7d6e, type: 3}
+--- !u!1001 &8801000000000000001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551000000000000001, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_Name
+      value: Floor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 8801000000000000001}
   - {fileID: 1374431101}
   - {fileID: 1862734603}
   - {fileID: 1486083797}

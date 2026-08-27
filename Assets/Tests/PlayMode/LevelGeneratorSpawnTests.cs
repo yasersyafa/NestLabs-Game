@@ -6,10 +6,13 @@ using Nestlabs.Level;
 using Nestlabs.Obstacle;
 using Nestlabs.Wall;
 using NestLabs.Node;
+using NestLabs.Shared.Flow;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using VContainer;
+using VContainer.Unity;
 
 namespace NestLabs.Tests.PlayMode
 {
@@ -32,6 +35,13 @@ namespace NestLabs.Tests.PlayMode
         public IEnumerator RulesSpawnObstaclesAndWallPairsAsClimberAscends()
         {
             yield return EditorSceneManager.LoadSceneInPlayMode(ScenePath, new LoadSceneParameters(LoadSceneMode.Single));
+            yield return null;
+
+            // The scene boots in the pre-run "ready" pose (flow state Menu), which halts every
+            // spawn rule. Start the run so the generator actually ticks, the way the first tap does.
+            var scope = Object.FindFirstObjectByType<LifetimeScope>();
+            Assert.IsNotNull(scope, "No LifetimeScope in the scene - DI is not wired");
+            scope.Container.Resolve<IGameStateService>().EnterPlay();
             yield return null;
 
             var generator = Object.FindFirstObjectByType<LevelGenerator>();

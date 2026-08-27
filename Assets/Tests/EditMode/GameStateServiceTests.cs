@@ -25,6 +25,11 @@ namespace NestLabs.Tests
             _published = new RecordingPublisher<GameStateChangedEvent>();
             _hitstop = new FakeHitstop();
             _service = new GameStateService(_died, _published, _hitstop);
+
+            // The service now boots in Menu (the pre-run "ready" pose). Every test below except
+            // Boots_InMenu assumes a live run, so start one and drop the Menu -> Play message.
+            _service.EnterPlay();
+            _published.Messages.Clear();
         }
 
         [TearDown]
@@ -33,11 +38,24 @@ namespace NestLabs.Tests
         private void Die() => _died.Fire(new PlayerDiedEvent(Vector2.zero));
 
         [Test]
-        public void Boots_InPlay()
+        public void Boots_InMenu_AndTheFirstPlayStartsTheRun()
         {
-            Assert.AreEqual(GameState.Play, _service.Current);
-            Assert.IsTrue(_service.IsPlaying);
-            Assert.AreEqual(0, _published.Messages.Count, "Construction has no From state to report.");
+            var published = new RecordingPublisher<GameStateChangedEvent>();
+            var service = new GameStateService(new FakeSubscriber<PlayerDiedEvent>(), published, _hitstop);
+
+            Assert.AreEqual(GameState.Menu, service.Current, "The scene boots into the pre-run ready pose.");
+            Assert.IsFalse(service.IsPlaying);
+            Assert.AreEqual(0, published.Messages.Count, "Construction has no From state to report.");
+
+            service.EnterPlay();
+
+            Assert.AreEqual(GameState.Play, service.Current);
+            Assert.IsTrue(service.IsPlaying);
+            Assert.AreEqual(1, published.Messages.Count);
+            Assert.AreEqual(GameState.Menu, published.Messages[0].From);
+            Assert.AreEqual(GameState.Play, published.Messages[0].To);
+
+            service.Dispose();
         }
 
         [Test]

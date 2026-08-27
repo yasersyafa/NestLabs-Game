@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NestLabs.Node;
 using NestLabs.Player;
+using NestLabs.Shared.Flow;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace NestLabs.Tests
         private GameObject _go;
         private PlayerConfigSO _config;
         private FakePlayerInput _input;
+        private FakeGameState _gameState;
         private PlayerStateMachine _fsm;
         private PlayerContext _context;
         private PlayerSensor _sensor;
@@ -85,10 +87,11 @@ namespace NestLabs.Tests
             health.Initialize(_config);
 
             _input = new FakePlayerInput();
+            _gameState = new FakeGameState();
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
                 _fsm, motor, sensor, _nodeSensor, visual, null, health, NullHitstop.Instance,
-                _config, _input, NullPlayerEventSink.Instance, _go.transform);
+                _gameState, _config, _input, NullPlayerEventSink.Instance, _go.transform);
             _context.ResetBlackboard();
 
             _fsm.Register(new LatchState(_context));
@@ -98,6 +101,7 @@ namespace NestLabs.Tests
             _fsm.Register(new DashState(_context));
             _fsm.Register(new HitState(_context));
             _fsm.Register(new DeadState(_context));
+            _fsm.Register(new IdleState(_context));
         }
 
         [TearDown]
@@ -133,6 +137,23 @@ namespace NestLabs.Tests
             _fsm.Tick(0f);
 
             Assert.AreEqual(expected, _fsm.CurrentId);
+        }
+
+        [Test]
+        public void Idle_FirstTap_StartsTheRun_AndLaunchesOffTheStartWall()
+        {
+            _fsm.Initialize(_context, PlayerStateId.Idle);
+
+            Assert.AreEqual(0f, _context.Motor.GravityScale, "Idle hangs the player still on the floor.");
+
+            _input.TapPending = true;
+            _fsm.Tick(0f);
+
+            Assert.AreEqual(1, _gameState.EnterPlayCount, "The first tap must start the run.");
+            Assert.AreEqual(PlayerStateId.Jump, _fsm.CurrentId, "and launch the player into the climb.");
+            Assert.AreEqual(-_config.JumpHorizontalSpeed, _context.Motor.Velocity.x, 0.001f,
+                "The opening jump goes left, off the right-hand start wall.");
+            Assert.AreEqual(_config.JumpVelocity, _context.Motor.Velocity.y, 0.001f);
         }
 
         [TestCase(PlayerStateId.Dash)]
@@ -432,7 +453,7 @@ namespace NestLabs.Tests
 
             var context = new PlayerContext(
                 _fsm, _context.Motor, _sensor, _nodeSensor, _context.Visual, null, _context.Health,
-                hitstop, _config, _input, NullPlayerEventSink.Instance, _go.transform);
+                hitstop, _gameState, _config, _input, NullPlayerEventSink.Instance, _go.transform);
             context.ResetBlackboard();
 
             try
@@ -517,6 +538,19 @@ namespace NestLabs.Tests
             }
 
             public void ClearTap() => TapPending = false;
+        }
+
+        private sealed class FakeGameState : IGameStateService
+        {
+            public int EnterPlayCount;
+
+            public GameState Current { get; private set; } = GameState.Menu;
+            public bool IsPlaying => Current == GameState.Play;
+
+            public void EnterMenu() => Current = GameState.Menu;
+            public void EnterPlay() { EnterPlayCount++; Current = GameState.Play; }
+            public void Pause() => Current = GameState.Pause;
+            public void Resume() => Current = GameState.Play;
         }
 
         private sealed class SpyState : IPlayerState

@@ -28,6 +28,9 @@ namespace NestLabs.Player
         Hit,
 
         /// <summary>Terminal. Input detached.</summary>
-        Dead
+        Dead,
+
+        /// <summary>Pre-run. Resting on the floor, waiting for the first tap to start the climb.</summary>
+        Idle
     }
 }

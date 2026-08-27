@@ -1,4 +1,5 @@
 using NestLabs.Node;
+using NestLabs.Shared.Flow;
 using UnityEngine;
 
 namespace NestLabs.Player
@@ -25,6 +26,10 @@ namespace NestLabs.Player
         public IHitstop Hitstop => NullHitstop.Safe(_hitstop);
 
         private readonly IHitstop _hitstop;
+
+        /// <summary>Flow state. Idle reads this to start the run on the first tap.</summary>
+        public IGameStateService GameState { get; }
+
         public PlayerConfigSO Config { get; }
         public IPlayerInput Input { get; }
         public IPlayerEventSink Events { get; }
@@ -40,6 +45,7 @@ namespace NestLabs.Player
             PlayerTrail trail,
             PlayerHealth health,
             IHitstop hitstop,
+            IGameStateService gameState,
             PlayerConfigSO config,
             IPlayerInput input,
             IPlayerEventSink events,
@@ -53,6 +59,7 @@ namespace NestLabs.Player
             Trail = trail;
             Health = health;
             _hitstop = hitstop;
+            GameState = gameState ?? NullGameStateService.Instance;
             Config = config;
             Input = input;
             Events = events;

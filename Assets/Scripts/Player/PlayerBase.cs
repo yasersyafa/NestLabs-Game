@@ -1,5 +1,6 @@
 using System;
 using NestLabs.Shared.Combat;
+using NestLabs.Shared.Flow;
 using UnityEngine;
 using VContainer;
 
@@ -31,6 +32,7 @@ namespace NestLabs.Player
         private IPlayerInput _input;
         private IPlayerEventSink _events;
         private IHitstop _hitstop;
+        private IGameStateService _gameState;
         private PlayerStateMachine _fsm;
         private PlayerContext _context;
         private bool _ownsInput;
@@ -45,12 +47,14 @@ namespace NestLabs.Player
         /// </summary>
         [Inject]
         public void Construct(
-            IPlayerInput input, IPlayerEventSink events, PlayerConfigSO config, IHitstop hitstop)
+            IPlayerInput input, IPlayerEventSink events, PlayerConfigSO config, IHitstop hitstop,
+            IGameStateService gameState)
         {
             _input = input;
             _events = events;
             _config = config;
             _hitstop = hitstop;
+            _gameState = gameState;
         }
 
         private void Reset()
@@ -132,6 +136,7 @@ namespace NestLabs.Player
             }
 
             _events ??= NullPlayerEventSink.Instance;
+            _gameState ??= NullGameStateService.Instance;
             IHitstop safeHitstop = NullHitstop.Safe(_hitstop);
             if (_hitstop != null && ReferenceEquals(safeHitstop, NullHitstop.Instance))
             {
@@ -145,8 +150,8 @@ namespace NestLabs.Player
 
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
-                _fsm, _motor, _sensor, _nodeSensor, _visual, _trail, _health, _hitstop, _config,
-                _input, _events, transform);
+                _fsm, _motor, _sensor, _nodeSensor, _visual, _trail, _health, _hitstop, _gameState,
+                _config, _input, _events, transform);
             _context.ResetBlackboard();
 
             _fsm.Register(new LatchState(_context));
@@ -156,9 +161,13 @@ namespace NestLabs.Player
             _fsm.Register(new DashState(_context));
             _fsm.Register(new HitState(_context));
             _fsm.Register(new DeadState(_context));
+            _fsm.Register(new IdleState(_context));
 
             _sensor.Probe();
-            _fsm.Initialize(_context, PlayerStateId.Fall);
+            // A live run (or a bare prefab with no flow service) drops straight into Fall as before;
+            // otherwise the player waits on the floor in Idle until the first tap starts the run.
+            _fsm.Initialize(
+                _context, _gameState.IsPlaying ? PlayerStateId.Fall : PlayerStateId.Idle);
         }
 
         private void OnDamageDetected(IDamageSource source)

@@ -2,10 +2,13 @@
     "name": "NestLabs.Tests.PlayMode",
     "rootNamespace": "NestLabs.Tests",
     "references": [
+        "NestLabs.Runtime",
+        "NestLabs.Shared",
         "Nestlabs.Obstacle",
         "Nestlabs.Level",
         "Nestlabs.Wall",
         "NestLabs.Node",
+        "VContainer",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

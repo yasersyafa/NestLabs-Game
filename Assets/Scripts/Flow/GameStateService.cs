@@ -17,7 +17,9 @@ namespace NestLabs
         private readonly IHitstop _hitstop;
         private readonly IDisposable _subscriptions;
 
-        private GameState _current = GameState.Play;
+        // The scene boots into a "ready" pose: the player stands on the floor and the run only
+        // starts on the first tap. Menu is that pre-run state — nothing else ever routes through it.
+        private GameState _current = GameState.Menu;
 
         public GameState Current => _current;
         public bool IsPlaying => _current == GameState.Play;
