@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using GabrielBigardi.SpriteAnimator;
 using Nestlabs.Level;
 using UnityEngine;
 
@@ -13,12 +14,18 @@ namespace NestLabs.Node
     [DisallowMultipleComponent]
     public sealed class NodeBase : MonoBehaviour, IPoolable
     {
+        // Animation names on the SpriteAnimationObject (see Node.asset). Idle is the resting pose;
+        // InRange is the "you can grab me" cue the player's node sensor toggles on proximity.
+        private const string IdleAnim = "Idle";
+        private const string InRangeAnim = "OnEnter";
+
         [Header("Data")]
         [SerializeField] private NodeDataSO _data;
 
         [Header("Parts")]
         [SerializeField] private CircleCollider2D _radius;
         [SerializeField] private SpriteRenderer _sprite;
+        [SerializeField] private SpriteAnimator _animator;
         [SerializeField] private Transform _vfxRoot;
 
         [Tooltip("Draws the range in the Game view and in a build. Sits under the Radius child so it inherits the collider's transform exactly.")]
@@ -62,13 +69,13 @@ namespace NestLabs.Node
         private void OnValidate()
         {
             // Keeps the collider the designer sees in the Scene view honest about the asset's radius.
-            if (_radius == null || _sprite == null || _rangeRing == null || _vfxRoot == null) FindParts();
+            if (_radius == null || _sprite == null || _animator == null || _rangeRing == null || _vfxRoot == null) FindParts();
             ApplyData();
         }
 
         private void Awake()
         {
-            if (_radius == null || _sprite == null || _rangeRing == null || _vfxRoot == null) FindParts();
+            if (_radius == null || _sprite == null || _animator == null || _rangeRing == null || _vfxRoot == null) FindParts();
 
             if (_data == null)
             {
@@ -88,25 +95,46 @@ namespace NestLabs.Node
             _flashTween?.Kill();
         }
 
-        // Nothing to (re)start on spawn - Awake's structural wiring (FindParts/ApplyData)
-        // doesn't need to redo per reuse, and cooldown/tint reset happens on despawn instead.
+        // Structural wiring (FindParts/ApplyData) survives reuse, but the sprite animator does not
+        // auto-play (_playAutomatically is off), so a fresh or reused node has to be put back on
+        // the idle pose here. Cooldown/tint reset happens on despawn instead.
         public void OnSpawned(Action releaseSelf)
         {
+            PlayAnim(IdleAnim);
         }
 
         // Pooled reuse skips OnDestroy, so a Node returning to the pool mid-cooldown or
         // mid-pop-tween must reset both here or it could come back still looking/acting spent.
+        // Same for the proximity cue: drop back to idle so it never returns mid-blink.
         public void OnDespawned()
         {
             _popTween?.Kill();
             _flashTween?.Kill();
             _readyAt = 0f;
 
+            PlayAnim(IdleAnim);
+
             if (_data != null)
             {
                 if (_sprite != null) _sprite.color = _data.Tint;
                 SetRingColor(_data.Tint);
             }
+        }
+
+        /// <summary>
+        /// Toggled by the player's node sensor as its grab radius enters or leaves this node's
+        /// range. The node owns what the reaction is; today it swaps the sprite animation between
+        /// the idle pose and the "in range" cue.
+        /// </summary>
+        public void SetHighlighted(bool highlighted)
+        {
+            PlayAnim(highlighted ? InRangeAnim : IdleAnim);
+        }
+
+        private void PlayAnim(string animName)
+        {
+            if (_animator == null || _animator.SpriteAnimationObject == null) return;
+            _animator.PlayIfNotPlaying(animName);
         }
 
         private void Update()
@@ -143,6 +171,7 @@ namespace NestLabs.Node
         {
             if (_radius == null) _radius = GetComponentInChildren<CircleCollider2D>();
             if (_sprite == null) _sprite = GetComponentInChildren<SpriteRenderer>();
+            if (_animator == null) _animator = GetComponentInChildren<SpriteAnimator>();
             if (_rangeRing == null) _rangeRing = GetComponentInChildren<LineRenderer>();
             if (_vfxRoot == null) _vfxRoot = transform.Find("Vfx");
             if (_vfxRoot == null) _vfxRoot = transform;

@@ -430,6 +430,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 248959e2724312549b3d343823ca68c3, type: 2}
   _radius: {fileID: 186591495379217507}
   _sprite: {fileID: 3248523976150574700}
+  _animator: {fileID: 8346382836894211064}
   _vfxRoot: {fileID: 7758945382478167208}
   _rangeRing: {fileID: 1471491052226310650}
   _drawGizmos: 1
@@ -447,4 +448,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: GabrielBigardi.SpriteAnimator::GabrielBigardi.SpriteAnimator.SpriteAnimator
   _playAutomatically: 0
   _spriteAnimationObject: {fileID: 11400000, guid: c88a6dadd9cd9ce4ca6f5040fcadd1ee, type: 2}
-  _spriteRenderer: {fileID: 0}
+  _spriteRenderer: {fileID: 3248523976150574700}

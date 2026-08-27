@@ -22,7 +22,6 @@ MonoBehaviour:
     FPS: 12
     Frames:
     - {fileID: 21300000, guid: 96fa01d96a009f44c95883fdb947420a, type: 3}
-    - {fileID: 21300000, guid: af45fcb568cfd6a4c80a82a86dd70470, type: 3}
     - {fileID: 21300000, guid: db81d7f6a710b6343a03d163cbb2c339, type: 3}
-    - {fileID: 21300000, guid: 96fa01d96a009f44c95883fdb947420a, type: 3}
-    SpriteAnimationType: 1
+    - {fileID: 21300000, guid: af45fcb568cfd6a4c80a82a86dd70470, type: 3}
+    SpriteAnimationType: 0

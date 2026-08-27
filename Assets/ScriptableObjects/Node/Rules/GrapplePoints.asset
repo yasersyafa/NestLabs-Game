@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GrapplePoints
   m_EditorClassIdentifier: NestLabs.Node::NestLabs.Node.Rules.NodeSpawnRuleSO
   lookaheadDistance: 24
-  spawnYGapMin: 3
+  spawnYGapMin: 4
   spawnYGapMax: 6
   yOffsetRange: {x: -1, y: 1}
   minSpawnSeparation: 0
@@ -21,7 +21,7 @@ MonoBehaviour:
   offscreenMargin: 3
   cullDistanceBelowPlayer: 12
   initialBurstCount: 6
-  initialFillStartOffset: 2
+  initialFillStartOffset: 4
   entries:
   - Prefab: {fileID: 2735869302020331096, guid: b725b1097bb116e43bcfcbaba7c2966d, type: 3}
     Weight: 1

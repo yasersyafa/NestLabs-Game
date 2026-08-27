@@ -4,7 +4,8 @@
     "references": [
         "Nestlabs.Level",
         "VContainer",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "GabrielBigardi.SpriteAnimator"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -7,7 +7,8 @@ namespace NestLabs.Player
     /// <summary>
     /// Tracks which grapple nodes the player is currently inside. Membership is a set, not an
     /// event, so this only listens to Enter and Exit. Unlike <see cref="PlayerHurtbox"/> there is
-    /// no Stay handler, and the cost is one component walk per radius crossing.
+    /// no Stay handler, and the cost is one component walk per radius crossing. Each crossing also
+    /// toggles the node's proximity highlight so it can show a "grab me" cue.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public sealed class PlayerNodeSensor : MonoBehaviour
@@ -34,7 +35,12 @@ namespace NestLabs.Player
         private void OnDisable()
         {
             // Exit callbacks do not fire for a disabled collider, so stale entries would survive
-            // a respawn.
+            // a respawn. Drop each node's proximity cue by hand for the same reason.
+            for (int i = 0; i < _inRange.Count; i++)
+            {
+                if (_inRange[i] != null) _inRange[i].SetHighlighted(false);
+            }
+
             _inRange.Clear();
         }
 
@@ -76,14 +82,15 @@ namespace NestLabs.Player
             if (other.GetComponentInParent<NodeBase>() is NodeBase node && !_inRange.Contains(node))
             {
                 _inRange.Add(node);
+                node.SetHighlighted(true);
             }
         }
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (other.GetComponentInParent<NodeBase>() is NodeBase node)
+            if (other.GetComponentInParent<NodeBase>() is NodeBase node && _inRange.Remove(node))
             {
-                _inRange.Remove(node);
+                node.SetHighlighted(false);
             }
         }
     }
