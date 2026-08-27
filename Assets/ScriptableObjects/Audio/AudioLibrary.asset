@@ -18,6 +18,9 @@ MonoBehaviour:
     Volume: 0
     PitchRange: {x: 0, y: 0}
   MusicEntries:
+  - Id: 1
+    Clip: {fileID: 8300000, guid: f412bf4baf41f4cf3b2dbb8e110d316b, type: 3}
+    Volume: 0.3
   - Id: 0
-    Clip: {fileID: 0}
-    Volume: 0
+    Clip: {fileID: 8300000, guid: f412bf4baf41f4cf3b2dbb8e110d316b, type: 3}
+    Volume: 0.3

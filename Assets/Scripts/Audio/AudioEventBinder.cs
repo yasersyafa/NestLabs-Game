@@ -2,6 +2,7 @@ using System;
 using MessagePipe;
 using NestLabs.Player;
 using NestLabs.Score;
+using NestLabs.Shared.Flow;
 using NestLabs.Shared.Obstacle;
 
 namespace NestLabs.Audio
@@ -17,6 +18,7 @@ namespace NestLabs.Audio
 
         public AudioEventBinder(
             IAudioService audio,
+            ISubscriber<GameStateChangedEvent> gameStateChanged,
             ISubscriber<PlayerJumpedEvent> jumped,
             ISubscriber<PlayerDashedEvent> dashed,
             ISubscriber<PlayerLatchedEvent> latched,
@@ -26,6 +28,23 @@ namespace NestLabs.Audio
             ISubscriber<ObstacleHitEvent> obstacleHit)
         {
             DisposableBagBuilder bag = DisposableBag.CreateBuilder();
+
+            // Music has no dedicated binder like SFX — the flow state drives it. Gameplay music
+            // starts when a run begins and stops back at the menu or on death. Resuming from Pause
+            // is not a fresh start, so it is excluded (PlayMusic would no-op on the same id anyway).
+            gameStateChanged.Subscribe(e =>
+            {
+                switch (e.To)
+                {
+                    case GameState.Play when e.From != GameState.Pause:
+                        audio.PlayMusic(MusicId.Gameplay);
+                        break;
+                    case GameState.Menu:
+                    case GameState.Death:
+                        audio.StopMusic();
+                        break;
+                }
+            }).AddTo(bag);
 
             jumped.Subscribe(_ => audio.PlaySfx(SfxId.Jump)).AddTo(bag);
             dashed.Subscribe(_ => audio.PlaySfx(SfxId.Dash)).AddTo(bag);
