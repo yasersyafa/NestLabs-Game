@@ -48,8 +48,8 @@ namespace Nestlabs.Obstacle
             var line = GetComponent<LineRenderer>();
             line.positionCount = 2;
             line.useWorldSpace = true;
-            line.startWidth = 0.08f;
-            line.endWidth = 0.08f;
+            line.startWidth = 0.17f;
+            line.endWidth = 0.17f;
             line.numCapVertices = 4;
             if (line.sharedMaterial == null)
             {
@@ -99,6 +99,9 @@ namespace Nestlabs.Obstacle
             float rad = _currentAngle * Mathf.Deg2Rad;
             var offset = new Vector3(Mathf.Sin(rad), -Mathf.Cos(rad), 0f) * ropeLength;
             transform.position = _anchorPos + offset;
+            // Tilt the bob so its local down-axis points along the rope (anchor -> bob),
+            // instead of staying upright while it slides along the arc.
+            transform.rotation = Quaternion.Euler(0f, 0f, _currentAngle);
 
             _rope.SetPosition(0, _anchorPos);
             _rope.SetPosition(1, transform.position);
