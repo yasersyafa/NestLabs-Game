@@ -57,6 +57,7 @@ namespace NestLabs
             builder.RegisterComponentInHierarchy<ScoreHud>();
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
             builder.RegisterComponentInHierarchy<LevelGenerator>();
+            builder.RegisterComponentInHierarchy<FogSystem>();
             builder.RegisterComponentInHierarchy<Hitstop>().As<IHitstop>();
 
             builder.Register<IGameStateService, GameStateService>(Lifetime.Singleton);
