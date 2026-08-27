@@ -33,6 +33,7 @@ namespace Nestlabs.Level
 
         private Camera _cam;
         private SpawnRuleContext _ctx;
+        private bool _primed;
         private readonly List<ISpawnRule> _runtimeRules = new();
 
         private void Awake()
@@ -67,15 +68,28 @@ namespace Nestlabs.Level
         {
             if (player == null) return;
 
-            // Death and Pause both leave this Update running, so without this every rule keeps
-            // spawning after the run is over.
-            if (!_gameState.IsPlaying) return;
-
             _ctx.Player = player;
             _ctx.Resolver = _resolver;
             _ctx.RawScreenHalfWidth = (_cam != null && _cam.orthographic)
                 ? _cam.orthographicSize * _cam.aspect
                 : 0f;
+
+            // Fill the opening layout once, before the run starts, so the player can read the
+            // first obstacles/nodes/walls during the ready pose instead of only after the first
+            // input. Resolver may not be assigned on the very first frame - retry until it is.
+            if (!_primed && _resolver != null)
+            {
+                foreach (ISpawnRule rule in _runtimeRules)
+                {
+                    rule.Prime(_ctx);
+                }
+                _primed = true;
+                SyncTransformsIfDirty();
+            }
+
+            // Death and Pause both leave this Update running, so without this every rule keeps
+            // spawning after the run is over.
+            if (!_gameState.IsPlaying) return;
 
             float dt = Time.deltaTime;
             foreach (ISpawnRule rule in _runtimeRules)
@@ -83,8 +97,13 @@ namespace Nestlabs.Level
                 rule.Tick(_ctx, dt);
             }
 
-            // All spawning happens in the loop above, so anything querying physics later in Update
-            // order still sees synced colliders.
+            SyncTransformsIfDirty();
+        }
+
+        // All spawning happens before this, so anything querying physics later in Update order
+        // still sees synced colliders.
+        private void SyncTransformsIfDirty()
+        {
             if (_ctx.TransformsDirty)
             {
                 Physics2D.SyncTransforms();

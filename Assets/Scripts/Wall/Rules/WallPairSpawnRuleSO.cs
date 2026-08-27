@@ -70,20 +70,39 @@ namespace Nestlabs.Wall.Rules
             return box.size.y * Mathf.Abs(wallPrefab.transform.lossyScale.y);
         }
 
+        // Fills the starting wall column before the game is playing, so the corridor is visible
+        // during the ready pose. Tick still refills as the player climbs.
+        public override void Prime(SpawnRuleContext ctx)
+        {
+            if (ctx.Player == null || _hasFilledInitial) return;
+            if (!HasUsableHeight()) return;
+
+            _active.RemoveAll(t => t == null);
+            for (int i = 0; i < initialSegmentCount; i++)
+            {
+                SpawnSegment(ctx);
+            }
+            _hasFilledInitial = true;
+        }
+
+        private bool HasUsableHeight()
+        {
+            if (_segmentHeight > 0f) return true;
+
+            if (!_loggedBadHeight)
+            {
+                Debug.LogError($"[WallPairSpawnRule] Could not resolve segment height from {wallPrefab}. " +
+                               "Needs a root BoxCollider2D or a segmentHeightOverride. Wall spawning disabled.");
+                _loggedBadHeight = true;
+            }
+            return false;
+        }
+
         public override void Tick(SpawnRuleContext ctx, float deltaTime)
         {
             if (ctx.Player == null) return;
 
-            if (_segmentHeight <= 0f)
-            {
-                if (!_loggedBadHeight)
-                {
-                    Debug.LogError($"[WallPairSpawnRule] Could not resolve segment height from {wallPrefab}. " +
-                                   "Needs a root BoxCollider2D or a segmentHeightOverride. Wall spawning disabled.");
-                    _loggedBadHeight = true;
-                }
-                return;
-            }
+            if (!HasUsableHeight()) return;
 
             _active.RemoveAll(t => t == null);
 

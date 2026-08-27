@@ -70,6 +70,26 @@ namespace Nestlabs.Level.Rules
             return Mathf.Max(lookaheadDistance, viewTopAbovePlayer + offscreenMargin);
         }
 
+        // Runs the initial burst before the game is playing, so the opening obstacles/nodes are
+        // visible during the ready pose instead of only after the first input. Tick's own burst
+        // block is the fallback if this was never called; the _hasBurstFilled guard stops a double.
+        public override void Prime(SpawnRuleContext ctx)
+        {
+            if (ctx.Player == null || _hasBurstFilled) return;
+
+            _active.RemoveAll(t => t == null);
+            FillInitialBurst(ctx);
+        }
+
+        private void FillInitialBurst(SpawnRuleContext ctx)
+        {
+            for (int i = 0; i < Mathf.Max(1, initialBurstCount); i++)
+            {
+                FireOnce(ctx);
+            }
+            _hasBurstFilled = true;
+        }
+
         public override void Tick(SpawnRuleContext ctx, float deltaTime)
         {
             if (ctx.Player == null) return;
@@ -78,11 +98,7 @@ namespace Nestlabs.Level.Rules
 
             if (!_hasBurstFilled)
             {
-                for (int i = 0; i < Mathf.Max(1, initialBurstCount); i++)
-                {
-                    FireOnce(ctx);
-                }
-                _hasBurstFilled = true;
+                FillInitialBurst(ctx);
             }
             else
             {

@@ -17,7 +17,7 @@ MonoBehaviour:
   spawnYGapMax: 6
   yOffsetRange: {x: -1, y: 1}
   minSpawnSeparation: 0
-  keepSpawnsOffscreen: 1
+  keepSpawnsOffscreen: 0
   offscreenMargin: 3
   cullDistanceBelowPlayer: 12
   initialBurstCount: 6
