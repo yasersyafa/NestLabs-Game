@@ -13,6 +13,10 @@ namespace Nestlabs.Obstacle
         [SerializeField] private float warningDuration = 1f;
         [SerializeField] private float warningEdgeMargin = 60f;
 
+        [Header("Facing")]
+        [Tooltip("The rest sprite is drawn facing left (travelling -X). Enable if the art faces right instead.")]
+        [SerializeField] private bool spriteFacesRight;
+
         private Collider2D col;
         private SpriteRenderer sprite;
         private Sequence sequence;
@@ -33,7 +37,8 @@ namespace Nestlabs.Obstacle
         private void Awake()
         {
             col = GetComponent<Collider2D>();
-            sprite = GetComponent<SpriteRenderer>();
+            // The sprite lives on a child ("Square"), not the root the script sits on.
+            sprite = GetComponentInChildren<SpriteRenderer>(true);
         }
 
         // Pooled instances never get Start() called again on reactivation, so the pool calls
@@ -43,6 +48,15 @@ namespace Nestlabs.Obstacle
             this.releaseSelf = releaseSelf;
 
             transform.position = startPos;
+
+            // Mirror the sprite so it points along its travel direction. Re-applied every spawn
+            // because a pooled instance keeps the previous run's flip.
+            if (sprite != null)
+            {
+                bool movingRight = endPos.x > startPos.x;
+                sprite.flipX = movingRight != spriteFacesRight;
+            }
+
             SetProjectileVisible(false);
 
             sequence = DOTween.Sequence()

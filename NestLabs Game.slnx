@@ -9,6 +9,7 @@
   <Project Path="NestLabs.Tests.EditMode.csproj" />
   <Project Path="NestLabs.Node.csproj" />
   <Project Path="Nestlabs.Environment.csproj" />
+  <Project Path="NestLabs.EditorTools.csproj" />
   <Project Path="Nestlabs.Wall.csproj" />
   <Project Path="NestLabs.Tests.PlayMode.csproj" />
 </Solution>
