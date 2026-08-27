@@ -12,9 +12,16 @@ namespace Nestlabs.Obstacle
         [Tooltip("Seconds for one full spin while travelling. 0 disables the spin.")]
         [SerializeField] private float spinDuration = 1.5f;
 
+        [Header("Endpoint markers")]
+        [Tooltip("Sprite pinned to travel point 1. Child of this prefab, held at the world endpoint while the body moves/spins.")]
+        [SerializeField] private Transform startMarker;
+        [Tooltip("Sprite pinned to travel point 2.")]
+        [SerializeField] private Transform endMarker;
+
         private Vector3 startPos;
         private Vector3 endPos;
         private LineRenderer pathLine;
+        private bool running;
 
         private void Awake()
         {
@@ -43,6 +50,9 @@ namespace Nestlabs.Obstacle
             pathLine.SetPosition(0, startPos);
             pathLine.SetPosition(1, endPos);
 
+            running = true;
+            PinMarkers();
+
             transform.DOMove(endPos, duration)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo);
@@ -57,7 +67,29 @@ namespace Nestlabs.Obstacle
 
         public void OnDespawned()
         {
+            running = false;
             transform.DOKill();
+        }
+
+        // Endpoints are fixed world points, but the markers are children of a body that moves and
+        // spins - re-pin them in world space every frame so they hold at point 1 / point 2.
+        private void LateUpdate()
+        {
+            if (running) PinMarkers();
+        }
+
+        private void PinMarkers()
+        {
+            if (startMarker != null)
+            {
+                startMarker.position = startPos;
+                startMarker.rotation = Quaternion.identity;
+            }
+            if (endMarker != null)
+            {
+                endMarker.position = endPos;
+                endMarker.rotation = Quaternion.identity;
+            }
         }
 
         private void OnDestroy()

@@ -261,12 +261,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77754b1e69236480d92164b65f9c50c1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Nestlabs.Obstacle::Nestlabs.Obstacle.SwingObstacle
   ropeLength: 2
   maxAngle: 60
   swingPeriod: 2
   swingEase: 4
+  anchorMarker: {fileID: 349886628437631734}
 --- !u!114 &62102186209148952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,12 +294,12 @@ GameObject:
   - component: {fileID: 349886628437631734}
   - component: {fileID: 8122914191537495339}
   m_Layer: 7
-  m_Name: Sprite
+  m_Name: AnchorMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &349886628437631734
 Transform:
   m_ObjectHideFlags: 0
@@ -309,7 +310,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.45, y: 0.45, z: 0.45}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6664505863046937385}
@@ -361,14 +362,14 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: d052f8bbb95ef3547947879dffe9e64e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 518ae382058fc6c4bab578ad31c7e345, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.671875, y: 1.015625}
+  m_Size: {x: 0.81, y: 0.88}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

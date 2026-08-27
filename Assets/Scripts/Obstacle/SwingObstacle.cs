@@ -23,6 +23,9 @@ namespace Nestlabs.Obstacle
         [SerializeField] private float swingPeriod = 2f;
         [SerializeField] private Ease swingEase = Ease.InOutSine;
 
+        [Tooltip("Sprite pinned to the fixed anchor point. Child of this prefab, held at the anchor while the bob swings.")]
+        [SerializeField] private Transform anchorMarker;
+
         // Exposed so the spawner can read the prefab's own tuning (rope length, max angle) to
         // keep the anchor clear of the screen edge, instead of duplicating these numbers on the
         // spawner too.
@@ -105,6 +108,13 @@ namespace Nestlabs.Obstacle
 
             _rope.SetPosition(0, _anchorPos);
             _rope.SetPosition(1, transform.position);
+
+            // Marker is a child of the swinging body - re-pin it to the fixed anchor in world space.
+            if (anchorMarker != null)
+            {
+                anchorMarker.position = _anchorPos;
+                anchorMarker.rotation = Quaternion.identity;
+            }
         }
 
         private void OnDestroy()
