@@ -49,6 +49,7 @@ namespace NestLabs
             if (!RegisterRequired(builder, _playerConfig, nameof(_playerConfig))) return;
             if (!RegisterRequired(builder, _audioLibrary, nameof(_audioLibrary))) return;
             builder.Register<IAudioMuteStore, PlayerPrefsAudioMuteStore>(Lifetime.Singleton);
+            builder.Register<IScoreStore, PlayerPrefsScoreStore>(Lifetime.Singleton);
 
             builder.RegisterComponentInHierarchy<PlayerBase>();
             builder.RegisterComponentInHierarchy<PlayerDebugHud>();

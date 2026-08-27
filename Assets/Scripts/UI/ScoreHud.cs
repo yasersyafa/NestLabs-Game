@@ -30,7 +30,11 @@ namespace NestLabs.UI
             ISubscriber<ScoreFinalizedEvent> scoreFinalized)
         {
             DisposableBagBuilder bag = DisposableBag.CreateBuilder();
-            scoreChanged.Subscribe(e => SetScore(e.CurrentScore)).AddTo(bag);
+            scoreChanged.Subscribe(e =>
+            {
+                SetScore(e.CurrentScore);
+                SetBest(e.BestScore);
+            }).AddTo(bag);
             scoreFinalized.Subscribe(e => SetFinal(e.FinalScore, e.BestScore)).AddTo(bag);
             subscriptions = bag.Build();
         }
@@ -38,6 +42,7 @@ namespace NestLabs.UI
         private void Awake()
         {
             SetScore(0);
+            SetBest(0);
         }
 
         private void OnDestroy()
@@ -50,10 +55,15 @@ namespace NestLabs.UI
             if (scoreText != null) scoreText.text = string.Format(scoreFormat, current);
         }
 
+        private void SetBest(int best)
+        {
+            if (bestScoreText != null) bestScoreText.text = string.Format(bestScoreFormat, best);
+        }
+
         private void SetFinal(int final, int best)
         {
             SetScore(final);
-            if (bestScoreText != null) bestScoreText.text = string.Format(bestScoreFormat, best);
+            SetBest(best);
         }
     }
 }

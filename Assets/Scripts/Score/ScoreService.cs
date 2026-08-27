@@ -20,6 +20,7 @@ namespace NestLabs.Score
         [SerializeField] private bool verboseLogging;
 
         private readonly ScoreData data = new();
+        private IScoreStore scoreStore;
         private IPublisher<ScoreChangedEvent> scoreChangedPublisher;
         private IPublisher<ScoreFinalizedEvent> scoreFinalizedPublisher;
         private IDisposable subscriptions;
@@ -35,22 +36,35 @@ namespace NestLabs.Score
         [Inject]
         public void Construct(
             IGameStateService gameState,
+            IScoreStore scoreStore,
             ISubscriber<PlayerDiedEvent> died,
             ISubscriber<GameStateChangedEvent> gameStateChanged,
             IPublisher<ScoreChangedEvent> scoreChanged,
             IPublisher<ScoreFinalizedEvent> scoreFinalized)
         {
+            this.scoreStore = scoreStore;
             scoreChangedPublisher = scoreChanged;
             scoreFinalizedPublisher = scoreFinalized;
+
+            data.BestScore = scoreStore.LoadBestScore();
 
             DisposableBagBuilder bag = DisposableBag.CreateBuilder();
             died.Subscribe(_ => FinalizeRun()).AddTo(bag);
             gameStateChanged.Subscribe(HandleGameStateChanged).AddTo(bag);
             subscriptions = bag.Build();
 
-            // GameStateService starts life already in Play (no menu flow yet), so no
-            // GameStateChangedEvent will ever fire for that first run. Pick it up directly.
+            // Normally the run starts on the first tap (Menu -> Play fires GameStateChangedEvent,
+            // handled below). This only covers a scope that is already in Play at container build.
             if (gameState.IsPlaying) ResetRun();
+        }
+
+        // All [Inject] Construct calls (including ScoreHud's) run during container build,
+        // before any Start. Publishing here - not in Construct - guarantees the HUD has
+        // already subscribed, so the opening best-score snapshot is not lost to the
+        // non-buffered broker.
+        private void Start()
+        {
+            scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore, data.BestScore));
         }
 
         private void OnDestroy()
@@ -99,7 +113,7 @@ namespace NestLabs.Score
             runActive = true;
             baselineSet = false;
             data.CurrentScore = 0;
-            scoreChangedPublisher?.Publish(new ScoreChangedEvent(0));
+            scoreChangedPublisher?.Publish(new ScoreChangedEvent(0, data.BestScore));
 
             #if UNITY_EDITOR
             if (verboseLogging) Debug.Log($"[ScoreService] ResetRun -> CurrentScore=0, BestScore= {data.BestScore}");
@@ -111,7 +125,7 @@ namespace NestLabs.Score
             if (points == 0 || !runActive) return;
             data.CurrentScore += points;
             if (data.CurrentScore > data.BestScore) data.BestScore = data.CurrentScore;
-            scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore));
+            scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore, data.BestScore));
 
             #if UNITY_EDITOR
             if (verboseLogging) Debug.Log($"[ScoreService] AddBonusPoints({points}) -> CurrentScore={data.CurrentScore}, BestScore={data.BestScore}");
@@ -123,7 +137,7 @@ namespace NestLabs.Score
             float climbed = Mathf.Max(0f, highestY - baselineY);
             data.CurrentScore = Mathf.RoundToInt(climbed * pointsPerUnit);
             if (data.CurrentScore > data.BestScore) data.BestScore = data.CurrentScore;
-            scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore));
+            scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore, data.BestScore));
 
             #if UNITY_EDITOR
             if (verboseLogging) Debug.Log($"[ScoreService] RecomputeScore -> baselineY={baselineY:F2}, highestY={highestY:F2}, climbed={climbed:F2}, CurrentScore={data.CurrentScore}, BestScore={data.BestScore}");
@@ -133,6 +147,7 @@ namespace NestLabs.Score
         private void FinalizeRun()
         {
             runActive = false;
+            scoreStore?.SaveBestScore(data.BestScore);
             scoreFinalizedPublisher?.Publish(new ScoreFinalizedEvent(data.CurrentScore, data.BestScore));
 
             #if UNITY_EDITOR
