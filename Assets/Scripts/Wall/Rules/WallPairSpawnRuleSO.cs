@@ -31,9 +31,6 @@ namespace Nestlabs.Wall.Rules
         [Tooltip("Hard ceiling on segments spawned in one frame. Guards against bad height data.")]
         [SerializeField] private int maxSegmentsPerFrame = 8;
 
-        [Header("Despawn")]
-        [Tooltip("Destroy a segment once the player has climbed this far above it.")]
-        [SerializeField] private float cullDistanceBelowPlayer = 12f;
 
         private float _segmentHeight;
         private float _nextSegmentY;
@@ -140,11 +137,12 @@ namespace Nestlabs.Wall.Rules
 
             // Measured from the segment's top edge, not its center - a segment is taller than the
             // camera is, so culling on center distance recycles walls while they are still on screen.
+            // Against the cull floor this reads as "recycle once the whole segment is submerged".
             float halfSegment = _segmentHeight * 0.5f;
             for (int i = _active.Count - 1; i >= 0; i--)
             {
                 Transform segment = _active[i];
-                if (ctx.Player.position.y - (segment.position.y + halfSegment) > cullDistanceBelowPlayer)
+                if (segment.position.y + halfSegment < ctx.CullFloorY)
                 {
                     ctx.Despawn(segment);
                     _active.RemoveAt(i);
