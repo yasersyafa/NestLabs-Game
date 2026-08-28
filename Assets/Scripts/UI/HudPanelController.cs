@@ -32,6 +32,11 @@ namespace NestLabs.UI
         [SerializeField] private Button retryButton;
         [SerializeField] private Button homeButton;
 
+        [Header("Hover")]
+        [Tooltip("NestLabs/UI/Invert material. Cloned per button by ButtonHoverInvert.")]
+        [SerializeField] private Material buttonInvertMaterial;
+        [SerializeField] private float hoverFadeDuration = 0.1f;
+
         private IGameStateService gameState = NullGameStateService.Instance;
         private IPlayerInput input;
         private IDisposable subscriptions;
@@ -63,6 +68,14 @@ namespace NestLabs.UI
             AddListener(creditsExitButton, () => SetCreditsOpen(false));
             AddListener(retryButton, ReloadScene);
             AddListener(homeButton, ReloadScene);
+
+            EnsureHover(pauseButton);
+            EnsureHover(resumeButton);
+            EnsureHover(pauseExitButton);
+            EnsureHover(creditButton);
+            EnsureHover(creditsExitButton);
+            EnsureHover(retryButton);
+            EnsureHover(homeButton);
 
             // The broker is not buffered, so the state that was set before this component woke up
             // never arrives as an event. Read it directly for the opening layout.
@@ -126,6 +139,20 @@ namespace NestLabs.UI
         private static void ReloadScene()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        // Attached at runtime, not baked into the panel prefabs, so the panels stay script-free
+        // and the hover effect is opt-in with a single serialized material reference.
+        private void EnsureHover(Button button)
+        {
+            if (button == null || buttonInvertMaterial == null) return;
+            if (button.TryGetComponent<ButtonHoverInvert>(out _)) return;
+
+            ButtonHoverInvert hover = button.gameObject.AddComponent<ButtonHoverInvert>();
+            hover.Configure(buttonInvertMaterial, hoverFadeDuration);
+
+            // The invert replaces the near-invisible grey ColorTint highlight entirely.
+            button.transition = Selectable.Transition.None;
         }
 
         private static void AddListener(Button button, UnityEngine.Events.UnityAction action)

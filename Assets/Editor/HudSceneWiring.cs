@@ -81,6 +81,12 @@ namespace NestLabs.EditorTools
                     return false;
                 }
 
+                const string InvertMatPath = "Assets/Art/Materials/UIInvert.mat";
+                var invertMat = AssetDatabase.LoadAssetAtPath<Material>(InvertMatPath);
+                so.FindProperty("buttonInvertMaterial").objectReferenceValue = invertMat;
+                if (invertMat == null)
+                    Debug.LogWarning($"[HudSceneWiring] '{InvertMatPath}' not found; hover invert left unwired.");
+
                 so.ApplyModifiedPropertiesWithoutUndo();
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
                 Debug.Log($"[HudSceneWiring] Wired HudPanelController on '{PrefabPath}'.");
