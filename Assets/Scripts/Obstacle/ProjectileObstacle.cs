@@ -13,6 +13,12 @@ namespace Nestlabs.Obstacle
         [SerializeField] private float warningDuration = 1f;
         [SerializeField] private float warningEdgeMargin = 60f;
 
+        [Header("Warning Blink")]
+        [Tooltip("Blink rate (full off-on cycles per second) at the start of the warning.")]
+        [SerializeField] private float warningBlinkStartHz = 2f;
+        [Tooltip("Blink rate right before the projectile fires. Higher = more frantic.")]
+        [SerializeField] private float warningBlinkEndHz = 12f;
+
         [Header("Facing")]
         [Tooltip("The rest sprite is drawn facing left (travelling -X). Enable if the art faces right instead.")]
         [SerializeField] private bool spriteFacesRight;
@@ -25,6 +31,10 @@ namespace Nestlabs.Obstacle
         private Vector3 endPos;
         private RectTransform warningUI;
         private Action releaseSelf;
+
+        // Accumulated blink phase (whole numbers = one off-on cycle). Integrated from a ramping
+        // frequency so the icon speeds up smoothly instead of jumping rate mid-cycle.
+        private float blinkPhase;
 
         // Called by a spawner right after Instantiate to drive this instance at runtime.
         public void Configure(Vector3 start, Vector3 end, RectTransform warningIcon)
@@ -58,10 +68,11 @@ namespace Nestlabs.Obstacle
             }
 
             SetProjectileVisible(false);
+            blinkPhase = 0f;
 
             sequence = DOTween.Sequence()
                 .AppendCallback(ShowWarning)
-                .AppendInterval(warningDuration)
+                .Append(DOVirtual.Float(0f, 1f, warningDuration, BlinkTick).SetEase(Ease.Linear))
                 .AppendCallback(Fire)
                 .Append(transform.DOMove(endPos, moveDuration).SetEase(Ease.Linear))
                 .AppendCallback(() => this.releaseSelf?.Invoke());
@@ -83,6 +94,24 @@ namespace Nestlabs.Obstacle
             if (warningUI == null) return;
             PositionWarningUI(warningUI);
             warningUI.gameObject.SetActive(true);
+        }
+
+        // Driven every frame across warningDuration by the DOTween sequence. progress goes 0 -> 1;
+        // blink frequency ramps from start to end Hz over that span, so the icon flashes faster the
+        // closer the projectile is to firing. Fire() then hides it for good.
+        private void BlinkTick(float progress)
+        {
+            if (warningUI == null) return;
+
+            float freqHz = Mathf.Lerp(warningBlinkStartHz, warningBlinkEndHz, progress);
+            blinkPhase += freqHz * Time.deltaTime;
+
+            bool on = blinkPhase - Mathf.Floor(blinkPhase) < 0.5f;
+            if (warningUI.gameObject.activeSelf != on)
+            {
+                warningUI.gameObject.SetActive(on);
+                if (on) PositionWarningUI(warningUI);
+            }
         }
 
         // The camera keeps tracking the player while the warning is up (SimpleCameraFollow runs
