@@ -4,7 +4,8 @@
     "references": [
         "NestLabs.Runtime",
         "Nestlabs.Obstacle",
-        "Nestlabs.Level"
+        "Nestlabs.Level",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [
         "Editor"
