@@ -8,6 +8,7 @@
         "UniTask",
         "Unity.InputSystem",
         "Unity.TextMeshPro",
+        "UnityEngine.UI",
         "GabrielBigardi.SpriteAnimator",
         "DOTween.Modules",
         "NestLabs.Shared",

@@ -55,6 +55,13 @@ namespace NestLabs
             builder.RegisterComponentInHierarchy<PlayerDebugHud>();
             builder.RegisterComponentInHierarchy<ScoreService>();
             builder.RegisterComponentInHierarchy<ScoreHud>();
+            // Only dev-awe carries the HUD prefab; YaserScene and the other rigs are gameplay-only.
+            // RegisterComponentInHierarchy throws when its target is missing, so registering
+            // unconditionally would break the container in every scene without the overlay.
+            if (ExistsInScene<HudPanelController>())
+            {
+                builder.RegisterComponentInHierarchy<HudPanelController>();
+            }
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
             builder.RegisterComponentInHierarchy<LevelGenerator>();
             builder.RegisterComponentInHierarchy<FogSystem>();
@@ -72,6 +79,20 @@ namespace NestLabs
                 resolver.Resolve<AudioEventBinder>();
                 resolver.Resolve<IGameStateService>();
             });
+        }
+
+        /// <summary>
+        /// Mirrors how VContainer resolves <c>RegisterComponentInHierarchy</c>: same scene, and
+        /// inactive objects included. Used to skip a registration whose target this scene lacks.
+        /// </summary>
+        private bool ExistsInScene<T>() where T : Component
+        {
+            foreach (GameObject root in gameObject.scene.GetRootGameObjects())
+            {
+                if (root.GetComponentInChildren<T>(true) != null) return true;
+            }
+
+            return false;
         }
 
         private bool RegisterRequired<T>(IContainerBuilder builder, T asset, string field) where T : class
