@@ -3,6 +3,7 @@ using MessagePipe;
 using NestLabs.Player;
 using NestLabs.Shared.Combat;
 using NestLabs.Shared.Flow;
+using NestLabs.Shared.Hazards;
 using UnityEngine;
 using VContainer;
 
@@ -15,7 +16,7 @@ namespace NestLabs
     /// with no player-side change. PlayerHurtbox never learns this concrete type.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public sealed class FogSystem : MonoBehaviour, IDamageSource
+    public sealed class FogSystem : MonoBehaviour, IDamageSource, IHazardLine
     {
         [Header("Tuning")]
         [Tooltip("World units per second the fog line climbs while the run is active.")]
@@ -30,11 +31,22 @@ namespace NestLabs
         private IGameStateService _gameState = NullGameStateService.Instance;
         private PlayerBase _player;
         private IDisposable _subscription;
+        private Collider2D _collider;
         private bool _active;
 
         public int Damage => _damage;
 
         public Vector2 Position => transform.position;
+
+        public bool IsActive => _active;
+
+        /// <summary>
+        /// Top of the lethal volume, which sits several units above <see cref="Position"/> because
+        /// the collider is a very tall box offset well below the origin. Read from bounds rather
+        /// than the transform so retuning the collider or scaling the prefab stays correct, and so
+        /// nobody substitutes <see cref="Position"/> here and culls the level too low.
+        /// </summary>
+        public float LethalY => _collider != null ? _collider.bounds.max.y : transform.position.y;
 
         /// <summary>
         /// VContainer method injection. Ordering against this component's own Awake is not
@@ -50,6 +62,11 @@ namespace NestLabs
             _gameState = gameState ?? NullGameStateService.Instance;
             _player = player;
             _subscription = stateChanged.Subscribe(OnGameStateChanged);
+        }
+
+        private void Awake()
+        {
+            _collider = GetComponent<Collider2D>();
         }
 
         private void Reset()

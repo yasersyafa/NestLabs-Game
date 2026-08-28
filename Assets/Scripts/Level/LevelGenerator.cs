@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Nestlabs.Level.Rules;
 using NestLabs.Shared.Flow;
+using NestLabs.Shared.Hazards;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -16,12 +17,15 @@ namespace Nestlabs.Level
     {
         private IObjectResolver _resolver;
         private IGameStateService _gameState = NullGameStateService.Instance;
+        private IHazardLine _hazard = NullHazardLine.Instance;
 
         [Inject]
-        public void Construct(IObjectResolver resolver, IGameStateService gameState)
+        public void Construct(
+            IObjectResolver resolver, IGameStateService gameState, IHazardLine hazard)
         {
             _resolver = resolver;
             _gameState = gameState ?? NullGameStateService.Instance;
+            _hazard = hazard ?? NullHazardLine.Instance;
         }
 
         [Header("References")]
@@ -30,6 +34,10 @@ namespace Nestlabs.Level
 
         [Header("Rules")]
         [SerializeField] private List<SpawnRuleSO> rules = new();
+
+        [Header("Culling")]
+        [Tooltip("Cull distance below the player used only in scenes with no hazard line (no fog).")]
+        [SerializeField] private float fallbackCullDistanceBelowPlayer = 12f;
 
         private Camera _cam;
         private SpawnRuleContext _ctx;
@@ -73,6 +81,13 @@ namespace Nestlabs.Level
             _ctx.RawScreenHalfWidth = (_cam != null && _cam.orthographic)
                 ? _cam.orthographicSize * _cam.aspect
                 : 0f;
+
+            // Content is recycled only once the fog has swallowed it, never because the player
+            // climbed past it - otherwise falling drops the player into a shaft with no walls or
+            // nodes left to recover on. Scenes with no fog keep the old player-relative distance.
+            _ctx.CullFloorY = _hazard.IsActive
+                ? _hazard.LethalY
+                : player.position.y - fallbackCullDistanceBelowPlayer;
 
             // Fill the opening layout once, before the run starts, so the player can read the
             // first obstacles/nodes/walls during the ready pose instead of only after the first

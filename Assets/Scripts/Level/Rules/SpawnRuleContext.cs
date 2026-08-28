@@ -22,6 +22,12 @@ namespace Nestlabs.Level.Rules
         public RectTransform UiCanvas;
         public float RawScreenHalfWidth;
 
+        // World Y below which content can never be reached again, so recycling it is safe. Tracks
+        // the rising hazard line, and falls back to a player-relative distance in scenes with no
+        // hazard. Culling against this instead of the player's live Y is what lets a falling player
+        // land back on walls and nodes they already passed.
+        public float CullFloorY = float.NegativeInfinity;
+
         // Set whenever a Spawn/Despawn moves or toggles a collider. LevelGenerator flushes it with
         // a single Physics2D.SyncTransforms after all rules tick - the sync cost scales with total
         // collider count, so one per frame beats one per spawned instance.

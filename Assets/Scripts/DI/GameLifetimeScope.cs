@@ -4,6 +4,7 @@ using NestLabs.Audio;
 using NestLabs.Player;
 using NestLabs.Score;
 using NestLabs.Shared.Flow;
+using NestLabs.Shared.Hazards;
 using NestLabs.UI;
 using NestLabs.Shared.Obstacle;
 using UnityEngine;
@@ -64,7 +65,18 @@ namespace NestLabs
             }
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
             builder.RegisterComponentInHierarchy<LevelGenerator>();
-            builder.RegisterComponentInHierarchy<FogSystem>();
+            // Same guard as the HUD: only test-merge carries a fog prefab, so registering it
+            // unconditionally throws in every other scene. LevelGenerator still needs an
+            // IHazardLine either way, and the null one makes it fall back to player-relative
+            // culling. AsSelf keeps the concrete registration that force-resolves Construct.
+            if (ExistsInScene<FogSystem>())
+            {
+                builder.RegisterComponentInHierarchy<FogSystem>().AsSelf().As<IHazardLine>();
+            }
+            else
+            {
+                builder.RegisterInstance<IHazardLine>(NullHazardLine.Instance);
+            }
             builder.RegisterComponentInHierarchy<Hitstop>().As<IHitstop>();
 
             builder.Register<IGameStateService, GameStateService>(Lifetime.Singleton);

@@ -24,10 +24,6 @@ namespace Nestlabs.Level.Rules
         [SerializeField] private bool keepSpawnsOffscreen = false;
         [SerializeField] private float offscreenMargin = 2f;
 
-        [Header("Despawn")]
-        [Tooltip("Destroy the obstacle once the player has climbed this far above it.")]
-        [SerializeField] private float cullDistanceBelowPlayer = 12f;
-
         [Header("Initial Fill")]
         [Tooltip("How many times to fire immediately when the level starts (e.g. so a few are already visible), before settling into the normal gap-based cadence. 1 = old behavior (just the first one fires right away).")]
         [SerializeField] private int initialBurstCount = 1;
@@ -155,7 +151,7 @@ namespace Nestlabs.Level.Rules
             for (int i = _active.Count - 1; i >= 0; i--)
             {
                 Transform obstacle = _active[i];
-                if (ctx.Player.position.y - obstacle.position.y > cullDistanceBelowPlayer)
+                if (obstacle.position.y < ctx.CullFloorY)
                 {
                     ctx.Despawn(obstacle);
                     _active.RemoveAt(i);
