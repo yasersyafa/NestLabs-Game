@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace NestLabs.EditorTools
 {
@@ -35,6 +36,12 @@ namespace NestLabs.EditorTools
                 cam.transform.position = new Vector3(0f, 0f, -10f);
             }
 
+            // Screen-space canvas so the projectile warning icon has somewhere to live, the same
+            // way ctx.UiCanvas does in the real spawn rule.
+            var canvasGo = new GameObject("UI Canvas",
+                typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            canvasGo.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+
             var go = new GameObject("ObstacleDebug");
             ObstacleDebugSpawner spawner = go.AddComponent<ObstacleDebugSpawner>();
 
@@ -43,6 +50,8 @@ namespace NestLabs.EditorTools
             Assign(so, "_loopingPrefab", Load<MovingObstacle>("LoopingObstacle.prefab"));
             Assign(so, "_projectilePrefab", Load<ProjectileObstacle>("ProjectileObstacle.prefab"));
             Assign(so, "_idlePrefab", Load<IdleObstacle>("IdleObstacle.prefab"));
+            Assign(so, "_warningCanvas", canvasGo.GetComponent<RectTransform>());
+            Assign(so, "_warningIconPrefab", Load<RectTransform>("WarningIcon.prefab"));
             so.ApplyModifiedPropertiesWithoutUndo();
 
             EditorSceneManager.MarkSceneDirty(scene);

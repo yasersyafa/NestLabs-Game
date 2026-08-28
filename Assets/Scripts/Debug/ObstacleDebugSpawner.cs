@@ -26,6 +26,11 @@ namespace NestLabs
         [SerializeField] private ProjectileObstacle _projectilePrefab;
         [SerializeField] private IdleObstacle _idlePrefab;
 
+        [Header("Warning UI")]
+        [Tooltip("Screen-space canvas the warning icon is parented to. Mirrors ctx.UiCanvas in the real spawn rule.")]
+        [SerializeField] private RectTransform _warningCanvas;
+        [SerializeField] private RectTransform _warningIconPrefab;
+
         [Header("Placement (world units, around origin)")]
         [Tooltip("Swing anchor height above origin.")]
         [SerializeField] private float _swingAnchorY = 4f;
@@ -89,8 +94,17 @@ namespace NestLabs
             var start = new Vector3(startX, 0f, 0f);
             var end = new Vector3(-startX, 0f, 0f);
 
+            // Same wiring the real ProjectileSpawnRuleSO does: instantiate the icon into the UI
+            // canvas, hidden, and hand it to the obstacle which drives its show/position/destroy.
+            RectTransform warningIcon = null;
+            if (_warningIconPrefab != null && _warningCanvas != null)
+            {
+                warningIcon = Instantiate(_warningIconPrefab, _warningCanvas);
+                warningIcon.gameObject.SetActive(false);
+            }
+
             ProjectileObstacle instance = Instantiate(_projectilePrefab, start, Quaternion.identity);
-            instance.Configure(start, end, null);
+            instance.Configure(start, end, warningIcon);
             GameObject go = instance.gameObject;
             (instance as IPoolable)?.OnSpawned(() =>
             {
