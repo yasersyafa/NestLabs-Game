@@ -601,6 +601,7 @@ GameObject:
   - component: {fileID: 6869356277380614783}
   - component: {fileID: 596978238743624757}
   - component: {fileID: 1000000000000000001}
+  - component: {fileID: 7658779540246095094}
   m_Layer: 5
   m_Name: ButtonRetry
   m_TagString: Untagged
@@ -710,6 +711,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7658779540246095094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5856237975507907236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d340f24ee0406cbac30ad2caf648a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ButtonHoverInvert
+  invertTemplate: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
+  fadeDuration: 0.1
 --- !u!1 &5928768417203830944
 GameObject:
   m_ObjectHideFlags: 0
@@ -935,6 +950,7 @@ GameObject:
   - component: {fileID: 2916184454526715368}
   - component: {fileID: 4157986703397345041}
   - component: {fileID: 1000000000000000002}
+  - component: {fileID: 5230757527352580713}
   m_Layer: 5
   m_Name: ButtonHome
   m_TagString: Untagged
@@ -1044,6 +1060,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5230757527352580713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7211069302037032429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d340f24ee0406cbac30ad2caf648a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ButtonHoverInvert
+  invertTemplate: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
+  fadeDuration: 0.1
 --- !u!1 &7635699554564618380
 GameObject:
   m_ObjectHideFlags: 0

@@ -426,6 +426,7 @@ GameObject:
   - component: {fileID: 7037961476853461071}
   - component: {fileID: 6844301765248021633}
   - component: {fileID: 1000000000000000003}
+  - component: {fileID: 6367569983726238903}
   m_Layer: 5
   m_Name: ExitButton
   m_TagString: Untagged
@@ -535,6 +536,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6367569983726238903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3624559274623144749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d340f24ee0406cbac30ad2caf648a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ButtonHoverInvert
+  invertTemplate: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
+  fadeDuration: 0.1
 --- !u!1 &4318082540923604382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1025,6 +1040,7 @@ GameObject:
   - component: {fileID: 2916184454526715368}
   - component: {fileID: 4157986703397345041}
   - component: {fileID: 1000000000000000001}
+  - component: {fileID: 1715172039488697695}
   m_Layer: 5
   m_Name: ButtonResume
   m_TagString: Untagged
@@ -1134,6 +1150,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1715172039488697695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7211069302037032429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d340f24ee0406cbac30ad2caf648a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ButtonHoverInvert
+  invertTemplate: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
+  fadeDuration: 0.1
 --- !u!1 &7286618076544555297
 GameObject:
   m_ObjectHideFlags: 0
@@ -1145,6 +1175,8 @@ GameObject:
   - component: {fileID: 9130461625776214070}
   - component: {fileID: 3467255275006936254}
   - component: {fileID: 3842850765904281941}
+  - component: {fileID: 6007135402300578681}
+  - component: {fileID: 787163241140467696}
   m_Layer: 5
   m_Name: MusicButton
   m_TagString: Untagged
@@ -1210,6 +1242,64 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6007135402300578681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7286618076544555297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 3842850765904281941}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &787163241140467696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7286618076544555297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d340f24ee0406cbac30ad2caf648a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ButtonHoverInvert
+  invertTemplate: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
+  fadeDuration: 0.1
 --- !u!1 &7635699554564618380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,6 +1347,8 @@ GameObject:
   - component: {fileID: 4628655292836296724}
   - component: {fileID: 3415625170803738621}
   - component: {fileID: 6770703058641297597}
+  - component: {fileID: 6941374750039048457}
+  - component: {fileID: 5602361188876852309}
   m_Layer: 5
   m_Name: SfxButton
   m_TagString: Untagged
@@ -1322,6 +1414,64 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6941374750039048457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8887914519121976084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 6770703058641297597}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5602361188876852309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8887914519121976084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d340f24ee0406cbac30ad2caf648a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ButtonHoverInvert
+  invertTemplate: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
+  fadeDuration: 0.1
 --- !u!1 &9177170384935542744
 GameObject:
   m_ObjectHideFlags: 0
@@ -1334,6 +1484,7 @@ GameObject:
   - component: {fileID: 5834098777467050932}
   - component: {fileID: 6031214111936458707}
   - component: {fileID: 1000000000000000002}
+  - component: {fileID: 2774593536476645092}
   m_Layer: 5
   m_Name: CreditButton
   m_TagString: Untagged
@@ -1443,3 +1594,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2774593536476645092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9177170384935542744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d340f24ee0406cbac30ad2caf648a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.ButtonHoverInvert
+  invertTemplate: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
+  fadeDuration: 0.1
