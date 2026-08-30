@@ -6,8 +6,10 @@ using UnityEngine.UI;
 namespace NestLabs.UI
 {
     /// <summary>
-    /// Fades a button to its photographic negative while the pointer is over it or it holds
-    /// selection. The HUD art is monochrome (black panel, white outline, white icon/label), so a
+    /// Fades a button to its photographic negative while the pointer is over it. Hover only:
+    /// EventSystem selection is deliberately ignored, otherwise a mouse click leaves the button
+    /// stuck inverted until something else is selected.
+    /// The HUD art is monochrome (black panel, white outline, white icon/label), so a
     /// straight <see cref="Selectable.Transition.ColorTint"/> can never lighten the black fill.
     /// The background <see cref="Image"/> gets a cloned <c>NestLabs/UI/Invert</c> material whose
     /// <c>_InvertAmount</c> is driven 0..1; the child graphics (icon, TMP label) are solid white,
@@ -18,7 +20,7 @@ namespace NestLabs.UI
     /// </summary>
     [RequireComponent(typeof(Image))]
     public sealed class ButtonHoverInvert : MonoBehaviour,
-        IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
+        IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private Material invertTemplate;
         [SerializeField] private float fadeDuration = 0.1f;
@@ -31,7 +33,6 @@ namespace NestLabs.UI
         private Material materialInstance;
 
         private bool pointerOn;
-        private bool selected;
         private float amount;
         private Tween tween;
         private bool cached;
@@ -56,7 +57,6 @@ namespace NestLabs.UI
             // A panel re-shown via SetActive keeps whatever colours it had when hidden. Start clean.
             EnsureMaterial();
             pointerOn = false;
-            selected = false;
             KillTween();
             Apply(0f);
         }
@@ -71,8 +71,6 @@ namespace NestLabs.UI
 
         public void OnPointerEnter(PointerEventData _) { pointerOn = true; Refresh(); }
         public void OnPointerExit(PointerEventData _) { pointerOn = false; Refresh(); }
-        public void OnSelect(BaseEventData _) { selected = true; Refresh(); }
-        public void OnDeselect(BaseEventData _) { selected = false; Refresh(); }
 
         private void EnsureCached()
         {
@@ -109,7 +107,7 @@ namespace NestLabs.UI
         private void Refresh()
         {
             if (!isActiveAndEnabled) return;
-            AnimateTo(pointerOn || selected ? 1f : 0f);
+            AnimateTo(pointerOn ? 1f : 0f);
         }
 
         private void AnimateTo(float target)
