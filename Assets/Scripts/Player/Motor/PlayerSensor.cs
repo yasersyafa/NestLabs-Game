@@ -1,3 +1,4 @@
+using Unity.Profiling;
 using UnityEngine;
 
 namespace NestLabs.Player
@@ -8,6 +9,10 @@ namespace NestLabs.Player
     /// </summary>
     public sealed class PlayerSensor : MonoBehaviour
     {
+        // Perf baseline: 3 Rigidbody2D.Cast per FixedUpdate. Marker so a capture attributes the
+        // fixed-step cost without instrumenting at profile time.
+        private static readonly ProfilerMarker s_probe = new("PlayerSensor.Probe");
+
         [SerializeField] private PlayerMotor _motor;
 
         [Tooltip("Layers that count as a latchable wall or as ground.")]
@@ -53,6 +58,8 @@ namespace NestLabs.Player
             {
                 return;
             }
+
+            using var probeScope = s_probe.Auto();
 
             int wallSide = 0;
             float wallDistance = float.PositiveInfinity;

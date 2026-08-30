@@ -2,6 +2,7 @@ using System;
 using MessagePipe;
 using NestLabs.Player;
 using NestLabs.Shared.Flow;
+using Unity.Profiling;
 using UnityEngine;
 using VContainer;
 
@@ -18,6 +19,11 @@ namespace NestLabs.Score
 
         [Tooltip("Editor-only score tracing. Off by default - RecomputeScore runs per frame while climbing.")]
         [SerializeField] private bool verboseLogging;
+
+        // Perf baseline: RecomputeScore + its ScoreChangedEvent publish run every frame the player
+        // gains height, and the HUD subscriber does a TMP mesh rebuild + string formatting per
+        // publish. Marker stays so a capture can show the cost before/after the throttle fix.
+        private static readonly ProfilerMarker s_recomputeScore = new("ScoreService.RecomputeScore");
 
         private readonly ScoreData data = new();
         private IScoreStore scoreStore;
@@ -140,6 +146,8 @@ namespace NestLabs.Score
 
         private void RecomputeScore()
         {
+            using var _ = s_recomputeScore.Auto();
+
             float climbed = Mathf.Max(0f, highestY - baselineY);
             data.CurrentScore = Mathf.RoundToInt(climbed * pointsPerUnit);
             if (data.CurrentScore > data.BestScore) data.BestScore = data.CurrentScore;

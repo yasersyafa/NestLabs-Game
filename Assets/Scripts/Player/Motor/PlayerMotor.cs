@@ -1,3 +1,4 @@
+using Unity.Profiling;
 using UnityEngine;
 
 namespace NestLabs.Player
@@ -11,6 +12,9 @@ namespace NestLabs.Player
     public sealed class PlayerMotor : MonoBehaviour
     {
         private const int MaxSlideIterations = 3;
+
+        // Perf baseline: up to MaxSlideIterations Rigidbody2D.Cast per airborne FixedTick.
+        private static readonly ProfilerMarker s_move = new("PlayerMotor.Move");
 
         [SerializeField] private Rigidbody2D _body;
         [SerializeField] private Collider2D _collider;
@@ -103,6 +107,8 @@ namespace NestLabs.Player
         /// </summary>
         public void Move(float dt)
         {
+            using var _ = s_move.Auto();
+
             Flags = PlayerCollisionFlags.None;
 
             Vector2 remaining = Velocity * dt;

@@ -1,0 +1,23 @@
+<!--
+  Managed code stripping is set to Low for Standalone + Android (ProjectSettings ->
+  Player -> Managed Stripping Level). VContainer resolves [Inject] targets by reflection
+  and MessagePipe builds generic broker types at container build, so the linker cannot
+  see those uses statically. Preserve the DI + messaging assemblies and every gameplay
+  assembly wholesale - the size win is in mscorlib/System.*, not our own small DLLs.
+
+  If stripping is ever raised to Medium/High, this file is what keeps the run booting;
+  do not delete it without a device smoke test of GameLifetimeScope.
+-->
+<linker>
+  <assembly fullname="VContainer" preserve="all" />
+  <assembly fullname="MessagePipe" preserve="all" />
+  <assembly fullname="MessagePipe.VContainer" preserve="all" />
+
+  <assembly fullname="NestLabs.Runtime" preserve="all" />
+  <assembly fullname="NestLabs.Shared" preserve="all" />
+  <assembly fullname="Nestlabs.Level" preserve="all" />
+  <assembly fullname="Nestlabs.Obstacle" preserve="all" />
+  <assembly fullname="NestLabs.Node" preserve="all" />
+  <assembly fullname="Nestlabs.Wall" preserve="all" />
+  <assembly fullname="Nestlabs.Environment" preserve="all" />
+</linker>

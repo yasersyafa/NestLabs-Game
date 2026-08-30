@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Nestlabs.Level.Rules;
 using NestLabs.Shared.Flow;
 using NestLabs.Shared.Hazards;
+using Unity.Profiling;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -43,6 +44,11 @@ namespace Nestlabs.Level
         private SpawnRuleContext _ctx;
         private bool _primed;
         private readonly List<ISpawnRule> _runtimeRules = new();
+
+        // Perf baseline: spawning is the only per-frame alloc/ physics-sync source outside the
+        // player. Keep these so a Profiler capture can attribute frame cost without a code change.
+        private static readonly ProfilerMarker s_tickRules = new("LevelGenerator.TickRules");
+        private static readonly ProfilerMarker s_syncTransforms = new("LevelGenerator.SyncTransforms");
 
         private void Awake()
         {
@@ -107,9 +113,12 @@ namespace Nestlabs.Level
             if (!_gameState.IsPlaying) return;
 
             float dt = Time.deltaTime;
-            foreach (ISpawnRule rule in _runtimeRules)
+            using (s_tickRules.Auto())
             {
-                rule.Tick(_ctx, dt);
+                foreach (ISpawnRule rule in _runtimeRules)
+                {
+                    rule.Tick(_ctx, dt);
+                }
             }
 
             SyncTransformsIfDirty();
@@ -121,7 +130,10 @@ namespace Nestlabs.Level
         {
             if (_ctx.TransformsDirty)
             {
-                Physics2D.SyncTransforms();
+                using (s_syncTransforms.Auto())
+                {
+                    Physics2D.SyncTransforms();
+                }
                 _ctx.TransformsDirty = false;
             }
         }

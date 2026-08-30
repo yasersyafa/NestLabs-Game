@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Nestlabs.Environment
@@ -20,6 +21,9 @@ namespace Nestlabs.Environment
         private int currentStageIndex = -1;
         private float smoothedPlayerY;
 
+        // Perf baseline: per-layer world-space transform writes every LateUpdate.
+        private static readonly ProfilerMarker s_updateLayers = new("ParallaxController.UpdateLayers");
+
         private void Awake()
         {
             if (player == null) return;
@@ -38,7 +42,10 @@ namespace Nestlabs.Environment
             float t = 1f - Mathf.Exp(-followSmoothing * Time.deltaTime);
             smoothedPlayerY = Mathf.Lerp(smoothedPlayerY, currentY, t);
 
-            foreach (var layer in layers) layer.UpdatePosition(smoothedPlayerY);
+            using (s_updateLayers.Auto())
+            {
+                foreach (var layer in layers) layer.UpdatePosition(smoothedPlayerY);
+            }
 
             CheckStageTransition(currentY);
         }
