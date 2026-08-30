@@ -90,7 +90,14 @@ namespace Nestlabs.Level.Rules
                     createFunc: () => Resolver.Instantiate(prefab, Vector3.zero, Quaternion.identity),
                     actionOnGet: instance => instance.gameObject.SetActive(true),
                     actionOnRelease: instance => instance.gameObject.SetActive(false),
-                    actionOnDestroy: instance => Object.Destroy(instance.gameObject));
+                    actionOnDestroy: instance => Object.Destroy(instance.gameObject),
+                    collectionCheck: true,
+                    // On-screen count of any one prefab sits in the single digits (a climb bench
+                    // ends with ~5 obstacles / 4 walls / 7 nodes live). 32 is deep headroom; the
+                    // cap just means a pathological spike destroys the overflow on Release instead
+                    // of retaining it inactive for the rest of the session.
+                    defaultCapacity: 8,
+                    maxSize: 32);
                 _poolsByPrefab[prefab] = pool;
             }
 

@@ -20,9 +20,8 @@ namespace NestLabs.Score
         [Tooltip("Editor-only score tracing. Off by default - RecomputeScore runs per frame while climbing.")]
         [SerializeField] private bool verboseLogging;
 
-        // Perf baseline: RecomputeScore + its ScoreChangedEvent publish run every frame the player
-        // gains height, and the HUD subscriber does a TMP mesh rebuild + string formatting per
-        // publish. Marker stays so a capture can show the cost before/after the throttle fix.
+        // RecomputeScore runs every frame the player gains height; the marker stays so a capture
+        // can confirm the publish/TMP-rebuild cost is gone now that it only fires on int changes.
         private static readonly ProfilerMarker s_recomputeScore = new("ScoreService.RecomputeScore");
 
         private readonly ScoreData data = new();
@@ -149,8 +148,18 @@ namespace NestLabs.Score
             using var _ = s_recomputeScore.Auto();
 
             float climbed = Mathf.Max(0f, highestY - baselineY);
-            data.CurrentScore = Mathf.RoundToInt(climbed * pointsPerUnit);
-            if (data.CurrentScore > data.BestScore) data.BestScore = data.CurrentScore;
+            int newScore = Mathf.RoundToInt(climbed * pointsPerUnit);
+
+            // Update() calls this on every frame the player gains any height, but the rounded
+            // score only ticks over about once per world unit climbed. Skip the publish - and
+            // the string.Format + TMP mesh rebuild it drives in ScoreHud - on the frames where
+            // nothing the HUD shows has actually changed.
+            bool scoreChanged = newScore != data.CurrentScore;
+            bool bestChanged = newScore > data.BestScore;
+            if (!scoreChanged && !bestChanged) return;
+
+            data.CurrentScore = newScore;
+            if (bestChanged) data.BestScore = newScore;
             scoreChangedPublisher?.Publish(new ScoreChangedEvent(data.CurrentScore, data.BestScore));
 
             #if UNITY_EDITOR

@@ -58,6 +58,7 @@ namespace NestLabs
             _subscriptions?.Dispose();
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         private void Update()
         {
             // Dead is terminal by design, so testing needs a way back without leaving play mode.
@@ -66,6 +67,7 @@ namespace NestLabs
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+#endif
 
         private void Append(string line)
         {
@@ -76,6 +78,9 @@ namespace NestLabs
             }
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // IMGUI: rebuilds every label from interpolated strings twice per frame. Editor / dev
+        // builds only - a release build has no on-screen debug readout and pays nothing here.
         private void OnGUI()
         {
             _style ??= new GUIStyle(GUI.skin.label) { fontSize = 16, richText = false };
@@ -108,5 +113,6 @@ namespace NestLabs
                 GUI.Label(new Rect(12f, 66f + i * 20f, 900f, 22f), _feed[i], _style);
             }
         }
+#endif
     }
 }

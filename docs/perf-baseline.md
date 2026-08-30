@@ -109,6 +109,34 @@ plus scene-0 sprite textures. This is the next build-size target:
 - **1.3 texture crunch** — deferred to the `sharedassets0.assets.resS` pass above.
 - **Splash screen / companyName / applicationIdentifier** — publishing decisions, left to owner.
 
+## After Fase 2 (2026-08-31) — runtime frametime
+
+Code changes, no data/build-setting changes:
+- **`ScoreService.RecomputeScore`** — was `Publish(ScoreChangedEvent)` on every frame the player
+  gained any height (→ `string.Format` ×2 + TMP mesh rebuild ×2 in `ScoreHud` per frame). Now
+  publishes only when the rounded `int` score or best actually changes — roughly once per world
+  unit climbed instead of once per frame.
+- **`PlayerDebugHud`** — `OnGUI` (per-frame IMGUI, interpolated strings, `new Rect`/`GUIStyle`)
+  and the R-to-restart `Update` are now `#if UNITY_EDITOR || DEVELOPMENT_BUILD`. A release build
+  has no on-screen debug readout and pays nothing.
+- **`ProjectileObstacle`** — `Camera.main` (tagged-object scan) was called every frame while a
+  warning icon is on screen; cached in `Awake`, refreshed only if null.
+- **`SpawnRuleContext`** pools — added `defaultCapacity: 8, maxSize: 32` so a spawn spike can no
+  longer retain unbounded inactive instances for the session.
+
+Tests: EditMode 44 green, PlayMode 2 green. Perf test (in-editor, synthetic climber — does not
+exercise the real `ScoreService`/`PlayerBase`, so treat as a no-regression check): frame median
+1.69 ms → 1.17 ms, `LevelGenerator.TickRules` 15.8 µs → 10.3 µs (within editor variance). Build
+size unchanged (release build already stripped `OnGUI`; see table).
+
+### Skipped in Fase 2 (with reason)
+- **`ParallaxLayer.UpdatePosition`** world-space writes — baseline shows parallax is not a hot
+  path, and the class's drift-free property (documented in `CLAUDE.md`) is not worth risking for
+  ~10 transform writes/frame.
+- **`PlayerHurtbox.OnTriggerStay2D`** `GetComponentInParent<IDamageSource>` per physics step —
+  only while overlapping fog/hazard, and it sits in the i-frame damage pipeline. Not worth the
+  risk for the saving.
+
 ## Regression policy
 
 Any change in Fase 1–3 of `~/.claude/plans/kalau-mau-optimisasi-project-quiet-donut.md`:

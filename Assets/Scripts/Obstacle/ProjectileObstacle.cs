@@ -27,6 +27,10 @@ namespace Nestlabs.Obstacle
         private SpriteRenderer sprite;
         private Sequence sequence;
 
+        // Camera.main is a tagged-object scan; PositionWarningUI runs it every frame the icon is
+        // visible. Cache it - the gameplay camera outlives every pooled projectile.
+        private Camera cam;
+
         private Vector3 startPos;
         private Vector3 endPos;
         private RectTransform warningUI;
@@ -49,6 +53,7 @@ namespace Nestlabs.Obstacle
             col = GetComponent<Collider2D>();
             // The sprite lives on a child ("Square"), not the root the script sits on.
             sprite = GetComponentInChildren<SpriteRenderer>(true);
+            cam = Camera.main;
         }
 
         // Pooled instances never get Start() called again on reactivation, so the pool calls
@@ -140,7 +145,7 @@ namespace Nestlabs.Obstacle
         // instead of being fixed at a world position that may sit off-screen.
         private void PositionWarningUI(RectTransform warning)
         {
-            var cam = Camera.main;
+            if (cam == null) cam = Camera.main;
             if (cam == null) return;
 
             Vector3 viewportPoint = cam.WorldToViewportPoint(startPos);
