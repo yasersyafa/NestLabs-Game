@@ -74,6 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6476004397974285590}
   - component: {fileID: 6409255551785754604}
+  - component: {fileID: 6409255551785754605}
   m_Layer: 5
   m_Name: GUI
   m_TagString: Untagged
@@ -127,6 +128,23 @@ MonoBehaviour:
   homeButton: {fileID: 6462916693917445889}
   buttonInvertMaterial: {fileID: 2100000, guid: e68417a07d064e37bebe03d7fea7132e, type: 2}
   hoverFadeDuration: 0.1
+--- !u!114 &6409255551785754605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2084574151720761896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6cf16508e8a4c058611970b93e5e5a6, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.DiedScorePanel
+  finalScoreText: {fileID: 8283016253495586833}
+  bestScoreText: {fileID: 0}
+  newBestLabel: {fileID: 5619222980214852886}
+  scoreFormat: '{0}m'
+  bestScoreFormat: BEST {0}m
 --- !u!1 &2367553233797441669
 GameObject:
   m_ObjectHideFlags: 0
@@ -1409,5 +1427,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &8283016253495586833 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8283016253495586831, guid: 46ba70b4c7e5b47f2a1986b4dd11b197, type: 3}
+  m_PrefabInstance: {fileID: 6075446942551256835}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &5619222980214852886 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5619222980214852885, guid: 46ba70b4c7e5b47f2a1986b4dd11b197, type: 3}
+  m_PrefabInstance: {fileID: 6075446942551256835}
+  m_PrefabAsset: {fileID: 0}

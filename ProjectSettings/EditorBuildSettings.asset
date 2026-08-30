@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/obstacle-debug.unity
     guid: f76c8fb7cb03c4bde9a540f362a6cfda
+  - enabled: 1
+    path: Assets/Scenes/MenuScene.unity
+    guid: 8ee614839ac2c4e73b3d0501a7d1f4be
+  - enabled: 1
+    path: Assets/Scenes/GameScene.unity
+    guid: 14dc75afd812449e5812e2a77e5f1c81
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

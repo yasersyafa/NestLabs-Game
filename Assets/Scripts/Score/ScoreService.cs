@@ -30,6 +30,11 @@ namespace NestLabs.Score
         private bool baselineSet;
         private bool runActive;
 
+        // Best score as it stood when the current run started. FinalizeRun compares against this,
+        // not data.BestScore, because data.BestScore is bumped live mid-run the moment the current
+        // score passes it - by finalize time the two are always equal on a good run.
+        private int bestBeforeRun;
+
         public int CurrentScore => data.CurrentScore;
         public int BestScore => data.BestScore;
 
@@ -112,6 +117,7 @@ namespace NestLabs.Score
         {
             runActive = true;
             baselineSet = false;
+            bestBeforeRun = data.BestScore;
             data.CurrentScore = 0;
             scoreChangedPublisher?.Publish(new ScoreChangedEvent(0, data.BestScore));
 
@@ -147,11 +153,12 @@ namespace NestLabs.Score
         private void FinalizeRun()
         {
             runActive = false;
+            bool isNewBest = data.CurrentScore > bestBeforeRun;
             scoreStore?.SaveBestScore(data.BestScore);
-            scoreFinalizedPublisher?.Publish(new ScoreFinalizedEvent(data.CurrentScore, data.BestScore));
+            scoreFinalizedPublisher?.Publish(new ScoreFinalizedEvent(data.CurrentScore, data.BestScore, isNewBest));
 
             #if UNITY_EDITOR
-            if (verboseLogging) Debug.Log($"[ScoreService] FinalizeRun -> FinalScore={data.CurrentScore}, BestScore={data.BestScore}");
+            if (verboseLogging) Debug.Log($"[ScoreService] FinalizeRun -> FinalScore={data.CurrentScore}, BestScore={data.BestScore}, IsNewBest={isNewBest}");
             #endif
         }
     }

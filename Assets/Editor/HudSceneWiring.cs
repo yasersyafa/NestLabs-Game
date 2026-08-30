@@ -81,6 +81,12 @@ namespace NestLabs.EditorTools
                     return false;
                 }
 
+                if (!WireDiedScorePanel(root))
+                {
+                    Debug.LogError("[HudSceneWiring] Aborted: DiedScorePanel references could not be resolved.");
+                    return false;
+                }
+
                 const string InvertMatPath = "Assets/Art/Materials/UIInvert.mat";
                 var invertMat = AssetDatabase.LoadAssetAtPath<Material>(InvertMatPath);
                 so.FindProperty("buttonInvertMaterial").objectReferenceValue = invertMat;
@@ -96,6 +102,29 @@ namespace NestLabs.EditorTools
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
+        }
+
+        // DiedScorePanel sits on the same GUI root as HudPanelController: the game-over panel
+        // starts inactive, so a script on the panel itself would never get injected and would miss
+        // the finalize event. It only needs the two labels inside the Died panel.
+        private static bool WireDiedScorePanel(GameObject root)
+        {
+            var panel = root.GetComponent<DiedScorePanel>();
+            if (panel == null) panel = root.AddComponent<DiedScorePanel>();
+
+            var so = new SerializedObject(panel);
+            bool ok = true;
+
+            ok &= SetComponent<TMPro.TMP_Text>(so, root, "finalScoreText",
+                "Overlay/Died/MainPanel/Content/ScoreText");
+            ok &= SetObject(so, root, "newBestLabel",
+                "Overlay/Died/MainPanel/Content/HighscoreLabel");
+
+            if (!ok) return false;
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            Debug.Log("[HudSceneWiring] Wired DiedScorePanel.");
+            return true;
         }
 
         private static void WireScene(string scenePath)
@@ -163,6 +192,27 @@ namespace NestLabs.EditorTools
             }
 
             so.FindProperty(field).objectReferenceValue = t.gameObject;
+            return true;
+        }
+
+        private static bool SetComponent<T>(SerializedObject so, GameObject root, string field, string path)
+            where T : Component
+        {
+            Transform t = root.transform.Find(path);
+            if (t == null)
+            {
+                Debug.LogError($"[HudSceneWiring] Missing path '{path}' for field '{field}'.");
+                return false;
+            }
+
+            var component = t.GetComponent<T>();
+            if (component == null)
+            {
+                Debug.LogError($"[HudSceneWiring] No {typeof(T).Name} on '{path}' for field '{field}'.");
+                return false;
+            }
+
+            so.FindProperty(field).objectReferenceValue = component;
             return true;
         }
 

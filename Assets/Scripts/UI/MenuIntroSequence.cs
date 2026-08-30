@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace NestLabs.UI
 {
@@ -31,6 +32,10 @@ namespace NestLabs.UI
         [Header("Step 3-4: hand-off")]
         [SerializeField] private GameObject tapToStart;
         [SerializeField] private GameObject nextObject;
+
+        [Header("Start button target")]
+        // Loaded by name, not build index, so reordering Build Settings can't misroute it.
+        [SerializeField] private string gameSceneName = "GameScene";
 
         private InputAction tapAction;
         private bool tapArmed;
@@ -66,6 +71,15 @@ namespace NestLabs.UI
         private void OnTap(InputAction.CallbackContext _)
         {
             if (tapArmed) tapped = true;
+        }
+
+        /// <summary>
+        /// Hooked to the Start button's <c>onClick</c>. Sync load: MenuScene is tiny and carries no
+        /// container, so there is nothing to stream and no state to keep alive across the swap.
+        /// </summary>
+        public void LoadGameScene()
+        {
+            SceneManager.LoadScene(gameSceneName);
         }
 
         private IEnumerator Run()

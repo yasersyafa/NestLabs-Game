@@ -63,6 +63,11 @@ namespace NestLabs
             {
                 builder.RegisterComponentInHierarchy<HudPanelController>();
             }
+            // Same guard: only the HUD-carrying scenes have the game-over panel.
+            if (ExistsInScene<DiedScorePanel>())
+            {
+                builder.RegisterComponentInHierarchy<DiedScorePanel>();
+            }
             builder.RegisterComponentInHierarchy<AudioService>().As<IAudioService>();
             builder.RegisterComponentInHierarchy<LevelGenerator>();
             // Same guard as the HUD: only test-merge carries a fog prefab, so registering it

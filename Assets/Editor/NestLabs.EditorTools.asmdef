@@ -5,7 +5,8 @@
         "NestLabs.Runtime",
         "Nestlabs.Obstacle",
         "Nestlabs.Level",
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"

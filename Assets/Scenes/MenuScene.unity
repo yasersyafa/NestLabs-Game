@@ -746,8 +746,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: NestLabs.Runtime::NestLabs.UI.MenuIntroSequence
   image1: {fileID: 459462932}
   image2: {fileID: 1685832103}
-  delayBeforeStart: 1
-  gapBetweenImages: 0.5
+  delayBeforeStart: 0
+  gapBetweenImages: 0
   tapToStart: {fileID: 638938100}
   nextObject: {fileID: 1927247324}
 --- !u!4 &880642824
@@ -1423,7 +1423,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1485970078}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 880642823}
+        m_TargetAssemblyTypeName: NestLabs.UI.MenuIntroSequence, NestLabs.Runtime
+        m_MethodName: LoadGameScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1485970078
 MonoBehaviour:
   m_ObjectHideFlags: 0
