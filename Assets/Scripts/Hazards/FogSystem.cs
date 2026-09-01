@@ -28,11 +28,18 @@ namespace NestLabs
         [Tooltip("On each run start the fog line snaps to this many units below the player.")]
         [SerializeField] private float _startGapBelowPlayer = 9f;
 
+        [Tooltip("After a death the line keeps climbing this many real seconds, sealing off the shaft, before it freezes.")]
+        [SerializeField] private float _engulfDuration = 1f;
+
         private IGameStateService _gameState = NullGameStateService.Instance;
         private PlayerBase _player;
-        private IDisposable _subscription;
+        private IDisposable _subscriptions;
         private Collider2D _collider;
         private bool _active;
+
+        // Real-time deadline: a fog death near timeScale 0 (the death slow-mo) must not strand the
+        // line mid-rise, so the engulf window is measured in unscaled time.
+        private float _engulfUntilRealtime = -1f;
 
         public int Damage => _damage;
 
@@ -57,11 +64,16 @@ namespace NestLabs
         public void Construct(
             IGameStateService gameState,
             ISubscriber<GameStateChangedEvent> stateChanged,
+            ISubscriber<PlayerDiedEvent> died,
             PlayerBase player)
         {
             _gameState = gameState ?? NullGameStateService.Instance;
             _player = player;
-            _subscription = stateChanged.Subscribe(OnGameStateChanged);
+
+            DisposableBagBuilder bag = DisposableBag.CreateBuilder();
+            stateChanged.Subscribe(OnGameStateChanged).AddTo(bag);
+            died.Subscribe(OnPlayerDied).AddTo(bag);
+            _subscriptions = bag.Build();
         }
 
         private void Awake()
@@ -82,14 +94,24 @@ namespace NestLabs
                 // pause is deliberately excluded so the fog keeps the ground it gained.
                 case GameState.Play when e.From != GameState.Pause:
                     ResetBelowPlayer();
+                    _engulfUntilRealtime = -1f;
                     _active = true;
                     break;
 
-                case GameState.Death:
+                // Death is owned by OnPlayerDied now (a short engulf climb then a freeze), so it
+                // must not be handled here too or the two would fight.
                 case GameState.Menu:
                     _active = false;
+                    _engulfUntilRealtime = -1f;
                     break;
             }
+        }
+
+        private void OnPlayerDied(PlayerDiedEvent e)
+        {
+            // Keep rising a moment longer, then freeze — the black iris covers the screen by the
+            // time it stops anyway.
+            _engulfUntilRealtime = Time.realtimeSinceStartup + _engulfDuration;
         }
 
         private void ResetBelowPlayer()
@@ -103,15 +125,26 @@ namespace NestLabs
 
         private void Update()
         {
-            // Death and Pause both leave Update running; only advance during an active run.
-            if (!_active || !_gameState.IsPlaying) return;
+            bool engulfing = Time.realtimeSinceStartup < _engulfUntilRealtime;
+
+            // Engulf window elapsed: freeze the line where it ended up, once.
+            if (!engulfing && _engulfUntilRealtime > 0f)
+            {
+                _active = false;
+                _engulfUntilRealtime = -1f;
+            }
+
+            // Death and Pause both leave Update running. Advance during an active run, or through
+            // the post-fog-death engulf window (which climbs even though the run has ended).
+            if (!_active && !engulfing) return;
+            if (!engulfing && !_gameState.IsPlaying) return;
 
             transform.position += Vector3.up * (_riseSpeed * Time.deltaTime);
         }
 
         private void OnDestroy()
         {
-            _subscription?.Dispose();
+            _subscriptions?.Dispose();
         }
     }
 }

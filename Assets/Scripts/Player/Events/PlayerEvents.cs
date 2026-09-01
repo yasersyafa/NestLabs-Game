@@ -66,12 +66,20 @@ namespace NestLabs.Player
 
     public readonly struct PlayerDiedEvent
     {
-        /// <summary>Where the player died. Useful for a respawn marker or a death VFX spawn point.</summary>
+        /// <summary>Where the player died. The death VFX and the iris wipe spawn from here.</summary>
         public readonly Vector2 Position;
 
         public PlayerDiedEvent(Vector2 position)
         {
             Position = position;
         }
+    }
+
+    /// <summary>
+    /// Raised once the death choreography has finished playing. The game-over panel waits on this
+    /// (with a timeout fallback) so it does not cover the sequence.
+    /// </summary>
+    public readonly struct PlayerDeathSequenceCompletedEvent
+    {
     }
 }

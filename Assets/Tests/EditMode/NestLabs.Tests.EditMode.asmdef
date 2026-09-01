@@ -6,6 +6,7 @@
         "NestLabs.Shared",
         "NestLabs.Node",
         "MessagePipe",
+        "UniTask",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

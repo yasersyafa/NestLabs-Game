@@ -12,6 +12,9 @@ namespace NestLabs.Audio
         Death,
         ObstacleHit,
         ScoreFinalize,
+        // Appended: AudioService sizes its lookup by enum length and matches entries by Id, so a
+        // trailing value is index-safe and a missing library entry just no-ops.
+        FogConsume,
     }
 
     public enum MusicId

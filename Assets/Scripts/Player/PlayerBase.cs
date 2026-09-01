@@ -1,6 +1,7 @@
 using System;
 using NestLabs.Shared.Combat;
 using NestLabs.Shared.Flow;
+using NestLabs.UI;
 using UnityEngine;
 using VContainer;
 
@@ -21,6 +22,8 @@ namespace NestLabs.Player
         [SerializeField] private PlayerNodeSensor _nodeSensor;
         [SerializeField] private PlayerVisual _visual;
         [SerializeField] private PlayerTrail _trail;
+        [SerializeField] private PlayerDeathSequence _deathSequence;
+        [SerializeField] private PlayerDeathBurst _deathBurst;
         [SerializeField] private PlayerHealth _health;
         [SerializeField] private PlayerHurtbox _hurtbox;
 
@@ -33,6 +36,8 @@ namespace NestLabs.Player
         private IPlayerEventSink _events;
         private IHitstop _hitstop;
         private IGameStateService _gameState;
+        private ICameraShake _cameraShake;
+        private IScreenTransition _screenTransition;
         private PlayerStateMachine _fsm;
         private PlayerContext _context;
         private bool _ownsInput;
@@ -48,13 +53,15 @@ namespace NestLabs.Player
         [Inject]
         public void Construct(
             IPlayerInput input, IPlayerEventSink events, PlayerConfigSO config, IHitstop hitstop,
-            IGameStateService gameState)
+            IGameStateService gameState, ICameraShake cameraShake, IScreenTransition screenTransition)
         {
             _input = input;
             _events = events;
             _config = config;
             _hitstop = hitstop;
             _gameState = gameState;
+            _cameraShake = cameraShake;
+            _screenTransition = screenTransition;
         }
 
         private void Reset()
@@ -64,6 +71,8 @@ namespace NestLabs.Player
             _nodeSensor = GetComponentInChildren<PlayerNodeSensor>();
             _visual = GetComponent<PlayerVisual>();
             _trail = GetComponent<PlayerTrail>();
+            _deathSequence = GetComponent<PlayerDeathSequence>();
+            _deathBurst = GetComponent<PlayerDeathBurst>();
             _health = GetComponent<PlayerHealth>();
             _hurtbox = GetComponentInChildren<PlayerHurtbox>();
         }
@@ -150,9 +159,15 @@ namespace NestLabs.Player
 
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
-                _fsm, _motor, _sensor, _nodeSensor, _visual, _trail, _health, _hitstop, _gameState,
-                _config, _input, _events, transform);
+                _fsm, _motor, _sensor, _nodeSensor, _visual, _trail, _deathSequence, _health, _hitstop,
+                _gameState, _config, _input, _events, transform);
             _context.ResetBlackboard();
+
+            _deathSequence?.Initialize(
+                _context,
+                _deathBurst,
+                _cameraShake ?? NullCameraShake.Instance,
+                _screenTransition ?? NullScreenTransition.Instance);
 
             _fsm.Register(new LatchState(_context));
             _fsm.Register(new SlideState(_context));

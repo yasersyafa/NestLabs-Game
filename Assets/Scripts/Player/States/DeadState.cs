@@ -18,6 +18,8 @@ namespace NestLabs.Player
             Motor.Velocity = Vector2.zero;
 
             Ctx.Events.Died(Ctx.Transform.position);
+            // Null on a bare prefab / test rig; the sequence is optional polish, not load-bearing.
+            Ctx.DeathSequence?.Play();
         }
 
         public override void Exit()

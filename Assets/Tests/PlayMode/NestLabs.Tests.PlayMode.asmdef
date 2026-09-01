@@ -9,6 +9,7 @@
         "Nestlabs.Wall",
         "NestLabs.Node",
         "VContainer",
+        "UniTask",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting"

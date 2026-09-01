@@ -33,6 +33,7 @@ namespace NestLabs
             builder.RegisterMessageBroker<PlayerLatchedEvent>(options);
             builder.RegisterMessageBroker<PlayerHitEvent>(options);
             builder.RegisterMessageBroker<PlayerDiedEvent>(options);
+            builder.RegisterMessageBroker<PlayerDeathSequenceCompletedEvent>(options);
             builder.RegisterMessageBroker<ScoreChangedEvent>(options);
             builder.RegisterMessageBroker<ScoreFinalizedEvent>(options);
             builder.RegisterMessageBroker<ObstacleHitEvent>(options);
@@ -83,6 +84,28 @@ namespace NestLabs
                 builder.RegisterInstance<IHazardLine>(NullHazardLine.Instance);
             }
             builder.RegisterComponentInHierarchy<Hitstop>().As<IHitstop>();
+
+            // PlayerBase.Construct now requires both of these. Gameplay-only scenes (YaserScene) have
+            // no HUD prefab and no reason to shake, so they fall back to the null objects — without
+            // the else branches the container build would throw there.
+            if (ExistsInScene<SimpleCameraFollow>())
+            {
+                builder.RegisterComponentInHierarchy<SimpleCameraFollow>().As<ICameraShake>();
+            }
+            else
+            {
+                builder.RegisterInstance<ICameraShake>(NullCameraShake.Instance);
+            }
+
+            if (ExistsInScene<ScreenTransitionController>())
+            {
+                builder.RegisterComponentInHierarchy<ScreenTransitionController>()
+                    .AsSelf().As<IScreenTransition>();
+            }
+            else
+            {
+                builder.RegisterInstance<IScreenTransition>(NullScreenTransition.Instance);
+            }
 
             builder.Register<IGameStateService, GameStateService>(Lifetime.Singleton);
 

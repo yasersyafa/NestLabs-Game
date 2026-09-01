@@ -72,6 +72,31 @@ namespace NestLabs.Player
         [Tooltip("Seconds of immunity after a hit lands. Must be >= HitStunDuration or the player can be chain-hit while stunned.")]
         public float InvulnerabilityDuration = 1f;
 
+        [Header("Death")]
+        [Tooltip("Time scale for a brief dread beat the instant the player dies. 1 disables the slow-mo.")]
+        [Range(0.05f, 1f)] public float DeathSlowScale = 0.6f;
+
+        [Tooltip("Real seconds the death slow-mo holds.")]
+        [Min(0f)] public float DeathSlowDuration = 0.3f;
+
+        [Tooltip("Peak camera shake offset, in world units, the instant the player dies.")]
+        [Min(0f)] public float DeathShakeAmplitude = 0.4f;
+
+        [Tooltip("Real seconds the death camera shake takes to decay to nothing.")]
+        [Min(0f)] public float DeathShakeDuration = 0.35f;
+
+        [Tooltip("Noise sample rate of the death shake. Higher is buzzier.")]
+        [Min(0.01f)] public float DeathShakeFrequency = 28f;
+
+        [Tooltip("Real seconds the shard burst plays alone before the black iris starts to bloom.")]
+        [Min(0f)] public float DeathBurstLead = 0.3f;
+
+        [Tooltip("Seconds the black iris takes to bloom out from the death point and cover the screen.")]
+        [Min(0f)] public float DeathIrisCloseDuration = 0.6f;
+
+        [Tooltip("Beat held after the iris covers the screen, before the game-over panel appears.")]
+        [Min(0f)] public float DeathHoldDuration = 0.3f;
+
         [Header("Input Feel")]
         [Tooltip("A tap fired this many seconds before wall contact still triggers the jump on Latch entry.")]
         public float InputBufferDuration = 0.12f;

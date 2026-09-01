@@ -165,5 +165,29 @@ namespace NestLabs.Player
                 .SetLoops(2, LoopType.Yoyo)
                 .SetLink(gameObject);
         }
+
+        /// <summary>
+        /// Switches the sprite off the instant the player dies — the death is a vanish, and the
+        /// burst plus the iris wipe carry the moment. Also clears any running juice tween so a
+        /// restart starts from a clean pose.
+        /// </summary>
+        public void BeginDeath()
+        {
+            _squashTween?.Kill();
+            _flashTween?.Kill();
+
+            if (_squashRoot != null)
+            {
+                _squashRoot.localPosition = Vector3.zero;
+                _squashRoot.localRotation = Quaternion.identity;
+                _squashRoot.localScale = Vector3.one;
+            }
+
+            if (_renderer != null)
+            {
+                _renderer.color = Color.white;
+                _renderer.enabled = false;
+            }
+        }
     }
 }

@@ -31,5 +31,10 @@ MonoBehaviour:
   HitStunDuration: 0.3
   KnockbackVelocity: {x: 8, y: 10}
   InvulnerabilityDuration: 1
+  DeathShakeAmplitude: 0.4
+  DeathShakeDuration: 0.35
+  DeathShakeFrequency: 28
+  DeathBurstLead: 0.3
+  DeathIrisCloseDuration: 0.6
   InputBufferDuration: 0.12
   CoyoteDuration: 0.1

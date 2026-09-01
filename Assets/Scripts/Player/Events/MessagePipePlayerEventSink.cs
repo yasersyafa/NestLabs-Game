@@ -15,6 +15,7 @@ namespace NestLabs.Player
         private readonly IPublisher<PlayerLatchedEvent> _latched;
         private readonly IPublisher<PlayerHitEvent> _hit;
         private readonly IPublisher<PlayerDiedEvent> _died;
+        private readonly IPublisher<PlayerDeathSequenceCompletedEvent> _deathSequenceCompleted;
 
         public MessagePipePlayerEventSink(
             IPublisher<PlayerStateChangedEvent> stateChanged,
@@ -22,7 +23,8 @@ namespace NestLabs.Player
             IPublisher<PlayerDashedEvent> dashed,
             IPublisher<PlayerLatchedEvent> latched,
             IPublisher<PlayerHitEvent> hit,
-            IPublisher<PlayerDiedEvent> died)
+            IPublisher<PlayerDiedEvent> died,
+            IPublisher<PlayerDeathSequenceCompletedEvent> deathSequenceCompleted)
         {
             _stateChanged = stateChanged;
             _jumped = jumped;
@@ -30,6 +32,7 @@ namespace NestLabs.Player
             _latched = latched;
             _hit = hit;
             _died = died;
+            _deathSequenceCompleted = deathSequenceCompleted;
         }
 
         public void StateChanged(PlayerStateId from, PlayerStateId to) =>
@@ -49,5 +52,8 @@ namespace NestLabs.Player
 
         public void Died(Vector2 position) =>
             _died.Publish(new PlayerDiedEvent(position));
+
+        public void DeathSequenceCompleted() =>
+            _deathSequenceCompleted.Publish(new PlayerDeathSequenceCompletedEvent());
     }
 }

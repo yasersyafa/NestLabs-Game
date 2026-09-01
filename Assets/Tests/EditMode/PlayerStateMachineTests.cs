@@ -90,7 +90,7 @@ namespace NestLabs.Tests
             _gameState = new FakeGameState();
             _fsm = new PlayerStateMachine();
             _context = new PlayerContext(
-                _fsm, motor, sensor, _nodeSensor, visual, null, health, NullHitstop.Instance,
+                _fsm, motor, sensor, _nodeSensor, visual, null, null, health, NullHitstop.Instance,
                 _gameState, _config, _input, NullPlayerEventSink.Instance, _go.transform);
             _context.ResetBlackboard();
 
@@ -452,7 +452,7 @@ namespace NestLabs.Tests
             _config.GrappleTimeScale = 0.5f;
 
             var context = new PlayerContext(
-                _fsm, _context.Motor, _sensor, _nodeSensor, _context.Visual, null, _context.Health,
+                _fsm, _context.Motor, _sensor, _nodeSensor, _context.Visual, null, null, _context.Health,
                 hitstop, _gameState, _config, _input, NullPlayerEventSink.Instance, _go.transform);
             context.ResetBlackboard();
 

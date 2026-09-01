@@ -15,5 +15,6 @@ namespace NestLabs.Player
         void Latched(int wallSide);
         void Hit(int damage, int remainingHealth, Vector2 knockback);
         void Died(Vector2 position);
+        void DeathSequenceCompleted();
     }
 }

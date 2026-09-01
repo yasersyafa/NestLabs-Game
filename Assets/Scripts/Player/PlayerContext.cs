@@ -17,6 +17,8 @@ namespace NestLabs.Player
         public PlayerNodeSensor NodeSensor { get; }
         public PlayerVisual Visual { get; }
         public PlayerTrail Trail { get; }
+        /// <summary>Runs the death choreography. Null on a bare prefab / test rig — callers guard.</summary>
+        public PlayerDeathSequence DeathSequence { get; }
         public PlayerHealth Health { get; }
         /// <summary>
         /// Resolved on every read rather than once in the constructor. PlayerBase builds this in
@@ -43,6 +45,7 @@ namespace NestLabs.Player
             PlayerNodeSensor nodeSensor,
             PlayerVisual visual,
             PlayerTrail trail,
+            PlayerDeathSequence deathSequence,
             PlayerHealth health,
             IHitstop hitstop,
             IGameStateService gameState,
@@ -57,6 +60,7 @@ namespace NestLabs.Player
             NodeSensor = nodeSensor;
             Visual = visual;
             Trail = trail;
+            DeathSequence = deathSequence;
             Health = health;
             _hitstop = hitstop;
             GameState = gameState ?? NullGameStateService.Instance;

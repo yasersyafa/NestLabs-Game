@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using DG.Tweening;
 using MessagePipe;
 using NestLabs.Player;
 using NestLabs.Shared.Flow;
@@ -37,9 +39,30 @@ namespace NestLabs.UI
         [SerializeField] private Material buttonInvertMaterial;
         [SerializeField] private float hoverFadeDuration = 0.1f;
 
+        [Header("Death panel")]
+        [Tooltip("Faded in when the death choreography finishes. Optional — without it the panel just pops.")]
+        [SerializeField] private CanvasGroup diedGroup;
+        [SerializeField] private float diedFadeDuration = 0.3f;
+        [Tooltip("Safety net: show the panel this many unscaled seconds after death even if the sequence-complete event never arrives.")]
+        [SerializeField] private float diedPanelMaxDelay = 3.5f;
+
+        [Tooltip("The Died panel's RectTransform. Slid down from off-screen when the panel is revealed. Optional.")]
+        [SerializeField] private RectTransform diedPanelRect;
+        [SerializeField] private float diedSlideDuration = 0.4f;
+        [SerializeField] private Ease diedSlideEase = Ease.OutCubic;
+        [Tooltip("anchoredPosition.y the panel starts from, above the screen, before sliding to 0.")]
+        [SerializeField] private float diedSlideFromY = 1918f;
+
         private IGameStateService gameState = NullGameStateService.Instance;
         private IPlayerInput input;
         private IDisposable subscriptions;
+
+        // The game-over panel is held back until the death choreography raises its completion event
+        // (or the fallback timer fires), so it never covers the sequence.
+        private bool deathPending;
+        private Coroutine deathFallback;
+        private Tween diedFadeTween;
+        private Tween diedSlideTween;
 
         // Credits is a sub-view of Pause, not a GameState, so it needs its own flag. Cleared on
         // every transition out of Pause so reopening the menu never lands on the credits page.
@@ -49,13 +72,15 @@ namespace NestLabs.UI
         public void Construct(
             IGameStateService gameState,
             IPlayerInput input,
-            ISubscriber<GameStateChangedEvent> gameStateChanged)
+            ISubscriber<GameStateChangedEvent> gameStateChanged,
+            ISubscriber<PlayerDeathSequenceCompletedEvent> deathSequenceCompleted)
         {
             this.gameState = gameState ?? NullGameStateService.Instance;
             this.input = input;
 
             DisposableBagBuilder bag = DisposableBag.CreateBuilder();
             gameStateChanged.Subscribe(e => HandleGameStateChanged(e.To)).AddTo(bag);
+            deathSequenceCompleted.Subscribe(_ => ShowDiedPanel()).AddTo(bag);
             subscriptions = bag.Build();
         }
 
@@ -85,6 +110,10 @@ namespace NestLabs.UI
         private void OnDestroy()
         {
             subscriptions?.Dispose();
+
+            if (deathFallback != null) StopCoroutine(deathFallback);
+            diedFadeTween?.Kill();
+            diedSlideTween?.Kill();
 
             RemoveListeners(pauseButton);
             RemoveListeners(resumeButton);
@@ -118,10 +147,88 @@ namespace NestLabs.UI
             bool paused = current == GameState.Pause;
             bool died = current == GameState.Death;
 
-            SetActive(overlay, paused || died);
             SetActive(pausePanel, paused && !creditsOpen);
             SetActive(creditsPanel, paused && creditsOpen);
-            SetActive(diedPanel, died);
+
+            // No pausing out of a death, and the button sits under the deferred panel anyway.
+            if (pauseButton != null) pauseButton.interactable = !died;
+
+            if (died)
+            {
+                BeginDeathPanelDeferred();
+                return;
+            }
+
+            // Left the death state (a retry/restart): drop any pending reveal.
+            deathPending = false;
+            if (deathFallback != null) { StopCoroutine(deathFallback); deathFallback = null; }
+            diedFadeTween?.Kill();
+            diedSlideTween?.Kill();
+            if (diedPanelRect != null)
+            {
+                Vector2 rp = diedPanelRect.anchoredPosition;
+                diedPanelRect.anchoredPosition = new Vector2(rp.x, 0f);
+            }
+
+            SetActive(overlay, paused);
+            SetActive(diedPanel, false);
+        }
+
+        /// <summary>
+        /// Death just landed: keep the panel hidden and arm a fallback timer. The panel is revealed
+        /// by <see cref="ShowDiedPanel"/>, driven by the choreography's completion event.
+        /// </summary>
+        private void BeginDeathPanelDeferred()
+        {
+            if (deathPending || (diedPanel != null && diedPanel.activeSelf)) return;
+
+            deathPending = true;
+            if (deathFallback != null) StopCoroutine(deathFallback);
+            deathFallback = StartCoroutine(DeathPanelFallback());
+        }
+
+        private IEnumerator DeathPanelFallback()
+        {
+            yield return new WaitForSecondsRealtime(diedPanelMaxDelay);
+            deathFallback = null;
+            ShowDiedPanel();
+        }
+
+        /// <summary>Reveals the game-over panel, fading it in when a CanvasGroup is wired. Idempotent.</summary>
+        private void ShowDiedPanel()
+        {
+            if (gameState.Current != GameState.Death) return;
+            if (diedPanel != null && diedPanel.activeSelf) return;
+
+            deathPending = false;
+            if (deathFallback != null) { StopCoroutine(deathFallback); deathFallback = null; }
+
+            SetActive(overlay, true);
+            SetActive(diedPanel, true);
+
+            if (diedGroup != null)
+            {
+                diedFadeTween?.Kill();
+                diedGroup.alpha = 0f;
+                diedFadeTween = diedGroup
+                    .DOFade(1f, diedFadeDuration)
+                    .SetUpdate(true)
+                    .SetLink(gameObject);
+            }
+
+            // Slide the card in from above the frame. Unscaled — the panel is shown while
+            // Time.timeScale can be 0 (a lingering hitstop dip, or Pause).
+            if (diedPanelRect != null)
+            {
+                diedSlideTween?.Kill();
+                Vector2 p = diedPanelRect.anchoredPosition;
+                diedPanelRect.anchoredPosition = new Vector2(p.x, diedSlideFromY);
+                diedSlideTween = diedPanelRect
+                    .DOAnchorPosY(0f, diedSlideDuration)
+                    .SetEase(diedSlideEase)
+                    .SetUpdate(true)
+                    .SetLink(gameObject);
+            }
         }
 
         private void ResumeRun()
