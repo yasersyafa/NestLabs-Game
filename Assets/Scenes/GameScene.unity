@@ -647,6 +647,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3686264175245156335, guid: c248ceced59bdc445be89af56ebf0cc3, type: 3}
+      propertyPath: _fallbackConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 121541dfe151a4805933910f9c5cda5e, type: 2}
     - target: {fileID: 3992866589844026069, guid: c248ceced59bdc445be89af56ebf0cc3, type: 3}
       propertyPath: m_Name
       value: Player
@@ -705,7 +709,7 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
-  _playerConfig: {fileID: 11400000, guid: 8d58cd1f3fcb91a4c84715f9684d19dd, type: 2}
+  _playerConfig: {fileID: 11400000, guid: 121541dfe151a4805933910f9c5cda5e, type: 2}
   _audioLibrary: {fileID: 11400000, guid: 5cee06d7565da4ad59682746bc6067ad, type: 2}
 --- !u!4 &1486083797
 Transform:
