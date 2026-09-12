@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="55" result="Passed" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.3060852">
+  <test-suite type="TestSuite" id="1000" name="NestLabs Game" fullname="NestLabs Game" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.306085" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1065" name="NestLabs.Tests.EditMode.dll" fullname="/Users/janeismine/Desktop/NestLabs Game/Library/ScriptAssemblies/NestLabs.Tests.EditMode.dll" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.284582" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="6015" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1066" name="NestLabs" fullname="NestLabs" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.281538" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1067" name="Tests" fullname="NestLabs.Tests" runstate="Runnable" testcasecount="55" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.278810" total="55" passed="55" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="DeadStateTests" fullname="NestLabs.Tests.DeadStateTests" classname="NestLabs.Tests.DeadStateTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.098280" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1002" name="Enter_ForwardsAFogDeathCause" fullname="NestLabs.Tests.DeadStateTests.Enter_ForwardsAFogDeathCause" methodname="Enter_ForwardsAFogDeathCause" classname="NestLabs.Tests.DeadStateTests" runstate="Runnable" seed="1407209096" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.054350" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="Enter_ForwardsAnObstacleDeathCause" fullname="NestLabs.Tests.DeadStateTests.Enter_ForwardsAnObstacleDeathCause" methodname="Enter_ForwardsAnObstacleDeathCause" classname="NestLabs.Tests.DeadStateTests" runstate="Runnable" seed="1742973731" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001230" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1004" name="Enter_WithNoDeathSequenceWired_DoesNotThrow" fullname="NestLabs.Tests.DeadStateTests.Enter_WithNoDeathSequenceWired_DoesNotThrow" methodname="Enter_WithNoDeathSequenceWired_DoesNotThrow" classname="NestLabs.Tests.DeadStateTests" runstate="Runnable" seed="243164703" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.003068" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1005" name="GameStateServiceTests" fullname="NestLabs.Tests.GameStateServiceTests" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.032789" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1006" name="Boots_InMenu_AndTheFirstPlayStartsTheRun" fullname="NestLabs.Tests.GameStateServiceTests.Boots_InMenu_AndTheFirstPlayStartsTheRun" methodname="Boots_InMenu_AndTheFirstPlayStartsTheRun" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="831110751" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.011603" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1008" name="Death_ComesFromThePlayerEvent" fullname="NestLabs.Tests.GameStateServiceTests.Death_ComesFromThePlayerEvent" methodname="Death_ComesFromThePlayerEvent" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="471807598" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001023" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1009" name="Death_IsTerminal_UntilSomethingLeavesItExplicitly" fullname="NestLabs.Tests.GameStateServiceTests.Death_IsTerminal_UntilSomethingLeavesItExplicitly" methodname="Death_IsTerminal_UntilSomethingLeavesItExplicitly" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="1187019370" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.004037" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[[GameStateService] Rejected transition Death -> Pause.
+]]></output>
+            </test-case>
+            <test-case id="1014" name="Dispose_StopsListeningForDeaths" fullname="NestLabs.Tests.GameStateServiceTests.Dispose_StopsListeningForDeaths" methodname="Dispose_StopsListeningForDeaths" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="304590670" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000621" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1011" name="EveryAcceptedMove_PublishesItsFromAndTo_Once" fullname="NestLabs.Tests.GameStateServiceTests.EveryAcceptedMove_PublishesItsFromAndTo_Once" methodname="EveryAcceptedMove_PublishesItsFromAndTo_Once" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="1654093287" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001149" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1010" name="Menu_IsOnlyReachableFromAStoppedRun" fullname="NestLabs.Tests.GameStateServiceTests.Menu_IsOnlyReachableFromAStoppedRun" methodname="Menu_IsOnlyReachableFromAStoppedRun" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="96575454" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.003589" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[[GameStateService] Rejected transition Play -> Menu.
+]]></output>
+            </test-case>
+            <test-case id="1007" name="Pause_FreezesTime_AndResumeRestoresIt" fullname="NestLabs.Tests.GameStateServiceTests.Pause_FreezesTime_AndResumeRestoresIt" methodname="Pause_FreezesTime_AndResumeRestoresIt" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="2044824478" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000973" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1012" name="RejectedMove_PublishesNothing" fullname="NestLabs.Tests.GameStateServiceTests.RejectedMove_PublishesNothing" methodname="RejectedMove_PublishesNothing" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="501747685" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000602" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1013" name="Subscriber_ReadingCurrent_SeesTheNewState" fullname="NestLabs.Tests.GameStateServiceTests.Subscriber_ReadingCurrent_SeesTheNewState" methodname="Subscriber_ReadingCurrent_SeesTheNewState" classname="NestLabs.Tests.GameStateServiceTests" runstate="Runnable" seed="1552817699" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000734" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1015" name="HitstopTests" fullname="NestLabs.Tests.HitstopTests" classname="NestLabs.Tests.HitstopTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.009592" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1018" name="Begin_WhilePaused_DoesNotUnfreeze" fullname="NestLabs.Tests.HitstopTests.Begin_WhilePaused_DoesNotUnfreeze" methodname="Begin_WhilePaused_DoesNotUnfreeze" classname="NestLabs.Tests.HitstopTests" runstate="Runnable" seed="309497839" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.003307" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1019" name="Cancel_WhilePaused_LeavesTimeFrozen" fullname="NestLabs.Tests.HitstopTests.Cancel_WhilePaused_LeavesTimeFrozen" methodname="Cancel_WhilePaused_LeavesTimeFrozen" classname="NestLabs.Tests.HitstopTests" runstate="Runnable" seed="518044912" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000941" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1017" name="Pause_DuringADip_ResumesTheDip_NotFullSpeed" fullname="NestLabs.Tests.HitstopTests.Pause_DuringADip_ResumesTheDip_NotFullSpeed" methodname="Pause_DuringADip_ResumesTheDip_NotFullSpeed" classname="NestLabs.Tests.HitstopTests" runstate="Runnable" seed="1478465002" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000870" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="Pause_FreezesTime_AndUnpauseRestoresFullSpeed" fullname="NestLabs.Tests.HitstopTests.Pause_FreezesTime_AndUnpauseRestoresFullSpeed" methodname="Pause_FreezesTime_AndUnpauseRestoresFullSpeed" classname="NestLabs.Tests.HitstopTests" runstate="Runnable" seed="2079152889" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000691" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1020" name="NullScreenTransitionTests" fullname="NestLabs.Tests.NullScreenTransitionTests" classname="NestLabs.Tests.NullScreenTransitionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.005175" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1021" name="CloseAsync_CompletesSynchronously" fullname="NestLabs.Tests.NullScreenTransitionTests.CloseAsync_CompletesSynchronously" methodname="CloseAsync_CompletesSynchronously" classname="NestLabs.Tests.NullScreenTransitionTests" runstate="Runnable" seed="454712804" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001711" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1022" name="OpenImmediate_DoesNotThrow" fullname="NestLabs.Tests.NullScreenTransitionTests.OpenImmediate_DoesNotThrow" methodname="OpenImmediate_DoesNotThrow" classname="NestLabs.Tests.NullScreenTransitionTests" runstate="Runnable" seed="1024904128" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000718" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1023" name="PlayerConfigDeathFieldsTests" fullname="NestLabs.Tests.PlayerConfigDeathFieldsTests" classname="NestLabs.Tests.PlayerConfigDeathFieldsTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.011019" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1024" name="FogDeathJuiceFields_HaveExpectedDefaults" fullname="NestLabs.Tests.PlayerConfigDeathFieldsTests.FogDeathJuiceFields_HaveExpectedDefaults" methodname="FogDeathJuiceFields_HaveExpectedDefaults" classname="NestLabs.Tests.PlayerConfigDeathFieldsTests" runstate="Runnable" seed="1203141147" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001670" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1025" name="PlayerHealthTests" fullname="NestLabs.Tests.PlayerHealthTests" classname="NestLabs.Tests.PlayerHealthTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.010719" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1026" name="Initialize_DefaultsTheDeathCauseToUnknown" fullname="NestLabs.Tests.PlayerHealthTests.Initialize_DefaultsTheDeathCauseToUnknown" methodname="Initialize_DefaultsTheDeathCauseToUnknown" classname="NestLabs.Tests.PlayerHealthTests" runstate="Runnable" seed="1096792864" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.002306" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1030" name="LethalDamage_KeepsTheCauseForTheDeadState" fullname="NestLabs.Tests.PlayerHealthTests.LethalDamage_KeepsTheCauseForTheDeadState" methodname="LethalDamage_KeepsTheCauseForTheDeadState" classname="NestLabs.Tests.PlayerHealthTests" runstate="Runnable" seed="1281412021" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001148" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1027" name="TryApplyDamage_RecordsTheDeathCause" fullname="NestLabs.Tests.PlayerHealthTests.TryApplyDamage_RecordsTheDeathCause" methodname="TryApplyDamage_RecordsTheDeathCause" classname="NestLabs.Tests.PlayerHealthTests" runstate="Runnable" seed="164631967" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000848" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1029" name="TryApplyDamage_RejectedByIFrames_DoesNotOverwriteTheCause" fullname="NestLabs.Tests.PlayerHealthTests.TryApplyDamage_RejectedByIFrames_DoesNotOverwriteTheCause" methodname="TryApplyDamage_RejectedByIFrames_DoesNotOverwriteTheCause" classname="NestLabs.Tests.PlayerHealthTests" runstate="Runnable" seed="946014687" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000783" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1028" name="TryApplyDamage_WithoutACause_LeavesItUnknown" fullname="NestLabs.Tests.PlayerHealthTests.TryApplyDamage_WithoutACause_LeavesItUnknown" methodname="TryApplyDamage_WithoutACause_LeavesItUnknown" classname="NestLabs.Tests.PlayerHealthTests" runstate="Runnable" seed="1423235605" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000916" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1031" name="PlayerStateMachineTests" fullname="NestLabs.Tests.PlayerStateMachineTests" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" testcasecount="31" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.100967" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1046" name="BufferedTap_FiresOnLatchEntry" fullname="NestLabs.Tests.PlayerStateMachineTests.BufferedTap_FiresOnLatchEntry" methodname="BufferedTap_FiresOnLatchEntry" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="384013709" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.018997" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1062" name="ChangeState_ExitsOldBeforeEnteringNew_ExactlyOnceEach" fullname="NestLabs.Tests.PlayerStateMachineTests.ChangeState_ExitsOldBeforeEnteringNew_ExactlyOnceEach" methodname="ChangeState_ExitsOldBeforeEnteringNew_ExactlyOnceEach" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1800687145" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.004314" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1063" name="ChangeState_FromInsideEnter_DoesNotRecurse" fullname="NestLabs.Tests.PlayerStateMachineTests.ChangeState_FromInsideEnter_DoesNotRecurse" methodname="ChangeState_FromInsideEnter_DoesNotRecurse" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="839900133" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001782" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1059" name="ExitDecay_BleedsHorizontalSpeedDownToTheExitSpeed" fullname="NestLabs.Tests.PlayerStateMachineTests.ExitDecay_BleedsHorizontalSpeedDownToTheExitSpeed" methodname="ExitDecay_BleedsHorizontalSpeedDownToTheExitSpeed" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="236786978" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.016299" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1060" name="ExitDecay_LeavesALaunchSlowerThanTheExitSpeedAlone" fullname="NestLabs.Tests.PlayerStateMachineTests.ExitDecay_LeavesALaunchSlowerThanTheExitSpeedAlone" methodname="ExitDecay_LeavesALaunchSlowerThanTheExitSpeedAlone" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="738138046" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001303" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1056" name="Fall_LatchesOnAnyWall" fullname="NestLabs.Tests.PlayerStateMachineTests.Fall_LatchesOnAnyWall" methodname="Fall_LatchesOnAnyWall" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="183454860" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001139" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1055" name="Grapple_CutsShort_OnHittingTheFarWall" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_CutsShort_OnHittingTheFarWall" methodname="Grapple_CutsShort_OnHittingTheFarWall" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="114083109" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001105" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1061" name="Grapple_DoesNotStrandTheTimeScale_WhenTheHitstopWasDestroyed" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_DoesNotStrandTheTimeScale_WhenTheHitstopWasDestroyed" methodname="Grapple_DoesNotStrandTheTimeScale_WhenTheHitstopWasDestroyed" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1078797196" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001988" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1053" name="Grapple_EndsOnCrossingTheNode_KeepingItsVelocity" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_EndsOnCrossingTheNode_KeepingItsVelocity" methodname="Grapple_EndsOnCrossingTheNode_KeepingItsVelocity" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1436114777" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001170" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1054" name="Grapple_FallsOut_WhenTheMaxDurationExpires" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_FallsOut_WhenTheMaxDurationExpires" methodname="Grapple_FallsOut_WhenTheMaxDurationExpires" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="43475683" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000976" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1057" name="Grapple_HoldsStill_DuringTheWindUp" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_HoldsStill_DuringTheWindUp" methodname="Grapple_HoldsStill_DuringTheWindUp" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="315753989" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.003277" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1058" name="Grapple_LaunchesOnTheEnteringFrame_WhenWindUpIsZero" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_LaunchesOnTheEnteringFrame_WhenWindUpIsZero" methodname="Grapple_LaunchesOnTheEnteringFrame_WhenWindUpIsZero" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="256195559" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001136" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1051" name="Grapple_LaunchesTowardTheNode_AtItsOwnForce" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_LaunchesTowardTheNode_AtItsOwnForce" methodname="Grapple_LaunchesTowardTheNode_AtItsOwnForce" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1419992580" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001198" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1052" name="Grapple_PicksNearestNode" fullname="NestLabs.Tests.PlayerStateMachineTests.Grapple_PicksNearestNode" methodname="Grapple_PicksNearestNode" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="217501660" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.002186" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1037" name="Idle_FirstTap_StartsTheRun_AndLaunchesOffTheStartWall" fullname="NestLabs.Tests.PlayerStateMachineTests.Idle_FirstTap_StartsTheRun_AndLaunchesOffTheStartWall" methodname="Idle_FirstTap_StartsTheRun_AndLaunchesOffTheStartWall" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="77465865" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.002680" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1050" name="Jump_HandsOverToFall_AtApex" fullname="NestLabs.Tests.PlayerStateMachineTests.Jump_HandsOverToFall_AtApex" methodname="Jump_HandsOverToFall_AtApex" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1251769772" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001118" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1048" name="Latch_DropsToFall_WhenTheWallRunsOut" fullname="NestLabs.Tests.PlayerStateMachineTests.Latch_DropsToFall_WhenTheWallRunsOut" methodname="Latch_DropsToFall_WhenTheWallRunsOut" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="243357696" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001005" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1047" name="Latch_FallsThroughToSlide_AfterGraceDuration" fullname="NestLabs.Tests.PlayerStateMachineTests.Latch_FallsThroughToSlide_AfterGraceDuration" methodname="Latch_FallsThroughToSlide_AfterGraceDuration" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1893312081" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000982" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1064" name="PreviousId_TracksTheStateJustLeft" fullname="NestLabs.Tests.PlayerStateMachineTests.PreviousId_TracksTheStateJustLeft" methodname="PreviousId_TracksTheStateJustLeft" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="880059543" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000824" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1043" name="Tap_InAir_IsIgnored_WhenNoNodeInRange" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_InAir_IsIgnored_WhenNoNodeInRange" methodname="Tap_InAir_IsIgnored_WhenNoNodeInRange" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1933205676" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000949" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1044" name="Tap_InAir_WithinCoyoteWindow_IsAWallJump_NotADash" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_InAir_WithinCoyoteWindow_IsAWallJump_NotADash" methodname="Tap_InAir_WithinCoyoteWindow_IsAWallJump_NotADash" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1537127964" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000795" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1041" name="Tap_IsSwallowed_ByUninterruptibleStates" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_IsSwallowed_ByUninterruptibleStates" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.009677" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1038" name="Tap_IsSwallowed_ByUninterruptibleStates(Dash)" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_IsSwallowed_ByUninterruptibleStates(Dash)" methodname="Tap_IsSwallowed_ByUninterruptibleStates" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1666280689" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001680" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1039" name="Tap_IsSwallowed_ByUninterruptibleStates(Hit)" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_IsSwallowed_ByUninterruptibleStates(Hit)" methodname="Tap_IsSwallowed_ByUninterruptibleStates" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="896417963" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001760" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1040" name="Tap_IsSwallowed_ByUninterruptibleStates(Dead)" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_IsSwallowed_ByUninterruptibleStates(Dead)" methodname="Tap_IsSwallowed_ByUninterruptibleStates" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="8827151" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001187" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1036" name="Tap_ResolvesPerTable" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_ResolvesPerTable" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.007462" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1032" name="Tap_ResolvesPerTable(Latch,Jump)" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_ResolvesPerTable(Latch,Jump)" methodname="Tap_ResolvesPerTable" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="858810458" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001525" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1033" name="Tap_ResolvesPerTable(Slide,Jump)" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_ResolvesPerTable(Slide,Jump)" methodname="Tap_ResolvesPerTable" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="278232109" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001074" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1034" name="Tap_ResolvesPerTable(Jump,Dash)" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_ResolvesPerTable(Jump,Dash)" methodname="Tap_ResolvesPerTable" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="799305086" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000995" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1035" name="Tap_ResolvesPerTable(Fall,Dash)" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_ResolvesPerTable(Fall,Dash)" methodname="Tap_ResolvesPerTable" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="827681438" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.000749" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1042" name="Tap_SwallowedByDash_StaysBufferedForTheNextState" fullname="NestLabs.Tests.PlayerStateMachineTests.Tap_SwallowedByDash_StaysBufferedForTheNextState" methodname="Tap_SwallowedByDash_StaysBufferedForTheNextState" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1987449369" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001612" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1049" name="WallJump_LaunchesAwayFromTheWall" fullname="NestLabs.Tests.PlayerStateMachineTests.WallJump_LaunchesAwayFromTheWall" methodname="WallJump_LaunchesAwayFromTheWall" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1384011740" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001592" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1045" name="WallJump_SpendsCoyote_SoTheNextGrappleFires" fullname="NestLabs.Tests.PlayerStateMachineTests.WallJump_SpendsCoyote_SoTheNextGrappleFires" methodname="WallJump_SpendsCoyote_SoTheNextGrappleFires" classname="NestLabs.Tests.PlayerStateMachineTests" runstate="Runnable" seed="1946616245" result="Passed" start-time="2026-09-01 14:57:57Z" end-time="2026-09-01 14:57:57Z" duration="0.001690" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: /Users/janeismine/Library/Application Support/DefaultCompany/NestLabs Game/TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
