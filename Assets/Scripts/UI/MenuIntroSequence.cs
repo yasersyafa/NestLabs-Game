@@ -1,76 +1,77 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace NestLabs.UI
 {
     /// <summary>
-    /// Menu intro beat, run once on enable:
-    /// <list type="number">
-    /// <item>show image 1,</item>
-    /// <item>show image 2,</item>
-    /// <item>activate the TapToStart object,</item>
-    /// <item>on the first screen tap, deactivate TapToStart and activate the next object.</item>
-    /// </list>
+    /// Menu intro, run once on enable: the screen starts fully white, then a hole opens from the
+    /// centre and grows past the far corner, uncovering the menu UI (art, logo, buttons) that is
+    /// already laid out behind it. The inverse of the death choreography's iris close — same
+    /// analytic-disc shader driven per frame, forked to <c>NestLabs/UI/IrisReveal</c> (opaque
+    /// outside a growing hole, white instead of black).
     ///
-    /// No animation: the images are plain <see cref="GameObject"/>s toggled with SetActive in order.
-    /// They start hidden so nothing flashes during <c>delayBeforeStart</c>.
+    /// The material is cloned per instance so <see cref="Material.SetFloat(int,float)"/> never
+    /// writes the shared project asset — same discipline as <see cref="ScreenTransitionController"/>.
     ///
-    /// Self-contained: MenuScene carries no VContainer scope, so the tap is a code-built
-    /// <see cref="InputAction"/> mirroring <c>TouchPlayerInput</c> (the project runs the new Input
-    /// System only, <c>activeInputHandler: 1</c>).
+    /// Self-contained: MenuScene carries no VContainer scope, so references are wired directly in
+    /// the scene and there is no injection.
     /// </summary>
     public sealed class MenuIntroSequence : MonoBehaviour
     {
-        [Header("Step 1-2: images, shown in order")]
-        [SerializeField] private GameObject image1;
-        [SerializeField] private GameObject image2;
-        [SerializeField] private float delayBeforeStart = 0f;
-        [SerializeField] private float gapBetweenImages = 0.1f;
+        [Header("White iris reveal")]
+        [Tooltip("Full-stretch Image using the NestLabs/UI/IrisReveal material. Starts covering.")]
+        [SerializeField] private Image revealOverlay;
 
-        [Header("Step 3-4: hand-off")]
-        [SerializeField] private GameObject tapToStart;
-        [SerializeField] private GameObject nextObject;
+        [Tooltip("Seconds the screen holds fully white before the hole starts opening.")]
+        [SerializeField] private float holdBeforeReveal = 0.35f;
+
+        [Tooltip("Seconds the hole takes to grow from a point to full screen.")]
+        [SerializeField] private float revealDuration = 1.2f;
+
+        [Tooltip("Extra radius past the far screen corner so nothing white is left. Viewport units.")]
+        [SerializeField] private float coverPadding = 0.05f;
 
         [Header("Start button target")]
         // Loaded by name, not build index, so reordering Build Settings can't misroute it.
         [SerializeField] private string gameSceneName = "GameScene";
 
-        private InputAction tapAction;
-        private bool tapArmed;
-        private bool tapped;
+        private static readonly int RadiusId = Shader.PropertyToID("_Radius");
+        private static readonly int CenterId = Shader.PropertyToID("_Center");
+        private static readonly int AspectId = Shader.PropertyToID("_Aspect");
+
+        private Material _mat;
 
         private void Awake()
         {
-            tapAction = new InputAction("MenuTap", InputActionType.Button);
-            tapAction.AddBinding("<Touchscreen>/primaryTouch/press");
-            tapAction.AddBinding("<Mouse>/leftButton");
-            tapAction.performed += OnTap;
+            if (revealOverlay != null)
+            {
+                // Clone so SetFloat never touches the project material asset.
+                _mat = new Material(revealOverlay.material);
+                revealOverlay.material = _mat;
+                Debug.Log($"[MenuIntro] overlay material shader = '{_mat.shader.name}', " +
+                          $"hasRadius = {_mat.HasProperty(RadiusId)}", this);
+            }
+            else
+            {
+                Debug.LogWarning("[MenuIntro] revealOverlay is not assigned.", this);
+            }
         }
 
         private void OnEnable()
         {
-            tapAction.Enable();
-            StartCoroutine(Run());
+            StartCoroutine(Reveal());
         }
 
         private void OnDisable()
         {
             StopAllCoroutines();
-            tapAction.Disable();
         }
 
         private void OnDestroy()
         {
-            tapAction.performed -= OnTap;
-            tapAction.Dispose();
-        }
-
-        // Only latches once the sequence has armed it (step 4), so a tap during the intro is ignored.
-        private void OnTap(InputAction.CallbackContext _)
-        {
-            if (tapArmed) tapped = true;
+            if (_mat != null) Destroy(_mat);
         }
 
         /// <summary>
@@ -82,36 +83,59 @@ namespace NestLabs.UI
             SceneManager.LoadScene(gameSceneName);
         }
 
-        private IEnumerator Run()
+        private IEnumerator Reveal()
         {
-            tapArmed = false;
-            tapped = false;
+            if (revealOverlay == null || _mat == null)
+            {
+                yield break;
+            }
 
-            // Start state: prompt, next and both images hidden.
-            if (tapToStart != null) tapToStart.SetActive(false);
-            if (nextObject != null) nextObject.SetActive(false);
-            if (image1 != null) image1.SetActive(false);
-            if (image2 != null) image2.SetActive(false);
+            float aspect = Screen.height > 0 ? (float)Screen.width / Screen.height : 1f;
 
-            if (delayBeforeStart > 0f) yield return new WaitForSecondsRealtime(delayBeforeStart);
+            _mat.SetFloat(RadiusId, 0f);
+            _mat.SetVector(CenterId, new Vector4(0.5f, 0.5f, 0f, 0f));
+            _mat.SetFloat(AspectId, aspect);
+            revealOverlay.gameObject.SetActive(true);
 
-            // 1. show image 1
-            if (image1 != null) image1.SetActive(true);
+            if (holdBeforeReveal > 0f) yield return new WaitForSecondsRealtime(holdBeforeReveal);
 
-            if (gapBetweenImages > 0f) yield return new WaitForSecondsRealtime(gapBetweenImages);
+            // The hole must reach the farthest screen corner (plus a margin) to uncover everything.
+            float target = MaxCornerDistance(aspect) + coverPadding;
+            Debug.Log($"[MenuIntro] reveal start: aspect={aspect:F3} target={target:F3} " +
+                      $"duration={revealDuration}", this);
 
-            // 2. show image 2
-            if (image2 != null) image2.SetActive(true);
+            // Burn one frame first: the scene-load hitch makes the first frame's delta huge, so
+            // start the wall clock only after it has passed or the grow reads as an instant cut.
+            yield return null;
 
-            // 3. activate TapToStart
-            if (tapToStart != null) tapToStart.SetActive(true);
+            float startTime = Time.realtimeSinceStartup;
+            float k = 0f;
+            int frames = 0;
+            while (k < 1f)
+            {
+                k = Mathf.Clamp01((Time.realtimeSinceStartup - startTime) / Mathf.Max(revealDuration, 0.0001f));
+                // Ease-in-out: gentle start and finish so the iris reads as a deliberate open,
+                // not a pop.
+                float eased = Mathf.SmoothStep(0f, 1f, k);
+                _mat.SetFloat(RadiusId, eased * target);
+                frames++;
+                yield return null;
+            }
+            Debug.Log($"[MenuIntro] reveal done in {frames} frames", this);
 
-            // 4. first tap -> swap TapToStart for nextObject
-            tapArmed = true;
-            yield return new WaitUntil(() => tapped);
+            _mat.SetFloat(RadiusId, target);
+            revealOverlay.gameObject.SetActive(false);
+        }
 
-            if (tapToStart != null) tapToStart.SetActive(false);
-            if (nextObject != null) nextObject.SetActive(true);
+        /// <summary>
+        /// Largest aspect-corrected distance from the screen centre to any corner — the radius the
+        /// hole must grow to before the white fill is gone from every corner.
+        /// </summary>
+        private static float MaxCornerDistance(float aspect)
+        {
+            float dx = 0.5f * aspect;
+            const float dy = 0.5f;
+            return Mathf.Sqrt(dx * dx + dy * dy);
         }
     }
 }
