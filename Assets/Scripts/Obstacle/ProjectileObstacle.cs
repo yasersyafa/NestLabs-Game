@@ -1,12 +1,13 @@
 using System;
 using DG.Tweening;
 using Nestlabs.Level;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 
 namespace Nestlabs.Obstacle
 {
     [RequireComponent(typeof(Collider2D))]
-    public class ProjectileObstacle : ObstacleBase, IPoolable
+    public class ProjectileObstacle : ObstacleBase, IPoolable, IScreenVisibility
     {
         [Header("Timing")]
         [SerializeField] private float moveDuration = 1f;
@@ -35,6 +36,11 @@ namespace Nestlabs.Obstacle
         private Vector3 endPos;
         private RectTransform warningUI;
         private Action releaseSelf;
+        private bool screenVisible = true;
+
+        public bool IsScreenVisible => screenVisible;
+
+        public void SetScreenVisible(bool visible) => screenVisible = visible;
 
         // Accumulated blink phase (whole numbers = one off-on cycle). Integrated from a ramping
         // frequency so the icon speeds up smoothly instead of jumping rate mid-cycle.
@@ -61,6 +67,7 @@ namespace Nestlabs.Obstacle
         public void OnSpawned(Action releaseSelf)
         {
             this.releaseSelf = releaseSelf;
+            screenVisible = true;
 
             transform.position = startPos;
 
@@ -124,6 +131,7 @@ namespace Nestlabs.Obstacle
         // two. Re-anchor every frame the icon is visible so it stays lined up with spawnY.
         private void Update()
         {
+            if (!screenVisible) return;
             if (warningUI != null && warningUI.gameObject.activeSelf)
             {
                 PositionWarningUI(warningUI);

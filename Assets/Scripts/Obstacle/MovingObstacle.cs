@@ -1,12 +1,13 @@
 using System;
 using DG.Tweening;
 using Nestlabs.Level;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 
 namespace Nestlabs.Obstacle
 {
     [RequireComponent(typeof(LineRenderer))]
-    public class MovingObstacle : ObstacleBase, IPoolable
+    public class MovingObstacle : ObstacleBase, IPoolable, IScreenVisibility
     {
         [SerializeField] private float duration = 2f;
         [Tooltip("Seconds for one full spin while travelling. 0 disables the spin.")]
@@ -22,6 +23,11 @@ namespace Nestlabs.Obstacle
         private Vector3 endPos;
         private LineRenderer pathLine;
         private bool running;
+        private bool screenVisible = true;
+
+        public bool IsScreenVisible => screenVisible;
+
+        public void SetScreenVisible(bool visible) => screenVisible = visible;
 
         private void Awake()
         {
@@ -41,6 +47,7 @@ namespace Nestlabs.Obstacle
         // this explicitly every time (fresh or reused) instead.
         public void OnSpawned(Action releaseSelf)
         {
+            screenVisible = true;
             transform.position = startPos;
             transform.rotation = Quaternion.identity;
 
@@ -75,7 +82,7 @@ namespace Nestlabs.Obstacle
         // spins - re-pin them in world space every frame so they hold at point 1 / point 2.
         private void LateUpdate()
         {
-            if (running) PinMarkers();
+            if (running && screenVisible) PinMarkers();
         }
 
         private void PinMarkers()

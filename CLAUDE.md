@@ -56,6 +56,7 @@ will not compile.
 NestLabs.Shared        (no references, leaf: interfaces, enums, event structs, null objects)
   <- Nestlabs.Level    (spawn rule contracts, LevelGenerator, pooling)
        <- Nestlabs.Obstacle, NestLabs.Node, Nestlabs.Wall
+       <- Nestlabs.Chunk (references Nestlabs.Obstacle + NestLabs.Node, see below)
   <- NestLabs.Runtime  (Assets/Scripts root: player, audio, score, flow, DI, UI, hazards)
 Nestlabs.Environment   (isolated, parallax only)
 NestLabs.EditorTools   (Editor-only)
@@ -65,9 +66,16 @@ NestLabs.Tests.EditMode / NestLabs.Tests.PlayMode
 `NestLabs.Runtime` does **not** reference `Nestlabs.Wall` or `Nestlabs.Environment`. Anything the
 player or a service must see belongs in `NestLabs.Shared`.
 
+`Nestlabs.Chunk` combines node + obstacle placement into one authored layout (`ChunkSO`) fired by
+`ChunkSpawnRuleSO`, so it references both `Nestlabs.Obstacle` and `NestLabs.Node` directly. It does
+**not** reference `Nestlabs.Wall` - walls are fixed corridor geometry, not part of what a chunk needs
+to coordinate. It stays a sibling of `Nestlabs.Obstacle`/`NestLabs.Node`/`Nestlabs.Wall` rather than
+living in `NestLabs.Runtime` (which could reach both dependencies already) so every rule family keeps
+owning its own asmdef, consistent with the rest of this graph.
+
 Namespace casing is inconsistent and follows the asmdef that owns the file: `NestLabs.*` for Player,
 Audio, Score, Node, Shared, UI, EditorTools, but `Nestlabs.*` (lowercase L) for Level, Obstacle,
-Wall, Environment. Match the folder you are in rather than normalizing.
+Wall, Chunk, Environment. Match the folder you are in rather than normalizing.
 
 `AssemblyInfo.cs` in `Assets/Scripts/` and `Assets/Scripts/Node/` grants `InternalsVisibleTo` to
 `NestLabs.Tests.EditMode`. That is how tests stage `PlayerSensor.Current` and `NodeBase.Data`
@@ -165,8 +173,25 @@ run starts so the player can read it during the ready pose; steady-state spawnin
 `Tick`, and only while `IsPlaying`. `SpawnRuleContext.AddClaim` / `ClaimClearance` let grapple nodes
 reserve their grab radius so obstacles never spawn inside a point the player must reach.
 
-Rule types: `DistanceSpawnRuleSO`, `IntervalSpawnRuleSO`, `WeightedGroupSpawnRuleSO`,
-`ProjectileSpawnRuleSO`, `NodeSpawnRuleSO`, `WallPairSpawnRuleSO`.
+Rule types: `DistanceSpawnRuleSO`, `IntervalSpawnRuleSO`, `ProjectileSpawnRuleSO`,
+`WallPairSpawnRuleSO`, `ChunkSpawnRuleSO`.
+
+**Node + obstacle placement is chunk-based**, not two independent rules. `WeightedGroupSpawnRuleSO`
+(obstacles) and `NodeSpawnRuleSO` (nodes) used to run as separate `DistanceSpawnRuleSO` progressions,
+reconciled only reactively via `AddClaim`/`ClaimClearance` - which broke down whenever the corridor
+was narrower than a node's required clearance (routine with a Strong node at narrow aspect ratios),
+falling back to spawning the obstacle overlapping the node's claim anyway. `Nestlabs.Chunk.Rules.ChunkSpawnRuleSO`
+replaces both: it fires one hand-authored `ChunkSO` per spawn - a fixed layout combining node and
+obstacle positions - picked from a weighted, difficulty-tiered pool with a short anti-repeat window.
+Because node and obstacle placement are authored together, a chunk is solvable by construction; there
+is no runtime retry/fallback path left. `ChunkSO` entries are authored against a `referenceHalfWidth`
+set to the narrowest supported corridor and only ever scaled up for a wider device, so a chunk
+solvable at the reference width stays solvable everywhere. `Assets/Editor/ChunkAuthoringTool.cs`
+(`NestLabs > Debug > Build Chunk Content`) builds the starter `ChunkSO`/`ChunkSpawnRuleSO` assets and
+wires them into `LevelGenerator.prefab` and every scene's `LevelGenerator` instance - re-run it
+instead of hand-editing those `.asset`/prefab/scene references, since `PrefabInstance.m_Modifications`
+array-index bookkeeping is easy to corrupt by hand (see its header comment). `WeightedGroupSpawnRuleSO`
+and `NodeSpawnRuleSO` stay in the codebase, unwired, as a one-line revert.
 
 ### Other systems
 

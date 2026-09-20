@@ -1,12 +1,12 @@
 {
-    "name": "NestLabs.Node",
-    "rootNamespace": "NestLabs.Node",
+    "name": "Nestlabs.Chunk",
+    "rootNamespace": "Nestlabs.Chunk",
     "references": [
         "Nestlabs.Level",
+        "Nestlabs.Obstacle",
+        "NestLabs.Node",
         "NestLabs.Shared",
-        "VContainer",
-        "DOTween.Modules",
-        "GabrielBigardi.SpriteAnimator"
+        "VContainer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

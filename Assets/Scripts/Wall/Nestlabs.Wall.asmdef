@@ -3,6 +3,7 @@
     "rootNamespace": "Nestlabs.Wall",
     "references": [
         "Nestlabs.Level",
+        "NestLabs.Shared",
         "VContainer"
     ],
     "includePlatforms": [],

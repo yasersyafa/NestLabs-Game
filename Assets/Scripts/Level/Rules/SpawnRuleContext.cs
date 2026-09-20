@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Nestlabs.Level;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 using UnityEngine.Pool;
 using VContainer;
@@ -21,6 +22,20 @@ namespace Nestlabs.Level.Rules
         public Camera Cam;
         public RectTransform UiCanvas;
         public float RawScreenHalfWidth;
+
+        // World Y band the camera currently frames, +/- VisibilityMargin hysteresis. Recomputed
+        // once per frame in LevelGenerator.Update, same as RawScreenHalfWidth, so every rule's
+        // Tick sees the same camera state without each recomputing
+        // cam.transform.position.y +/- orthographicSize itself. Default +/-Infinity is fail-open:
+        // no valid orthographic camera means nothing gets hidden.
+        public float CameraViewMinY = float.NegativeInfinity;
+        public float CameraViewMaxY = float.PositiveInfinity;
+        public float VisibilityMargin;
+
+        public bool IsYVisible(float minEdgeY, float maxEdgeY, bool currentlyVisible) =>
+            ScreenVisibility.IsInView(minEdgeY, maxEdgeY, CameraViewMinY, CameraViewMaxY, VisibilityMargin, currentlyVisible);
+
+        public bool IsYVisible(float y, bool currentlyVisible) => IsYVisible(y, y, currentlyVisible);
 
         // World Y below which content can never be reached again, so recycling it is safe. Tracks
         // the rising hazard line, and falls back to a player-relative distance in scenes with no

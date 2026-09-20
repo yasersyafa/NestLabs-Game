@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using GabrielBigardi.SpriteAnimator;
 using Nestlabs.Level;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 
 namespace NestLabs.Node
@@ -12,7 +13,7 @@ namespace NestLabs.Node
     /// from <see cref="NodeDataSO"/> so variants differ by asset, not by script.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class NodeBase : MonoBehaviour, IPoolable
+    public sealed class NodeBase : MonoBehaviour, IPoolable, IScreenVisibility
     {
         // Animation names on the SpriteAnimationObject (see Node.asset). Idle is the resting pose;
         // InRange is the "you can grab me" cue the player's node sensor toggles on proximity.
@@ -39,6 +40,11 @@ namespace NestLabs.Node
         private Tween _popTween;
         private Tween _flashTween;
         private Vector3 _spriteBaseScale = Vector3.one;
+        private bool _screenVisible = true;
+
+        public bool IsScreenVisible => _screenVisible;
+
+        public void SetScreenVisible(bool visible) => _screenVisible = visible;
 
         public Vector2 Position => transform.position;
 
@@ -100,6 +106,7 @@ namespace NestLabs.Node
         // the idle pose here. Cooldown/tint reset happens on despawn instead.
         public void OnSpawned(Action releaseSelf)
         {
+            _screenVisible = true;
             PlayAnim(IdleAnim);
         }
 
@@ -139,6 +146,8 @@ namespace NestLabs.Node
 
         private void Update()
         {
+            if (!_screenVisible) return;
+
             // Only runs while spent. A node with no cooldown costs one comparison a frame.
             if (_readyAt <= 0f || Time.time < _readyAt) return;
 

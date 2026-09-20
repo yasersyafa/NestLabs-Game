@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bea6fff8c99447c785f02d5404d4278, type: 3}
+  m_Name: Chunk_EasyA
+  m_EditorClassIdentifier: Nestlabs.Chunk::Nestlabs.Chunk.ChunkSO
+  chunkId: Chunk_EasyA
+  tier: 0
+  weight: 1
+  footprintHeight: 5
+  referenceHalfWidth: 3.4
+  entries:
+  - type: 0
+    relativeX: 0
+    relativeY: 2
+    jitterX: {x: 0, y: 0}
+    nodePrefab: {fileID: 2735869302020331096, guid: b725b1097bb116e43bcfcbaba7c2966d, type: 3}
+    idlePrefab: {fileID: 0}
+    movingPrefab: {fileID: 0}
+    movingEndRelativeX: 0
+    swingPrefab: {fileID: 0}
+  - type: 1
+    relativeX: -2.6
+    relativeY: 4.5
+    jitterX: {x: -0.2, y: 0.2}
+    nodePrefab: {fileID: 0}
+    idlePrefab: {fileID: 6080047910524650234, guid: 8ed4459ebfc8e4285b060edffeb8e346, type: 3}
+    movingPrefab: {fileID: 0}
+    movingEndRelativeX: 0
+    swingPrefab: {fileID: 0}

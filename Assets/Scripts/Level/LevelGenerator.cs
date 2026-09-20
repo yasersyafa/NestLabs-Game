@@ -39,6 +39,8 @@ namespace Nestlabs.Level
         [Header("Culling")]
         [Tooltip("Cull distance below the player used only in scenes with no hazard line (no fog).")]
         [SerializeField] private float fallbackCullDistanceBelowPlayer = 12f;
+        [Tooltip("Hysteresis band added past the camera edge before a visible instance is allowed to hide again.")]
+        [SerializeField] private float visibilityMargin = 2f;
 
         private Camera _cam;
         private SpawnRuleContext _ctx;
@@ -62,6 +64,7 @@ namespace Nestlabs.Level
                 Player = player,
                 Cam = _cam,
                 UiCanvas = warningCanvas,
+                VisibilityMargin = visibilityMargin,
             };
 
             // ScriptableObject assets are shared/persistent - ticking the source asset directly
@@ -87,6 +90,13 @@ namespace Nestlabs.Level
             _ctx.RawScreenHalfWidth = (_cam != null && _cam.orthographic)
                 ? _cam.orthographicSize * _cam.aspect
                 : 0f;
+
+            if (_cam != null && _cam.orthographic)
+            {
+                float camY = _cam.transform.position.y;
+                _ctx.CameraViewMinY = camY - _cam.orthographicSize;
+                _ctx.CameraViewMaxY = camY + _cam.orthographicSize;
+            }
 
             // Content is recycled only once the fog has swallowed it, never because the player
             // climbed past it - otherwise falling drops the player into a shaft with no walls or

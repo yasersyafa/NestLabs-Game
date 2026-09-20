@@ -1562,14 +1562,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2770643300898209275, guid: 6a50c53a4b6974bf4863b998b15b7d6e, type: 3}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 1374431103}
-    - target: {fileID: 2770643300898209275, guid: 6a50c53a4b6974bf4863b998b15b7d6e, type: 3}
-      propertyPath: warningCanvas
-      value: 
-      objectReference: {fileID: 1936827132}
     - target: {fileID: 4557682079910712821, guid: 6a50c53a4b6974bf4863b998b15b7d6e, type: 3}
       propertyPath: m_Name
       value: SERVICES
@@ -1582,10 +1574,14 @@ PrefabInstance:
       propertyPath: warningCanvas
       value: 
       objectReference: {fileID: 1936827132}
-    - target: {fileID: 6125409491414946275, guid: 6a50c53a4b6974bf4863b998b15b7d6e, type: 3}
-      propertyPath: 'rules.Array.data[3]'
+    - target: {fileID: 0}
+      propertyPath: player
       value: 
-      objectReference: {fileID: 11400000, guid: 4062bc8ff0d2499f9158ca8330b96dcb, type: 2}
+      objectReference: {fileID: 1374431103}
+    - target: {fileID: 0}
+      propertyPath: warningCanvas
+      value: 
+      objectReference: {fileID: 1936827132}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1599,6 +1595,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6551000000000000001, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
+      propertyPath: m_Name
+      value: Floor
+      objectReference: {fileID: 0}
     - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1626,10 +1626,6 @@ PrefabInstance:
     - target: {fileID: 6551000000000000002, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6551000000000000001, guid: f100ca12b0574a2e9d1e5c2f8a7b6c40, type: 3}
-      propertyPath: m_Name
-      value: Floor
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

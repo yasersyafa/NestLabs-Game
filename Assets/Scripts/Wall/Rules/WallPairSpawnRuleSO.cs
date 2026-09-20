@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Nestlabs.Level.Rules;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 using VContainer.Unity;
 
@@ -142,10 +143,20 @@ namespace Nestlabs.Wall.Rules
             for (int i = _active.Count - 1; i >= 0; i--)
             {
                 Transform segment = _active[i];
-                if (segment.position.y + halfSegment < ctx.CullFloorY)
+                float top = segment.position.y + halfSegment;
+                float bottom = segment.position.y - halfSegment;
+
+                if (top < ctx.CullFloorY)
                 {
                     ctx.Despawn(segment);
                     _active.RemoveAt(i);
+                    continue;
+                }
+
+                if (segment.TryGetComponent(out IScreenVisibility vis))
+                {
+                    bool visible = ctx.IsYVisible(bottom, top, vis.IsScreenVisible);
+                    if (visible != vis.IsScreenVisible) vis.SetScreenVisible(visible);
                 }
             }
         }

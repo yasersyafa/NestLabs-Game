@@ -5,6 +5,8 @@
         "NestLabs.Runtime",
         "Nestlabs.Obstacle",
         "Nestlabs.Level",
+        "Nestlabs.Chunk",
+        "NestLabs.Node",
         "UnityEngine.UI",
         "Unity.TextMeshPro"
     ],

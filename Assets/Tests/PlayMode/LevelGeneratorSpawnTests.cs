@@ -27,10 +27,6 @@ namespace NestLabs.Tests.PlayMode
         private const float ClimbPerFrame = 0.5f;
         private const int MaxReasonableWalls = 60;
 
-        // Mirrors CoreObstacles_WeightedGroup.asset - the test needs the same corridor the rule uses.
-        private const float ObstacleXEdgeMargin = 1f;
-        private const float NodeClearancePadding = 0.5f;
-
         [UnityTest]
         public IEnumerator RulesSpawnObstaclesAndWallPairsAsClimberAscends()
         {
@@ -72,7 +68,7 @@ namespace NestLabs.Tests.PlayMode
                       $"idle={idleCount} moving={movingCount} swing={swingCount} wall={wallCount} node={nodeCount}");
 
             Assert.Greater(idleCount + movingCount + swingCount, 0,
-                "WeightedGroupSpawnRuleSO never fired an Idle/Moving/Swing obstacle over the climb");
+                "ChunkSpawnRuleSO never fired an Idle/Moving/Swing obstacle over the climb");
             Assert.Greater(wallCount, 0,
                 "WallPairSpawnRuleSO never fired a wall pair over the climb");
             Assert.AreEqual(0, wallCount % 2,
@@ -84,7 +80,7 @@ namespace NestLabs.Tests.PlayMode
                 $"WallPairSpawnRuleSO spawned {wallCount} active walls over a {ClimbFrames}-frame climb - " +
                 "the column is not bounding itself, check the resolved segment height");
             Assert.Greater(nodeCount, 0,
-                "NodeSpawnRuleSO never fired a grapple node over the climb");
+                "ChunkSpawnRuleSO never fired a grapple node over the climb");
 
             AssertObstaclesClearOfNodeRadii();
 
@@ -94,15 +90,19 @@ namespace NestLabs.Tests.PlayMode
         // Idle only. Moving tweens along X and Swing arcs through its rope, so their live positions
         // drift away from the spawn point - and only the spawn footprint is avoidance-checked, so
         // asserting on those two would flag the sweep case that is deliberately out of scope.
+        //
+        // No corridor-too-narrow escape hatch here anymore: ChunkSO layouts are authored against
+        // referenceHalfWidth (the narrowest supported corridor) and ChunkSpawnRuleSO only ever
+        // scales positions up from there, and CoreChunks.asset's minSpawnSeparation is sized to
+        // keep consecutive chunks' content clear of each other in Y too (see the comment on that
+        // field in ChunkAuthoringTool.BuildRule) - so every node/obstacle pair in the scene should
+        // clear on every device, not just "where the corridor happened to have room".
         private static void AssertObstaclesClearOfNodeRadii()
         {
-            Camera cam = Camera.main;
             NodeBase[] nodes = Object.FindObjectsByType<NodeBase>(FindObjectsSortMode.None);
             IdleObstacle[] idle = Object.FindObjectsByType<IdleObstacle>(FindObjectsSortMode.None);
 
-            if (cam == null || !cam.orthographic || nodes.Length == 0 || idle.Length == 0) return;
-
-            float corridor = 2f * Mathf.Max(0f, cam.orthographicSize * cam.aspect - ObstacleXEdgeMargin);
+            if (nodes.Length == 0 || idle.Length == 0) return;
 
             foreach (IdleObstacle obstacle in idle)
             {
@@ -113,18 +113,13 @@ namespace NestLabs.Tests.PlayMode
                 foreach (NodeBase node in nodes)
                 {
                     float minSeparation = node.ClaimRadius + obstacleRadius;
-
-                    // Avoidance is best-effort by design: at 9:16 a single node's clearance spans
-                    // more X than the whole playable corridor, so no clear spot exists to pick.
-                    // Only assert where one did.
-                    if (2f * (minSeparation + NodeClearancePadding) >= corridor) continue;
-
                     float actual = Vector2.Distance(obstacle.transform.position, node.Position);
 
                     Assert.Greater(actual, minSeparation,
                         $"IdleObstacle at {obstacle.transform.position} is {actual:F2} from node " +
-                        $"at {node.Position} but needs more than {minSeparation:F2} - it is inside the " +
-                        $"grapple radius, and the {corridor:F2}-wide corridor had room to avoid it");
+                        $"at {node.Position} but needs more than {minSeparation:F2} - a ChunkSO " +
+                        "placed an obstacle inside a node's grapple radius (or two consecutive " +
+                        "chunks landed too close together in Y)");
                 }
             }
         }

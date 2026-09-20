@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 
 namespace Nestlabs.Level.Rules
@@ -29,6 +30,10 @@ namespace Nestlabs.Level.Rules
         [SerializeField] private int initialBurstCount = 1;
         [Tooltip("Y above the player where the initial burst starts filling, walking upward by the normal gap. 0 = start at lookaheadDistance (previous behavior).")]
         [SerializeField] private float initialFillStartOffset = 0f;
+
+        // Exposed for subclasses that need to validate authored content against the configured
+        // cadence (e.g. ChunkSpawnRuleSO checking a chunk's footprint fits between two fires).
+        protected float SpawnYGapMin => spawnYGapMin;
 
         private float _nextSpawnY;
         private bool _hasBurstFilled;
@@ -155,6 +160,13 @@ namespace Nestlabs.Level.Rules
                 {
                     ctx.Despawn(obstacle);
                     _active.RemoveAt(i);
+                    continue;
+                }
+
+                if (obstacle.TryGetComponent(out IScreenVisibility vis))
+                {
+                    bool visible = ctx.IsYVisible(obstacle.position.y, vis.IsScreenVisible);
+                    if (visible != vis.IsScreenVisible) vis.SetScreenVisible(visible);
                 }
             }
         }

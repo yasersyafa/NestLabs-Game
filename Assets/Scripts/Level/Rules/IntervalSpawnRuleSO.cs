@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 
 namespace Nestlabs.Level.Rules
@@ -28,6 +29,15 @@ namespace Nestlabs.Level.Rules
         public override void Tick(SpawnRuleContext ctx, float deltaTime)
         {
             _active.RemoveAll(c => c == null);
+
+            foreach (Component instance in _active)
+            {
+                if (instance is IScreenVisibility vis)
+                {
+                    bool visible = ctx.IsYVisible(instance.transform.position.y, vis.IsScreenVisible);
+                    if (visible != vis.IsScreenVisible) vis.SetScreenVisible(visible);
+                }
+            }
 
             if (_active.Count >= maxConcurrent) return;
 

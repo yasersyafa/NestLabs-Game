@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Nestlabs.Level;
+using NestLabs.Shared.Culling;
 using UnityEngine;
 
 namespace Nestlabs.Obstacle
@@ -12,7 +13,7 @@ namespace Nestlabs.Obstacle
     [RequireComponent(typeof(LineRenderer))]
     [RequireComponent(typeof(CircleCollider2D))]
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SwingObstacle : ObstacleBase, IPoolable
+    public class SwingObstacle : ObstacleBase, IPoolable, IScreenVisibility
     {
         [Header("Swing")]
         [Tooltip("Distance from the anchor to the obstacle, in world units.")]
@@ -36,6 +37,23 @@ namespace Nestlabs.Obstacle
         private Vector3 _anchorPos;
         private float _currentAngle;
         private Tweener _swingTween;
+        private bool _screenVisible = true;
+
+        public bool IsScreenVisible => _screenVisible;
+
+        // Pauses/resumes the swing tween rather than merely skipping UpdatePosition's body: the
+        // tween drives transform.position, which is this obstacle's actual (trigger) collider
+        // position, not just cosmetic. Safe because the camera follows the player continuously -
+        // anything still reachable is, within camera-smoothing lag, inside the view band - and
+        // DOTween Pause/Play preserves exact elapsed progress, so resuming never jumps.
+        public void SetScreenVisible(bool visible)
+        {
+            if (_screenVisible == visible) return;
+            _screenVisible = visible;
+            if (_swingTween == null) return;
+            if (visible) _swingTween.Play();
+            else _swingTween.Pause();
+        }
 
         // Called by the spawner right after Instantiate.
         public void Configure(Vector3 anchor)
@@ -76,6 +94,7 @@ namespace Nestlabs.Obstacle
         // this explicitly every time (fresh or reused) instead.
         public void OnSpawned(Action releaseSelf)
         {
+            _screenVisible = true;
             _currentAngle = UnityEngine.Random.value < 0.5f ? -maxAngle : maxAngle;
             UpdatePosition();
 
