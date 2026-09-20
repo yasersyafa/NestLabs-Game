@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Nestlabs.Chunk::Nestlabs.Chunk.ChunkSO
   chunkId: Chunk_HardB
   tier: 2
-  weight: 1
+  weight: 0.5
   footprintHeight: 7.2
   referenceHalfWidth: 3.4
   entries:
@@ -47,7 +47,7 @@ MonoBehaviour:
     swingPrefab: {fileID: 1519158823203621363, guid: 78b03ba5dd5f144b3832931a748ba3fe, type: 3}
   - type: 1
     relativeX: 3.4
-    relativeY: 0
+    relativeY: 1.5
     jitterX: {x: -0.15, y: 0.15}
     nodePrefab: {fileID: 0}
     idlePrefab: {fileID: 6080047910524650234, guid: 8ed4459ebfc8e4285b060edffeb8e346, type: 3}

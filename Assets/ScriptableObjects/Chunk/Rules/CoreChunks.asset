@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8673738ff77be4ae8b25e219268b3fd3, type: 3}
   m_Name: CoreChunks
   m_EditorClassIdentifier: Nestlabs.Chunk::Nestlabs.Chunk.Rules.ChunkSpawnRuleSO
-  lookaheadDistance: 20
-  spawnYGapMin: 14
-  spawnYGapMax: 18
-  yOffsetRange: {x: -1, y: 1}
-  minSpawnSeparation: 13
+  lookaheadDistance: 16
+  spawnYGapMin: 7.5
+  spawnYGapMax: 9
+  yOffsetRange: {x: -0.2, y: 0.2}
+  minSpawnSeparation: 7.25
   keepSpawnsOffscreen: 0
   offscreenMargin: 2
   initialBurstCount: 3
-  initialFillStartOffset: 4
+  initialFillStartOffset: 1
   pool:
   - {fileID: 11400000, guid: d578fabd6458d47cfb6e528f1324f624, type: 2}
   - {fileID: 11400000, guid: 2da9ede4e9b45409fa82e0060a4d0537, type: 2}
@@ -30,10 +30,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4f028c483e004416a859a176e990aad7, type: 2}
   tierRamps:
   - tier: 1
-    introduceAtDistance: 20
-    fullWeightAtDistance: 45
+    introduceAtDistance: 35
+    fullWeightAtDistance: 65
   - tier: 2
-    introduceAtDistance: 60
-    fullWeightAtDistance: 110
-  antiRepeatWindow: 3
+    introduceAtDistance: 100
+    fullWeightAtDistance: 160
+  antiRepeatWindow: 2
   xEdgeMargin: 0.5

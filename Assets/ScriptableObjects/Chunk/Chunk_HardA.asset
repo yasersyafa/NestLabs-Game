@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Nestlabs.Chunk::Nestlabs.Chunk.ChunkSO
   chunkId: Chunk_HardA
   tier: 2
-  weight: 1
+  weight: 0.5
   footprintHeight: 7
   referenceHalfWidth: 3.4
   entries:

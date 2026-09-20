@@ -15,7 +15,7 @@ MonoBehaviour:
   chunkId: Chunk_MidB
   tier: 1
   weight: 1
-  footprintHeight: 5.4
+  footprintHeight: 7.5
   referenceHalfWidth: 3.4
   entries:
   - type: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
     swingPrefab: {fileID: 0}
   - type: 2
     relativeX: 2.4
-    relativeY: 5
+    relativeY: 7
     jitterX: {x: -0.2, y: 0.2}
     nodePrefab: {fileID: 0}
     idlePrefab: {fileID: 0}
