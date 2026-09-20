@@ -22,7 +22,6 @@ namespace NestLabs
     {
         [SerializeField] private PlayerConfigSO _playerConfig;
         [SerializeField] private AudioLibrarySO _audioLibrary;
-        [SerializeField] private PlayerDebugHud _playerDebugHud;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -55,8 +54,10 @@ namespace NestLabs
             builder.Register<IScoreStore, PlayerPrefsScoreStore>(Lifetime.Singleton);
 
             builder.RegisterComponentInHierarchy<PlayerBase>();
-            if (_playerDebugHud != null) builder.Register<PlayerDebugHud>(Lifetime.Scoped);
-            builder.RegisterComponentInHierarchy<PlayerDebugHud>();
+            if (ExistsInScene<PlayerDebugHud>())
+            {
+                builder.RegisterComponentInHierarchy<PlayerDebugHud>();
+            }
             builder.RegisterComponentInHierarchy<ScoreService>();
             builder.RegisterComponentInHierarchy<ScoreHud>();
             // Only dev-awe carries the HUD prefab; YaserScene and the other rigs are gameplay-only.
